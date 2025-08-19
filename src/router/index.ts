@@ -13,20 +13,38 @@ const router = createRouter({
     },
     // 本頁
     {
-      path: '/Home',
-      component: () => import('@/views/Home/index.vue'),
+      path: '/App',
+      component: () => import('@/views/App/index.vue'),
       children: [
         {
           path: 'page1',
-          component: () => import('@/views/Home/page1/index.vue'),
+          component: () => import('@/views/App/page1/index.vue'),
         },
         {
           path: 'page2',
-          component: () => import('@/views/Home/page2/index.vue'),
+          component: () => import('@/views/App/page2/index.vue'),
         },
         {
           path: 'page3',
-          component: () => import('@/views/Home/page3/index.vue'),
+          component: () => import('@/views/App/page3/index.vue'),
+        },
+      ],
+    },
+    {
+      path: '/Landing',
+      component: () => import('@/views/Landing/index.vue'),
+      children: [
+        {
+          path: 'page1',
+          component: () => import('@/views/Landing/page1/index.vue'),
+        },
+        {
+          path: 'page2',
+          component: () => import('@/views/Landing/page2/index.vue'),
+        },
+        {
+          path: 'page3',
+          component: () => import('@/views/Landing/page3/index.vue'),
         },
       ],
     },
