@@ -7,6 +7,7 @@ import Components from 'unplugin-vue-components/vite';
 import AutoImport from 'unplugin-auto-import/vite';
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 import Unocss from 'unocss/vite';
+import { viteMockServe } from 'vite-plugin-mock';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -26,6 +27,10 @@ export default defineConfig({
     Components({
       resolvers: [NaiveUiResolver()],
       dts: 'src/components.d.ts',
+    }),
+    viteMockServe({
+      mockPath: 'mock', // mock 檔案資料夾，預設就是 'mock'
+      enable: true, // 本地開發啟用
     }),
   ],
   resolve: {
