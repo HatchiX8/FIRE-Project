@@ -8,9 +8,7 @@ const instance = axios.create({
 // 如果需要攔截器可加上
 instance.interceptors.response.use(
   (res) => res,
-  (err) => {
-    return Promise.reject(err);
-  }
+  (err) => Promise.reject(err)
 );
 
 export default instance;
