@@ -1,0 +1,59 @@
+name: Auto merge personal branches into dev
+
+on:
+  push:
+    branches:
+      - 'hatchi/*' # ← 改成你的個人分支命名規則
+      # - 'feature/*' # ← 或其他你想自動併到 dev 的分支
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-test-and-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 依你的專案調整 Node/Pnpm 版本與建置命令
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test --if-present
+
+      # 建 PR：來源=目前分支，目標=dev
+      - name: Create PR to dev
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: dev
+          branch: ${{ github.ref_name }}
+          title: 'Auto: Merge `${{ github.ref_name }}` → dev'
+          body: |
+            Auto-generated PR from `${{ github.ref_name }}` to `dev`.
+            Triggered by push: ${{ github.sha }}
+          draft: false
+
+      # 啟用自動合併（需在 repo 設定開啟 Allow auto-merge）
+      - name: Enable PR auto-merge (squash)
+        if: steps.cpr.outputs.pull-request-number
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
