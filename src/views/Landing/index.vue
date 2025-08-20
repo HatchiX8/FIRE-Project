@@ -8,6 +8,7 @@
     </main>
 
     <p>新增文字</p>
+    <p>調整權限</p>
     <footer class="bg-blue">頁尾</footer>
   </div>
 </template>
