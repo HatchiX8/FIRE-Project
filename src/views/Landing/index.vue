@@ -5,10 +5,10 @@
     <main class="flex-1 overflow-auto">
       <p>廣告頁面</p>
       <router-view />
-      <p>測試action</p>
-      <p>tt</p>
     </main>
 
+    <p>新增文字</p>
+    <p>調整權限</p>
     <footer class="bg-blue">頁尾</footer>
   </div>
 </template>
