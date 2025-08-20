@@ -13,15 +13,15 @@ export default defineConfig({
     presetIcons({
       collections: {
         clarity: () => import('@iconify-json/clarity/icons.json'),
-        ion: () => import('@iconify-json/ion/icons.json'),
+        mdi: () => import('@iconify-json/mdi/icons.json'),
       },
     }),
     // 你也可以加入 presetAttributify(), presetIcons() ...等
   ],
-    transformers: [
+  transformers: [
     transformerDirectives(), // 支援 @apply
     transformerVariantGroup(), // 支援 hover:(text-white bg-blue-500)
   ],
-   // safelist, // 後續會寫成一支TS把要預載css寫進去 (動態class不會被UnoCss掃描到)
+  // safelist, // 後續會寫成一支TS把要預載css寫進去 (動態class不會被UnoCss掃描到)
   theme: themeColors,
 });
