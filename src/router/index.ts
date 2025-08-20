@@ -46,6 +46,10 @@ const router = createRouter({
           path: 'page3',
           component: () => import('@/views/Landing/page3/index.vue'),
         },
+        {
+          path: 'page4',
+          component: () => import('@/views/Landing/page4/index.vue'),
+        },
       ],
     },
   ],
