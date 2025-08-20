@@ -1,7 +1,14 @@
 <template>
-  <div>頁首</div>
-  <router-view />
-  <div>頁尾</div>
+  <div class="flex min-h-dvh flex-col">
+    <header class="bg-blue">頁首</header>
+
+    <main class="flex-1 overflow-auto">
+      <p>操作頁面</p>
+      <router-view />
+    </main>
+
+    <footer class="bg-blue">頁尾</footer>
+  </div>
 </template>
 <script setup lang="ts">
 // ----------import----------
