@@ -5,6 +5,7 @@
     <main class="flex-1 overflow-auto">
       <p>廣告頁面</p>
       <router-view />
+      <p>測試action</p>
     </main>
 
     <footer class="bg-blue">頁尾</footer>
