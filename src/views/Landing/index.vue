@@ -5,10 +5,9 @@
     <main class="flex-1 overflow-auto">
       <p>廣告頁面</p>
       <router-view />
-      <p>測試action</p>
-      <p>運作成功</p>
     </main>
 
+    <p>新增文字</p>
     <footer class="bg-blue">頁尾</footer>
   </div>
 </template>
