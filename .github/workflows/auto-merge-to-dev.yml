@@ -3,7 +3,8 @@ name: Auto merge personal branches into dev
 on:
   push:
     branches:
-      - 'hatchi/*' # ← 改成你的個人分支命名規則
+      - 'hatchi' # ← 改成你的個人分支命名規則
+      - 'hatchi-*'
       # - 'feature/*' # ← 或其他你想自動併到 dev 的分支
 
 permissions:
