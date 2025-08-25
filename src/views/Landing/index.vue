@@ -1,20 +1,19 @@
 <template>
   <div class="flex min-h-dvh flex-col">
-    <header class="bg-blue">頁首</header>
+    <headerComp>頁首</headerComp>
 
-    <main class="flex-1 overflow-auto">
+    <main class="bg-background flex-1 overflow-auto">
       <p>廣告頁面</p>
       <router-view />
     </main>
 
-    <p>新增文字</p>
-    <p>調整權限</p>
-    <footer class="bg-blue">頁尾</footer>
+    <footerComp>頁尾</footerComp>
   </div>
 </template>
 <script setup lang="ts">
 // ----------import----------
 // 套件
+import { headerComp, footerComp } from '@/components/index';
 // 共用型別
 // 元件
 // 商業邏輯

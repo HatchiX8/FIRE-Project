@@ -8,6 +8,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    BaseButton: typeof import('./components/base/baseButton.vue')['default']
+    FooterComp: typeof import('./components/layout/footerComp.vue')['default']
+    HeaderComp: typeof import('./components/layout/headerComp.vue')['default']
+    NButton: typeof import('naive-ui')['NButton']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
