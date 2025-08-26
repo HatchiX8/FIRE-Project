@@ -143,19 +143,21 @@
 
     <div class="mt-8 flex flex-col gap-5">
       <div class="text-center">
-        <button
-          class="bg-primary font-800 h-12 rounded-2xl px-6 text-black shadow-md transition hover:shadow-lg"
+        <router-link
+          :to="{ name: 'DeveloperGuide' }"
+          class="bg-primary font-600 text-textColor inline-block h-12 rounded-2xl px-6 leading-[48px] no-underline shadow-md transition hover:shadow-lg"
         >
           點我檢視開發者說明
-        </button>
+        </router-link>
       </div>
 
       <div class="text-center">
-        <button
-          class="bg-primary font-800 h-12 rounded-2xl px-6 text-black shadow-md transition hover:shadow-lg"
+        <router-link
+          :to="{ name: 'UsageNotes' }"
+          class="bg-primary font-600 text-textColor inline-block h-12 rounded-2xl px-6 leading-[48px] no-underline shadow-md transition hover:shadow-lg"
         >
           使用須知
-        </button>
+        </router-link>
       </div>
       <!-- 主 CTA -->
       <div class="text-center">
