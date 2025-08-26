@@ -101,54 +101,70 @@
     </n-carousel>
 
     <!-- ✅ 下方輕量優勢列（補畫面，不喧賓奪主） -->
-    <div class="flex flex-col">
-      <section class="mt-8 grid grid-cols-2 gap-3">
-        <div
-          class="bg-backgroundSurface flex items-center gap-2 rounded-xl border border-white/5 p-3"
-        >
-          <i class="i-mdi:shield-check-outline text-6 text-primary"></i>
-          <div>
-            <p class="font-600 text-sm">資料安全</p>
-            <p class="text-textSecondary text-xs">支援匯出與刪除</p>
-          </div>
-        </div>
-        <div
-          class="bg-backgroundSurface flex items-center gap-2 rounded-xl border border-white/5 p-3"
-        >
-          <i class="i-mdi:file-export-outline text-6 text-primary"></i>
-          <div>
-            <p class="font-600 text-sm">CSV 匯出</p>
-            <p class="text-textSecondary text-xs">一鍵備份你的紀錄</p>
-          </div>
-        </div>
-        <div
-          class="bg-backgroundSurface flex items-center gap-2 rounded-xl border border-white/5 p-3"
-        >
-          <i class="i-mdi:theme-light-dark text-6 text-primary"></i>
-          <div>
-            <p class="font-600 text-sm">深色優化</p>
-            <p class="text-textSecondary text-xs">夜間閱讀不刺眼</p>
-          </div>
-        </div>
-        <div
-          class="bg-backgroundSurface flex items-center gap-2 rounded-xl border border-white/5 p-3"
-        >
-          <i class="i-clarity:bolt-line text-6 text-primary"></i>
-          <div>
-            <p class="font-600 text-sm">體驗快速</p>
-            <p class="text-textSecondary text-xs">30 秒完成設定</p>
-          </div>
-        </div>
-      </section>
 
+    <section class="mt-8 grid grid-cols-2 gap-3">
+      <div
+        class="bg-backgroundSurface flex items-center gap-2 rounded-xl border border-white/5 p-3"
+      >
+        <i class="i-mdi:shield-check-outline text-6 text-primary"></i>
+        <div>
+          <p class="font-600 text-sm">資料安全</p>
+          <p class="text-textSecondary text-xs">支援匯出與刪除</p>
+        </div>
+      </div>
+      <div
+        class="bg-backgroundSurface flex items-center gap-2 rounded-xl border border-white/5 p-3"
+      >
+        <i class="i-mdi:file-export-outline text-6 text-primary"></i>
+        <div>
+          <p class="font-600 text-sm">CSV 匯出</p>
+          <p class="text-textSecondary text-xs">一鍵備份你的紀錄</p>
+        </div>
+      </div>
+      <div
+        class="bg-backgroundSurface flex items-center gap-2 rounded-xl border border-white/5 p-3"
+      >
+        <i class="i-mdi:theme-light-dark text-6 text-primary"></i>
+        <div>
+          <p class="font-600 text-sm">深色優化</p>
+          <p class="text-textSecondary text-xs">夜間閱讀不刺眼</p>
+        </div>
+      </div>
+      <div
+        class="bg-backgroundSurface flex items-center gap-2 rounded-xl border border-white/5 p-3"
+      >
+        <i class="i-clarity:bolt-line text-6 text-primary"></i>
+        <div>
+          <p class="font-600 text-sm">體驗快速</p>
+          <p class="text-textSecondary text-xs">30 秒完成設定</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-8 flex flex-col gap-5">
+      <div class="text-center">
+        <button
+          class="bg-primary font-800 h-12 rounded-2xl px-6 text-black shadow-md transition hover:shadow-lg"
+        >
+          點我檢視開發者說明
+        </button>
+      </div>
+
+      <div class="text-center">
+        <button
+          class="bg-primary font-800 h-12 rounded-2xl px-6 text-black shadow-md transition hover:shadow-lg"
+        >
+          使用須知
+        </button>
+      </div>
       <!-- 主 CTA -->
-      <div class="mt-20% text-center">
+      <div class="text-center">
         <button
           class="bg-primary font-800 h-12 rounded-2xl px-6 text-black shadow-md transition hover:shadow-lg"
         >
           立即開始免費體驗
         </button>
-        <p class="text-textSecondary mt-2 text-xs">無需綁卡，30 秒完成設定</p>
+        <p class="text-textSecondary mt-2 text-xs">連接Google立即體驗</p>
       </div>
     </div>
   </section>
