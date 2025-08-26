@@ -11,6 +11,11 @@ export default defineConfig({
   presets: [
     presetMini(),
     presetIcons({
+      scale: 1.2, // 基準比例，之後用 text-5、text-7 再放大
+      extraProperties: {
+        display: 'inline-block',
+        'vertical-align': 'middle',
+      },
       collections: {
         clarity: () => import('@iconify-json/clarity/icons.json'),
         mdi: () => import('@iconify-json/mdi/icons.json'),
