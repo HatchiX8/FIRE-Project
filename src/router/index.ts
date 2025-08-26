@@ -35,20 +35,19 @@ const router = createRouter({
       component: () => import('@/views/Landing/index.vue'),
       children: [
         {
-          path: 'page1',
-          component: () => import('@/views/Landing/page1/index.vue'),
+          path: 'home',
+          name: 'Home',
+          component: () => import('@/views/Landing/home/index.vue'),
         },
         {
-          path: 'page2',
-          component: () => import('@/views/Landing/page2/index.vue'),
+          path: 'developerGuide',
+          name: 'DeveloperGuide',
+          component: () => import('@/views/Landing/developerGuide/index.vue'),
         },
         {
-          path: 'page3',
-          component: () => import('@/views/Landing/page3/index.vue'),
-        },
-        {
-          path: 'page4',
-          component: () => import('@/views/Landing/page4/index.vue'),
+          path: 'usageNotes',
+          name: 'UsageNotes',
+          component: () => import('@/views/Landing/usageNotes/index.vue'),
         },
       ],
     },

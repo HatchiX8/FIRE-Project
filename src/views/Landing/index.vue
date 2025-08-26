@@ -2,8 +2,7 @@
   <div class="flex min-h-dvh flex-col">
     <headerComp>頁首</headerComp>
 
-    <main class="bg-background flex-1 overflow-auto">
-      <p>廣告頁面</p>
+    <main class="bg-background flex-1 overflow-auto p-4">
       <router-view />
     </main>
 

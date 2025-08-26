@@ -12,6 +12,9 @@ declare module 'vue' {
     FooterComp: typeof import('./components/layout/footerComp.vue')['default']
     HeaderComp: typeof import('./components/layout/headerComp.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
+    NCard: typeof import('naive-ui')['NCard']
+    NCarousel: typeof import('naive-ui')['NCarousel']
+    NCarouselItem: typeof import('naive-ui')['NCarouselItem']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
