@@ -17,16 +17,19 @@ const router = createRouter({
       component: () => import('@/views/App/index.vue'),
       children: [
         {
-          path: 'page1',
-          component: () => import('@/views/App/page1/index.vue'),
+          path: 'portfolio',
+          name: 'Portfolio',
+          component: () => import('@/views/App/portfolio/index.vue'),
         },
         {
-          path: 'page2',
-          component: () => import('@/views/App/page2/index.vue'),
+          path: 'profitOverview',
+          name: 'ProfitOverview',
+          component: () => import('@/views/App/profitOverview/index.vue'),
         },
         {
-          path: 'page3',
-          component: () => import('@/views/App/page3/index.vue'),
+          path: 'userProfile',
+          name: 'UserProfile',
+          component: () => import('@/views/App/userProfile/index.vue'),
         },
       ],
     },
