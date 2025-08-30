@@ -1,30 +1,12 @@
 <template>
-  <div class="flex">
-    <div class="bg-background w-1.5/3 h-full" ref="chartDom"></div>
-    <!-- 右邊：自訂數值 -->
-    <div class="text-textColor text-4 w-1.5/3 flex flex-col justify-center">
-      <div class="mb-2 flex justify-between">
-        <span>總資產</span>
-        <span>{{ props.chartData.totalInvest }} </span>
-      </div>
-      <div class="mb-2 flex justify-between">
-        <span>持股成本</span>
-        <span>{{ props.chartData.stockCost }} </span>
-      </div>
-      <div class="mb-2 flex justify-between">
-        <span>股票市值</span>
-        <span>{{ props.chartData.stockValue }} </span>
-      </div>
-      <div class="mb-2 flex justify-between">
-        <span>未實現損益</span>
-        <span>{{ props.chartData.stockProfit }}({{ props.chartData.profitRate }}) </span>
-      </div>
-    </div>
+  <div class="overflow-auto rounded-2xl">
+    <div class="h-full w-full bg-white" ref="chartDom"></div>
   </div>
 </template>
 <script setup lang="ts">
 // ----------import----------
 // 套件
+import { ref, markRaw, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import * as echarts from 'echarts';
 // store
 // 共用型別
@@ -35,13 +17,12 @@ import * as echarts from 'echarts';
 
 // ----------type----------
 interface ChartData {
-  totalInvest: number;
-  cashInvest: number;
-  stockCost: number;
-  stockValue: number;
-  positionRatio: number;
-  stockProfit: number;
-  profitRate: number;
+  date: string[];
+  countW: number[];
+  countG: number[];
+  countR: number[];
+  countY: number[];
+  all_Count: number[];
 }
 // ------------------------
 
@@ -108,39 +89,27 @@ const renderCharts = () => {
 
 // 可抽換趨勢圖內容
 const getChartOption = (data: ChartData): echarts.EChartsCoreOption => ({
+  xAxis: {
+    type: 'category',
+    data: data.date, // 月度數據
+  },
+  yAxis: {
+    type: 'value',
+  },
   series: [
     {
-      name: '資金配置',
-      type: 'pie',
-      radius: '70%',
-      center: ['40%', '45%'], // ⬅️ 這裡往上移，數字越小越上方
-      avoidLabelOverlap: false,
-      data: [
-        { value: data.cashInvest ?? 0, name: '現金部位' },
-        { value: data.stockCost ?? 0, name: '股票部位' },
-        // { value: data.countG?.[0] ?? 0, name: '現金比重' },
-        // { value: data.countR?.[0] ?? 0, name: '持股水位' },
-      ],
-      label: {
-        show: false,
-        formatter: '{b}\n{c} ({d}%)', // 顯示名稱 數值 百分比
-      },
+      data: [150, 200, 170, 250, 300, 220], // 模擬數據
+      type: 'line',
 
-      labelLine: { show: false },
+      label: {
+        show: true,
+        position: 'top', // 數據點標籤
+      },
     },
   ],
   tooltip: {
-    trigger: 'item',
-    formatter: '{b}<br/>金額: {c}<br/>水位: {d}%',
-  },
-  legend: {
-    show: false,
-    orient: 'vertical',
-    left: 'left',
-    bottom: 8,
-    textStyle: {
-      color: '#A0A0A0', // 依你的 textSecondary 調
-    },
+    trigger: 'axis', // 顯示軸提示
+    formatter: '{b}: {c}',
   },
 });
 // -------------------------
