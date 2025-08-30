@@ -11,9 +11,21 @@
           FIRE
         </h1>
       </a>
-      <baseButton color="primary" class="text-4 mr-2" ghost @click="userStore.requestLogin"
+      <baseButton
+        v-if="!userStore.isLoggedIn"
+        color="primary"
+        class="text-4 mr-2"
+        ghost
+        @click="userStore.requestLogin"
         >登入</baseButton
       >
+      <a
+        v-else
+        href="#"
+        class="text-6 text-primary hover:text-primaryHover mr-4"
+        @click="userStore.logout"
+        ><div class="i-mdi:login-variant"></div
+      ></a>
       <!-- <baseButton color="primary" class="mr-2" ghost><div class="i-mdi:logout"></div></baseButton> -->
     </div>
   </div>
