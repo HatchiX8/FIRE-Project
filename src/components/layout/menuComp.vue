@@ -1,18 +1,19 @@
 <template>
-  <div class="bg-backgroundSurface border-b-primaryActive border-b border-solid">
-    <div class="flex items-center justify-between">
-      <a href="/Landing/page1" class="flex items-center no-underline">
-        <h1 class="text-primary flex items-center text-xl font-bold">
-          <img
-            src="/src/assets/images/FIRE-logo.png"
-            alt="FIRE 投資版記帳APP"
-            class="mr-2 h-12 w-12"
-          />
-          FIRE
-        </h1>
-      </a>
-      <baseButton color="primary" class="text-4 mr-2" ghost>登入</baseButton>
-      <!-- <baseButton color="primary" class="mr-2" ghost><div class="i-mdi:logout"></div></baseButton> -->
+  <div class="bg-backgroundSurface border-t-primaryActive border-t-solid border">
+    <div class="flex justify-around py-4">
+      <div>
+        <router-link to="/App/portfolio" class="text-textColor no-underline">投資組合</router-link>
+      </div>
+      <div class="">
+        <router-link to="/App/profitOverview" class="text-textColor no-underline"
+          >歷史趨勢</router-link
+        >
+      </div>
+      <div>
+        <router-link to="/App/userProfile" class="text-textColor no-underline"
+          >個人中心</router-link
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -21,7 +22,6 @@
 // 套件
 // 共用型別
 // 元件
-import { baseButton } from '@/components/index';
 // 商業邏輯
 
 // ---------------------------

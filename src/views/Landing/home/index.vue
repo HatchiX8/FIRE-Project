@@ -1,5 +1,5 @@
 <template>
-  <section class="text-textColor px-4 py-6">
+  <section class="text-textColor px-4 py-3">
     <h2 class="mb-4">FIRE 投資記帳特色</h2>
 
     <!-- 橫向卡片滑動 -->
