@@ -78,12 +78,12 @@ const columns: DataTableColumns<StockRow> = [
         ),
         h(
           baseButton,
-          { size: 'small', color: 'primary', onClick: () => openDialog(row.stockId) },
+          { size: 'small', color: 'success', onClick: () => openDialog(row.stockId) },
           { default: () => '編輯備註' }
         ),
         h(
           baseButton,
-          { size: 'small', color: 'primary', onClick: () => openDialog(row.stockId) },
+          { size: 'small', color: 'danger', onClick: () => openDialog(row.stockId) },
           { default: () => '刪除資產' }
         ),
       ]),

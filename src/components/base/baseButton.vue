@@ -9,7 +9,7 @@ import { computed } from 'vue';
 import { themeColors } from '@/utils/index';
 
 const props = defineProps<{
-  color?: 'primary' | 'default';
+  color?: 'primary' | 'success' | 'danger' | 'default';
 }>();
 
 const buttonThemeOverrides = computed(() => {
@@ -19,6 +19,22 @@ const buttonThemeOverrides = computed(() => {
         primaryColor: themeColors.colors.primary,
         primaryColorHover: themeColors.colors.primaryHover,
         primaryColorPressed: themeColors.colors.primaryActive,
+      },
+    };
+  } else if (props.color === 'danger') {
+    return {
+      common: {
+        primaryColor: themeColors.colors.danger,
+        primaryColorHover: themeColors.colors.dangerHover,
+        primaryColorPressed: themeColors.colors.dangerActive,
+      },
+    };
+  } else if (props.color === 'success') {
+    return {
+      common: {
+        primaryColor: themeColors.colors.success,
+        primaryColorHover: themeColors.colors.successHover,
+        primaryColorPressed: themeColors.colors.successActive,
       },
     };
   }
