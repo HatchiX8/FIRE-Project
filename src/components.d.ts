@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BaseButton: typeof import('./components/base/baseButton.vue')['default']
+    BaseTable: typeof import('./components/base/baseTable.vue')['default']
     FooterComp: typeof import('./components/layout/footerComp.vue')['default']
     HeaderComp: typeof import('./components/layout/headerComp.vue')['default']
     MenuComp: typeof import('./components/layout/menuComp.vue')['default']
@@ -20,8 +21,8 @@ declare module 'vue' {
     NDataTable: typeof import('naive-ui')['NDataTable']
     NInput: typeof import('naive-ui')['NInput']
     NPagination: typeof import('naive-ui')['NPagination']
-    NSpace: typeof import('naive-ui')['NSpace']
-    PaginationTable: typeof import('./components/layout/paginationTable.vue')['default']
+    NSpace: typeof import('naive-ui'./components/data/baseTable.vue
+    PaginationTable: typeof import('./components/data/paginationTable.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
