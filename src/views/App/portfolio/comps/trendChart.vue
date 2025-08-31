@@ -114,20 +114,23 @@ const getChartOption = (data: ChartData): echarts.EChartsCoreOption => ({
     {
       name: '資金配置',
       type: 'pie',
-      radius: '70%',
+      radius: '80%',
       center: ['40%', '45%'], // ⬅️ 這裡往上移，數字越小越上方
       avoidLabelOverlap: false,
       data: [
-        { value: data.cashInvest ?? 0, name: '現金部位' },
-        { value: data.stockCost ?? 0, name: '股票部位' },
+        { value: data.cashInvest ?? 0, name: '現金' },
+        { value: data.stockCost ?? 0, name: '股票' },
         // { value: data.countG?.[0] ?? 0, name: '現金比重' },
         // { value: data.countR?.[0] ?? 0, name: '持股水位' },
       ],
       label: {
-        show: false,
-        formatter: '{b}\n{c} ({d}%)', // 顯示名稱 數值 百分比
+        show: true,
+        position: 'inside',
+        formatter: '{b}\n{d}%', // 換行顯示
+        color: '#000000',
+        fontSize: 16,
+        lineHeight: 18,
       },
-
       labelLine: { show: false },
     },
   ],

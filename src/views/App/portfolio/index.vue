@@ -67,25 +67,35 @@ const columns: DataTableColumns<StockRow> = [
     type: 'expand',
     width: 56,
     renderExpand: (row) =>
-      h('div', { class: 'p-3 text-left' }, [
-        h('div', `總市值：${row.marketValue.toLocaleString()}`),
-        h('div', `總成本：${row.totalCost.toLocaleString()}`),
-        h('div', `備註：${row.note ?? '-'}`),
-        h(
-          baseButton,
-          { size: 'small', color: 'primary', onClick: () => openDialog(row.stockId) },
-          { default: () => '庫存明細' }
-        ),
-        h(
-          baseButton,
-          { size: 'small', color: 'success', onClick: () => openDialog(row.stockId) },
-          { default: () => '編輯備註' }
-        ),
-        h(
-          baseButton,
-          { size: 'small', color: 'danger', onClick: () => openDialog(row.stockId) },
-          { default: () => '刪除資產' }
-        ),
+      h('div', { class: ' flex' }, [
+        h('div', { class: 'mt-2 flex flex-col gap-2 p-3 text-left' }, [
+          h('div', `總市值：${row.marketValue.toLocaleString()}`),
+          h('div', `總成本：${row.totalCost.toLocaleString()}`),
+          h('div', `備註：${row.note ?? '-'}`),
+          h(
+            baseButton,
+            {
+              size: 'small',
+              color: 'primary',
+              class: 'w-20',
+              onClick: () => openDialog(row.stockId),
+            },
+            { default: () => '庫存明細' }
+          ),
+        ]),
+
+        h('div', { class: 'mt-2 ml-auto flex flex-col gap-4' }, [
+          h(
+            baseButton,
+            { size: 'small', color: 'success', onClick: () => openDialog(row.stockId) },
+            { default: () => '編輯備註' }
+          ),
+          h(
+            baseButton,
+            { size: 'small', color: 'danger', onClick: () => openDialog(row.stockId) },
+            { default: () => '刪除資產' }
+          ),
+        ]),
       ]),
   },
 ];
@@ -103,9 +113,31 @@ const data = {
 
 const fakeData: StockRow[] = [
   {
-    assetId: 'UUID',
+    assetId: 'UUID-2330',
     stockId: '2330',
     stockName: '台積電',
+    quantity: 100,
+    currentPrice: 600,
+    marketValue: 60000,
+    totalCost: 58162,
+    profitRate: 3.16,
+    note: '跌破月線停損停利',
+  },
+  {
+    assetId: 'UUID-0050',
+    stockId: '0050',
+    stockName: '元大台灣50',
+    quantity: 100,
+    currentPrice: 600,
+    marketValue: 60000,
+    totalCost: 58162,
+    profitRate: 3.16,
+    note: '跌破月線停損停利',
+  },
+  {
+    assetId: 'UUID-00638L',
+    stockId: '00638L',
+    stockName: '台灣50',
     quantity: 100,
     currentPrice: 600,
     marketValue: 60000,
