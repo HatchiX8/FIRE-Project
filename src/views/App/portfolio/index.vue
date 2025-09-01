@@ -61,7 +61,15 @@ const columns: DataTableColumns<StockRow> = [
     key: 'profitRate', // key 可以對應一個欄位，但顯示內容自訂
     align: 'center',
     minWidth: 20,
-    render: (row) => `${row.profitRate.toFixed(2)}%`,
+    render: (row) => {
+      const cls =
+        row.profitRate > 0
+          ? 'text-danger'
+          : row.profitRate < 0
+            ? 'text-success'
+            : 'text-neutral_300';
+      return h('span', { class: cls }, `${row.profitRate.toFixed(2)}%`);
+    },
   },
   {
     type: 'expand',
@@ -142,22 +150,23 @@ const fakeData: StockRow[] = [
     currentPrice: 600,
     marketValue: 60000,
     totalCost: 58162,
-    profitRate: 3.16,
+    profitRate: -3.16,
     note: '跌破月線停損停利',
   },
 ];
 
 const expanded = ref<Array<string | number>>([]);
-
+// ----------斷言----------
 /** ✅ 這三個是「橋接變數」，把 TS 斷言放到 script */
 const bridgedColumns = columns as unknown as DataTableColumns<Record<string, unknown>>;
 
 const bridgedData = fakeData as unknown as Record<string, unknown>[];
 
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).assetId;
+// ------------------------
 
 const openDialog = (stockId: string) => {
   // 打開對話框的邏輯
-  console.log('看ID', stockId);
+  console.log('觸發點擊，ID為:', stockId);
 };
 </script>

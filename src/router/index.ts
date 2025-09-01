@@ -12,6 +12,11 @@ const router = createRouter({
     return { top: 0, behavior: 'smooth' } as ScrollToOptions;
   },
   routes: [
+    {
+      // 空路由自動導向 /Landing/home
+      path: '/',
+      redirect: '/Landing/home',
+    },
     // 登入頁面
     {
       path: '/login',
