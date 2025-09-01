@@ -7,9 +7,7 @@ export const handleApiError = (err: unknown) => {
   const error = err as AxiosError<{ message?: string }>;
   const status = error.response?.status;
 
-  if (status === 401) {
-    message.error('登入已過期，請重新登入');
-  } else if (status === 403) {
+  if (status === 403) {
     message.error('您沒有權限操作');
   } else if (status && status >= 500) {
     message.error('伺服器錯誤，請稍後再試');

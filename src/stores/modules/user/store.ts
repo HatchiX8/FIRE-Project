@@ -2,7 +2,7 @@
 // 套件
 import { defineStore } from 'pinia';
 // API
-import { getUserList } from '@/api/index';
+import { login, loginCheck } from '@/api/index';
 // 共用型別
 import type { userInfo } from '@/api/index';
 // 元件
@@ -25,13 +25,27 @@ export const useUserStore = defineStore('user', () => {
   const requestLogin = async () => {
     error.value = null;
     try {
-      const res = await getUserList();
+      const res = await login();
       userInfo.value = res.data;
 
       const fakeToken = userInfo.value.token;
       setToken(fakeToken);
     } catch (err) {
       error.value = getErrorMessage(err);
+    }
+  };
+
+  // 登入驗證請求
+  const requestLoginCheck = async (): Promise<boolean> => {
+    if (!token.value) return false;
+
+    try {
+      const res = await loginCheck();
+      userInfo.value = res.data;
+      return true;
+    } catch (err) {
+      error.value = getErrorMessage(err);
+      return false;
     }
   };
 
@@ -48,5 +62,5 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem(TOKEN_KEY);
   };
 
-  return { userInfo, error, requestLogin, setToken, token, logout, isLoggedIn };
+  return { userInfo, error, requestLogin, requestLoginCheck, setToken, token, logout, isLoggedIn };
 });

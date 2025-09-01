@@ -12,6 +12,11 @@ const router = createRouter({
     return { top: 0, behavior: 'smooth' } as ScrollToOptions;
   },
   routes: [
+    {
+      // 空路由自動導向 /Landing/home
+      path: '/',
+      redirect: '/Landing/home',
+    },
     // 登入頁面
     {
       path: '/login',
@@ -37,6 +42,11 @@ const router = createRouter({
           path: 'userProfile',
           name: 'UserProfile',
           component: () => import('@/views/App/userProfile/index.vue'),
+        },
+        {
+          path: 'adminPage',
+          name: 'AdminPage',
+          component: () => import('@/views/App/adminPage/index.vue'),
         },
       ],
     },
