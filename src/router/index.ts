@@ -43,6 +43,11 @@ const router = createRouter({
           name: 'UserProfile',
           component: () => import('@/views/App/userProfile/index.vue'),
         },
+        {
+          path: 'adminPage',
+          name: 'AdminPage',
+          component: () => import('@/views/App/adminPage/index.vue'),
+        },
       ],
     },
     {
