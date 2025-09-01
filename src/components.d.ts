@@ -21,8 +21,7 @@ declare module 'vue' {
     NDataTable: typeof import('naive-ui')['NDataTable']
     NInput: typeof import('naive-ui')['NInput']
     NPagination: typeof import('naive-ui')['NPagination']
-    NSpace: typeof import('naive-ui'./components/data/baseTable.vue
-    PaginationTable: typeof import('./components/data/paginationTable.vue')['default']
+    NSpace: typeof import('naive-ui')['NSpace']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
