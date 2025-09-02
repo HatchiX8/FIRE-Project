@@ -7,14 +7,23 @@
     @cancel="reset"
   >
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
-      <baseForm label="姓名" path="name" :component="NInput" v-model="form.name" />
       <baseForm
-        label="Email"
-        path="email"
+        label="真實姓名"
+        path="name"
         :component="NInput"
-        v-model="form.email"
-        :component-props="{ type: 'email' }"
-        class="w-80"
+        v-model="form.name"
+        class="w-90%"
+      />
+      <baseForm
+        label="審核說明"
+        path="note"
+        :component="NInput"
+        v-model="form.note"
+        class="w-90%"
+        :component-props="{
+          type: 'textarea',
+          autosize: { minRows: 4, maxRows: 8 }, // 內容區更高
+        }"
       />
     </n-form>
   </baseDialog>
@@ -34,11 +43,11 @@ import { baseDialog, baseForm } from '@/components/index';
 const visible = defineModel<boolean>({ required: true });
 const submitting = ref(false);
 const formRef = ref<FormInst | null>(null);
-const form = reactive({ id: '', name: '', email: '' });
+const form = reactive({ id: '', name: '', note: '' });
 
 const rules: FormRules = {
   name: { required: true, message: '必填' },
-  email: { required: true, message: '必填' },
+  note: { required: false, message: '非必填' },
 };
 
 async function handleSubmit() {

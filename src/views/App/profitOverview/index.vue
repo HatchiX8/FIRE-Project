@@ -2,7 +2,7 @@
   <div class="text-textColor">
     <div class="mb-4"><trendChart class="h-70" :chartData="data" /></div>
     <div class="flex items-center justify-between">
-      <baseButton color="primary">資金管理</baseButton>
+      <baseButton color="primary" @click="openTotalInvestDialog">資金管理</baseButton>
       <div class="flex items-center">
         <baseButton color="primary"><div class="i-mdi:chevron-left text-5"></div></baseButton>
         <div class="text-5 mx-2 text-center">
@@ -24,6 +24,13 @@
       class="mt-4"
     />
   </div>
+  <totalInvestDialog
+    v-model="totalInvestDlgOpen"
+    :current-invest="currentInvest"
+    :loading="submitting"
+    initial-mode="deposit"
+    @submit="onSubmit"
+  />
 </template>
 <script setup lang="ts">
 // ----------import----------
@@ -31,7 +38,7 @@
 // 共用型別
 import type { DataTableColumns } from 'naive-ui';
 // 元件
-import { trendChart } from './comps/index';
+import { trendChart, totalInvestDialog } from './comps/index';
 import { baseButton, baseTable } from '@/components/index';
 // 商業邏輯
 
@@ -204,4 +211,32 @@ const openDialog = (stockId: string) => {
   // 打開對話框的邏輯
   console.log('觸發點擊，ID為:', stockId);
 };
+
+// ----------資金管理----------
+const openTotalInvestDialog = () => {
+  totalInvestDlgOpen.value = true;
+};
+
+const totalInvestDlgOpen = ref(false);
+const submitting = ref(false); // 提交狀態
+const currentInvest = ref(1250000);
+
+async function onSubmit(payload: { mode: 'deposit' | 'withdraw'; amount: number }) {
+  submitting.value = true;
+  try {
+    if (payload.mode === 'deposit') {
+      console.log('觸發投入資金API');
+      // ← 實作你的 API
+    } else {
+      console.log('觸發提領資金API');
+      // ← 實作你的 API
+    }
+    // 成功後：關窗 + refresh
+    // dlgOpen.value = false;
+    console.log('刷新取得最新投資金額');
+  } finally {
+    submitting.value = false;
+  }
+}
+// ---------------------------
 </script>

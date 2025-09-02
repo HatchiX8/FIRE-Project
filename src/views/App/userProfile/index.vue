@@ -40,7 +40,7 @@
       <baseButton color="primary">資金投入/提領</baseButton>
     </div>
   </n-card>
-  <formComp v-model="open" />
+  <accUpgradeDialog v-model="openAccUpgradeDialog" />
 </template>
 <script setup lang="ts">
 // ----------import----------
@@ -48,7 +48,7 @@
 // 共用型別
 // 元件
 import { baseButton } from '@/components/index';
-import formComp from './comps/formComp.vue';
+import accUpgradeDialog from './comps/accUpgradeDialog.vue';
 // 商業邏輯
 // ---------------------------
 
@@ -68,10 +68,10 @@ const toggleEdit = () => {
   }
 };
 
-const open = ref(false);
+const openAccUpgradeDialog = ref(false);
 // ----------------------------
 
 const accUpgrade = () => {
-  open.value = true;
+  openAccUpgradeDialog.value = true;
 };
 </script>

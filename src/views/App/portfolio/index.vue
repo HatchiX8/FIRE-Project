@@ -1,6 +1,9 @@
 <template>
   <div>
     <div><trendChart class="h-45" :chartData="data" /></div>
+    <div class="mb-4 flex">
+      <baseButton class="ml-auto" color="primary" @click="openAssetDialog">新增資產</baseButton>
+    </div>
 
     <baseTable
       :columns="bridgedColumns"
@@ -10,6 +13,7 @@
       :page-size="10"
     />
   </div>
+  <newAssetDialog v-model="newAssetDlgOpen" :loading="submitting" />
 </template>
 <script setup lang="ts">
 // ----------import----------
@@ -17,8 +21,9 @@
 // 共用型別
 import type { DataTableColumns } from 'naive-ui';
 // 元件
-import { trendChart } from './comps/index';
+import { trendChart, newAssetDialog } from './comps/index';
 import { baseTable, baseButton } from '@/components/index';
+
 // 商業邏輯
 // ---------------------------
 
@@ -169,4 +174,14 @@ const openDialog = (stockId: string) => {
   // 打開對話框的邏輯
   console.log('觸發點擊，ID為:', stockId);
 };
+
+// ----------新增資產----------
+const submitting = ref(false); // 提交狀態
+
+const openAssetDialog = () => {
+  newAssetDlgOpen.value = true;
+};
+
+const newAssetDlgOpen = ref(false);
+// ---------------------------
 </script>
