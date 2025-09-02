@@ -2,7 +2,7 @@ import './assets/main.css';
 import 'uno.css';
 
 import { createApp, h } from 'vue';
-import { createPinia } from 'pinia';
+import { pinia } from './pinia';
 
 import App from './App.vue';
 import router from './router';
@@ -12,7 +12,7 @@ const app = createApp({
   render: () => withNaiveProviders(h(App)),
 });
 
-app.use(createPinia());
+app.use(pinia);
 app.use(router);
 
 app.mount('#app');
