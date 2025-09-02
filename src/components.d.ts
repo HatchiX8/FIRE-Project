@@ -9,6 +9,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BaseButton: typeof import('./components/base/baseButton.vue')['default']
+    BaseDialog: typeof import('./components/base/baseDialog.vue')['default']
+    BaseForm: typeof import('./components/form/baseForm.vue')['default']
     BaseTable: typeof import('./components/base/baseTable.vue')['default']
     FooterComp: typeof import('./components/layout/footerComp.vue')['default']
     HeaderComp: typeof import('./components/layout/headerComp.vue')['default']
@@ -19,7 +21,10 @@ declare module 'vue' {
     NCarousel: typeof import('naive-ui')['NCarousel']
     NCarouselItem: typeof import('naive-ui')['NCarouselItem']
     NDataTable: typeof import('naive-ui')['NDataTable']
+    NForm: typeof import('naive-ui')['NForm']
+    NFormItem: typeof import('naive-ui')['NFormItem']
     NInput: typeof import('naive-ui')['NInput']
+    NModal: typeof import('naive-ui')['NModal']
     NPagination: typeof import('naive-ui')['NPagination']
     NSpace: typeof import('naive-ui')['NSpace']
     RouterLink: typeof import('vue-router')['RouterLink']

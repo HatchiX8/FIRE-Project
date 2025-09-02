@@ -6,6 +6,8 @@ export { default as menuComp } from './layout/menuComp.vue';
 
 // ----------base----------
 export { default as baseButton } from './base/baseButton.vue';
+export { default as baseDialog } from './base/baseDialog.vue';
+export { default as baseForm } from './form/baseForm.vue';
 // ------------------------
 
 // ----------data----------
