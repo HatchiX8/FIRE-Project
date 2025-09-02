@@ -36,10 +36,11 @@
     </div>
 
     <div class="mt-6 flex justify-center gap-4">
-      <baseButton color="primary">帳號升級</baseButton>
+      <baseButton color="primary" @click="accUpgrade">帳號升級</baseButton>
       <baseButton color="primary">資金投入/提領</baseButton>
     </div>
   </n-card>
+  <formComp v-model="open" />
 </template>
 <script setup lang="ts">
 // ----------import----------
@@ -47,6 +48,7 @@
 // 共用型別
 // 元件
 import { baseButton } from '@/components/index';
+import formComp from './comps/formComp.vue';
 // 商業邏輯
 // ---------------------------
 
@@ -65,5 +67,11 @@ const toggleEdit = () => {
     console.log('送出資料:', form.value);
   }
 };
+
+const open = ref(false);
 // ----------------------------
+
+const accUpgrade = () => {
+  open.value = true;
+};
 </script>
