@@ -14,6 +14,8 @@
     />
   </div>
   <newAssetDialog v-model="newAssetDlgOpen" :loading="submitting" />
+  <editAssetDialog v-model="editAssetDlgOpen" :loading="submitting" />
+  <deleteAssetDialog v-model="deleteAssetDlgOpen" :loading="submitting" />
 </template>
 <script setup lang="ts">
 // ----------import----------
@@ -21,7 +23,7 @@
 // 共用型別
 import type { DataTableColumns } from 'naive-ui';
 // 元件
-import { trendChart, newAssetDialog } from './comps/index';
+import { trendChart, newAssetDialog, editAssetDialog, deleteAssetDialog } from './comps/index';
 import { baseTable, baseButton } from '@/components/index';
 
 // 商業邏輯
@@ -100,12 +102,12 @@ const columns: DataTableColumns<StockRow> = [
         h('div', { class: 'mt-2 ml-auto flex flex-col gap-4' }, [
           h(
             baseButton,
-            { size: 'small', color: 'success', onClick: () => openDialog(row.stockId) },
+            { size: 'small', color: 'success', onClick: () => openEditAssetDialog(row.stockId) },
             { default: () => '編輯備註' }
           ),
           h(
             baseButton,
-            { size: 'small', color: 'danger', onClick: () => openDialog(row.stockId) },
+            { size: 'small', color: 'danger', onClick: () => openDeleteAssetDialog(row.stockId) },
             { default: () => '刪除資產' }
           ),
         ]),
@@ -183,5 +185,23 @@ const openAssetDialog = () => {
 };
 
 const newAssetDlgOpen = ref(false);
+// ---------------------------
+
+// ----------編輯資產----------
+const editAssetDlgOpen = ref(false);
+
+const openEditAssetDialog = (stockId: string) => {
+  console.log('觸發點擊，ID為:', stockId);
+  editAssetDlgOpen.value = true;
+};
+// ---------------------------
+
+// ----------刪除資產----------
+const deleteAssetDlgOpen = ref(false);
+
+const openDeleteAssetDialog = (stockId: string) => {
+  console.log('觸發點擊，ID為:', stockId);
+  deleteAssetDlgOpen.value = true;
+};
 // ---------------------------
 </script>
