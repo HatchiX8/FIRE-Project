@@ -56,12 +56,12 @@
         :component-props="{ min: 0, step: 1, precision: 0, placeholder: '請輸入實際賣出價格' }"
       />
       <baseForm
-        label="賣出日期"
+        label="交易日期"
         path="tradesDate"
         :component="NInput"
         v-model="form.tradesDate"
         class="w-90%"
-        :component-props="{ placeholder: '請輸入賣出日期(YYYY-MM-DD)' }"
+        :component-props="{ placeholder: '請輸入交易日期(YYYY-MM-DD)' }"
       />
       <baseForm
         label="備註"
@@ -96,8 +96,8 @@ const formRef = ref<FormInst | null>(null);
 const form = reactive({
   id: '',
   name: '',
-  buyPrice: 0,
-  sellPrice: 0,
+  buyPrice: null,
+  sellPrice: null,
   quantity: null,
   buyCost: null,
   actualRealizedPnl: null,
@@ -142,28 +142,31 @@ const ymdValidator: FormItemRule['validator'] = (_r, v: string) => {
 const rules: FormRules = {
   name: [{ required: true, message: '必填', trigger: ['input', 'blur'] }],
 
-  avgPrice: [
+  buyPrice: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
     { validator: nonNegative('買進價格'), trigger: ['input', 'blur'] },
   ],
-
-  buyPrice: [
-    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
-    { validator: nonNegative('損益平衡點'), trigger: ['input', 'blur'] },
-  ],
-
-  quantity: [
-    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
-    { validator: nonNegative('買進股數'), trigger: ['input', 'blur'] },
-    { validator: integerOnly, trigger: ['blur'] },
-  ],
-
   buyCost: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
     { validator: nonNegative('買進成本'), trigger: ['input', 'blur'] },
   ],
+  sellPrice: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: nonNegative('賣出價格'), trigger: ['input', 'blur'] },
+  ],
 
-  buyDate: [
+  quantity: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: nonNegative('交易股數'), trigger: ['input', 'blur'] },
+    { validator: integerOnly, trigger: ['blur'] },
+  ],
+
+  actualRealizedPnl: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: nonNegative('實際總價'), trigger: ['input', 'blur'] },
+  ],
+
+  tradesDate: [
     { required: true, message: '必填', trigger: ['input', 'blur'] },
     { validator: ymdValidator, trigger: ['input', 'blur'] },
   ],

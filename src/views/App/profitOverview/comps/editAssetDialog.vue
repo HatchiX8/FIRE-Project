@@ -91,8 +91,8 @@ const formRef = ref<FormInst | null>(null);
 const form = reactive({
   id: '',
   name: '',
-  buyPrice: 0,
-  avgPrice: 0,
+  buyPrice: null,
+  avgPrice: null,
   quantity: null,
   buyCost: null,
   buyDate: '',

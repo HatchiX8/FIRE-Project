@@ -61,7 +61,7 @@ const columns: DataTableColumns<StockRow> = [
     render: (row: StockRow) => row.stockName,
   },
   {
-    title: '市價/買進價格',
+    title: '市價/持有均價',
     key: 'currentPrice', // key 可以對應一個欄位，但顯示內容自訂
     align: 'center',
     minWidth: 20,

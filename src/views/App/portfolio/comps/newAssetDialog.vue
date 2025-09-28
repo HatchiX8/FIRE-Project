@@ -37,7 +37,7 @@
         :component="NInputNumber"
         v-model="form.quantity"
         class="w-90%"
-        :component-props="{ min: 0, step: 100, precision: 0, placeholder: '整數1000為單位' }"
+        :component-props="{ min: 0, step: 100, precision: 0, placeholder: '實際股數，勿輸入張數' }"
       />
       <baseForm
         label="買進成本"
@@ -88,8 +88,8 @@ const formRef = ref<FormInst | null>(null);
 const form = reactive({
   id: '',
   name: '',
-  buyPrice: 0,
-  avgPrice: 0,
+  buyPrice: null,
+  avgPrice: null,
   quantity: null,
   buyCost: null,
   buyDate: '',
@@ -135,12 +135,12 @@ const rules: FormRules = {
 
   avgPrice: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
-    { validator: nonNegative('買進價格'), trigger: ['input', 'blur'] },
+    { validator: nonNegative('損益平衡點'), trigger: ['input', 'blur'] },
   ],
 
   buyPrice: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
-    { validator: nonNegative('損益平衡點'), trigger: ['input', 'blur'] },
+    { validator: nonNegative('買進價格'), trigger: ['input', 'blur'] },
   ],
 
   quantity: [

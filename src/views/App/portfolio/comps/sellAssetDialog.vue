@@ -1,7 +1,7 @@
 <template>
   <baseDialog
     v-model="visible"
-    title="新增資產"
+    title="賣出資產"
     :ok-loading="submitting"
     @ok="handleSubmit"
     @cancel="reset"
@@ -13,45 +13,46 @@
         :component="NInput"
         v-model="form.name"
         class="w-90%"
-        :component-props="{ placeholder: '請輸入股票代碼或名稱' }"
+        :component-props="{ disabled: true }"
       />
       <baseForm
-        label="買進價格"
-        path="buyPrice"
-        :component="NInputNumber"
-        v-model="form.buyPrice"
-        class="w-90%"
-        :component-props="{ min: 0, step: 0.05, precision: 2, placeholder: '請輸入買進價格' }"
-      />
-      <baseForm
-        label="損益平衡點"
-        path="avgPrice"
-        :component="NInputNumber"
-        v-model="form.avgPrice"
-        class="w-90%"
-        :component-props="{ min: 0, step: 0.05, precision: 2, placeholder: '請輸入損益平衡點' }"
-      />
-      <baseForm
-        label="買進股數"
+        label="持有股數"
         path="quantity"
         :component="NInputNumber"
         v-model="form.quantity"
         class="w-90%"
-        :component-props="{ min: 0, step: 100, precision: 0, placeholder: '整數1000為單位' }"
+        :component-props="{ disabled: true }"
       />
       <baseForm
-        label="買進成本"
-        path="buyCost"
+        label="賣出價格"
+        path="sellPrice"
         :component="NInputNumber"
-        v-model="form.buyCost"
+        v-model="form.sellPrice"
         class="w-90%"
-        :component-props="{ min: 0, step: 1, precision: 0, placeholder: '請輸入實際買進成本' }"
+        :component-props="{ min: 0, step: 0.05, precision: 2, placeholder: '請輸入損益平衡點' }"
+      />
+
+      <baseForm
+        label="賣出股數"
+        path="sellQty"
+        :component="NInputNumber"
+        v-model="form.sellQty"
+        class="w-90%"
+        :component-props="{ min: 0, step: 1, precision: 0, placeholder: '實際股數，勿輸入張數' }"
       />
       <baseForm
-        label="買進日期"
-        path="buyDate"
+        label="賣出總價"
+        path="actualRealizedPnl"
         :component="NInput"
-        v-model="form.buyDate"
+        v-model="form.actualRealizedPnl"
+        class="w-90%"
+        :component-props="{ placeholder: '請輸入賣出後總金額(含稅)' }"
+      />
+      <baseForm
+        label="賣出日期"
+        path="sellDate"
+        :component="NInput"
+        v-model="form.sellDate"
         class="w-90%"
         :component-props="{ placeholder: '請輸入買進日期(YYYY-MM-DD)' }"
       />
@@ -88,11 +89,11 @@ const formRef = ref<FormInst | null>(null);
 const form = reactive({
   id: '',
   name: '',
-  buyPrice: 0,
-  avgPrice: 0,
   quantity: null,
-  buyCost: null,
-  buyDate: '',
+  sellPrice: null,
+  sellQty: null,
+  actualRealizedPnl: null,
+  sellDate: '',
   note: '',
 });
 // ---------------------------
@@ -131,30 +132,22 @@ const ymdValidator: FormItemRule['validator'] = (_r, v: string) => {
 };
 
 const rules: FormRules = {
-  name: [{ required: true, message: '必填', trigger: ['input', 'blur'] }],
-
-  avgPrice: [
+  sellPrice: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
-    { validator: nonNegative('買進價格'), trigger: ['input', 'blur'] },
+    { validator: nonNegative('賣出價格'), trigger: ['input', 'blur'] },
   ],
 
-  buyPrice: [
+  sellQty: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
-    { validator: nonNegative('損益平衡點'), trigger: ['input', 'blur'] },
+    { validator: nonNegative('賣出股數'), trigger: ['input', 'blur'] },
   ],
 
-  quantity: [
+  actualRealizedPnl: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
-    { validator: nonNegative('買進股數'), trigger: ['input', 'blur'] },
+    { validator: nonNegative('賣出總價'), trigger: ['input', 'blur'] },
     { validator: integerOnly, trigger: ['blur'] },
   ],
-
-  buyCost: [
-    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
-    { validator: nonNegative('買進成本'), trigger: ['input', 'blur'] },
-  ],
-
-  buyDate: [
+  sellDate: [
     { required: true, message: '必填', trigger: ['input', 'blur'] },
     { validator: ymdValidator, trigger: ['input', 'blur'] },
   ],
