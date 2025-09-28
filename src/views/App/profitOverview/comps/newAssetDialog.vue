@@ -24,20 +24,20 @@
         :component-props="{ min: 0, step: 0.05, precision: 2, placeholder: '請輸入買進價格' }"
       />
       <baseForm
-        label="損益平衡點"
-        path="avgPrice"
+        label="賣出價格"
+        path="sellPrice"
         :component="NInputNumber"
-        v-model="form.avgPrice"
+        v-model="form.sellPrice"
         class="w-90%"
-        :component-props="{ min: 0, step: 0.05, precision: 2, placeholder: '請輸入損益平衡點' }"
+        :component-props="{ min: 0, step: 0.05, precision: 2, placeholder: '請輸入買進價格' }"
       />
       <baseForm
-        label="買進股數"
+        label="交易股數"
         path="quantity"
         :component="NInputNumber"
         v-model="form.quantity"
         class="w-90%"
-        :component-props="{ min: 0, step: 100, precision: 0, placeholder: '整數1000為單位' }"
+        :component-props="{ min: 0, step: 100, precision: 0, placeholder: '實際股數，勿輸入張數' }"
       />
       <baseForm
         label="買進成本"
@@ -48,12 +48,20 @@
         :component-props="{ min: 0, step: 1, precision: 0, placeholder: '請輸入實際買進成本' }"
       />
       <baseForm
-        label="買進日期"
-        path="buyDate"
-        :component="NInput"
-        v-model="form.buyDate"
+        label="賣出實際價格"
+        path="actualRealizedPnl"
+        :component="NInputNumber"
+        v-model="form.actualRealizedPnl"
         class="w-90%"
-        :component-props="{ placeholder: '請輸入買進日期(YYYY-MM-DD)' }"
+        :component-props="{ min: 0, step: 1, precision: 0, placeholder: '請輸入實際賣出價格' }"
+      />
+      <baseForm
+        label="賣出日期"
+        path="tradesDate"
+        :component="NInput"
+        v-model="form.tradesDate"
+        class="w-90%"
+        :component-props="{ placeholder: '請輸入賣出日期(YYYY-MM-DD)' }"
       />
       <baseForm
         label="備註"
@@ -89,10 +97,11 @@ const form = reactive({
   id: '',
   name: '',
   buyPrice: 0,
-  avgPrice: 0,
+  sellPrice: 0,
   quantity: null,
   buyCost: null,
-  buyDate: '',
+  actualRealizedPnl: null,
+  tradesDate: '',
   note: '',
 });
 // ---------------------------

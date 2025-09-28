@@ -13,7 +13,7 @@
         <baseButton color="primary"><div class="i-mdi:chevron-right text-5"></div></baseButton>
       </div>
 
-      <baseButton color="primary">新增資產</baseButton>
+      <baseButton color="primary" @click="openAssetDialog">新增資產</baseButton>
     </div>
     <baseTable
       :columns="bridgedColumns"
@@ -31,6 +31,7 @@
     initial-mode="deposit"
     @submit="onSubmit"
   />
+  <newAssetDialog v-model="newAssetDlgOpen" :loading="submitting" />
   <editAssetDialog v-model="editAssetDlgOpen" :loading="submitting" />
   <deleteAssetDialog v-model="deleteAssetDlgOpen" :loading="submitting" />
 </template>
@@ -40,7 +41,13 @@
 // 共用型別
 import type { DataTableColumns } from 'naive-ui';
 // 元件
-import { trendChart, totalInvestDialog, editAssetDialog, deleteAssetDialog } from './comps/index';
+import {
+  trendChart,
+  totalInvestDialog,
+  newAssetDialog,
+  editAssetDialog,
+  deleteAssetDialog,
+} from './comps/index';
 import { baseButton, baseTable } from '@/components/index';
 // 商業邏輯
 
@@ -127,16 +134,6 @@ const columns: DataTableColumns<StockRow> = [
             `實際損益：${row.stockProfit.toLocaleString()} (${row.profitLossRate.toFixed(2)}%)`
           ),
           h('div', `備註：${row.note ?? '-'}`),
-          h(
-            baseButton,
-            {
-              size: 'small',
-              color: 'primary',
-              class: 'w-20',
-              onClick: () => openDialog(row.stockId),
-            },
-            { default: () => '庫存明細' }
-          ),
         ]),
         h('div', { class: 'mt-2 ml-auto flex flex-col gap-4' }, [
           h(
@@ -209,11 +206,6 @@ const bridgedData = fakeData as unknown as Record<string, unknown>[];
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).tradesId;
 // ------------------------
 
-const openDialog = (stockId: string) => {
-  // 打開對話框的邏輯
-  console.log('觸發點擊，ID為:', stockId);
-};
-
 // ----------資金管理----------
 const openTotalInvestDialog = () => {
   totalInvestDlgOpen.value = true;
@@ -240,6 +232,15 @@ async function onSubmit(payload: { mode: 'deposit' | 'withdraw'; amount: number 
     submitting.value = false;
   }
 }
+// ---------------------------
+
+// ----------新增資產----------
+
+const openAssetDialog = () => {
+  newAssetDlgOpen.value = true;
+};
+
+const newAssetDlgOpen = ref(false);
 // ---------------------------
 
 // ----------編輯資產----------
