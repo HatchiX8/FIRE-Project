@@ -14,6 +14,8 @@ declare module 'vue' {
     BaseTable: typeof import('./components/base/baseTable.vue')['default']
     FooterComp: typeof import('./components/layout/footerComp.vue')['default']
     HeaderComp: typeof import('./components/layout/headerComp.vue')['default']
+    LoadingAreaOverlay: typeof import('./components/modules/loadingModule/loadingAreaOverlay.vue')['default']
+    LoadingOverlay: typeof import('./components/modules/loadingModule/loadingOverlay.vue')['default']
     MenuComp: typeof import('./components/layout/menuComp.vue')['default']
     NAvatar: typeof import('naive-ui')['NAvatar']
     NButton: typeof import('naive-ui')['NButton']
