@@ -1,6 +1,16 @@
 <template>
   <div>
-    <div><trendChart class="h-45" :chartData="portfolioStore.summaryList" /></div>
+    <loadingAreaOverlay :loadingId="portfolioStore.summaryLoading">
+      <div>
+        <trendChart
+          v-show="!isSummaryLoading"
+          class="h-45"
+          :chartData="portfolioStore.summaryList"
+        />
+      </div>
+      <div v-if="isSummaryLoading" class="my-25"></div>
+    </loadingAreaOverlay>
+
     <div class="mb-4 flex">
       <baseButton class="ml-auto" color="primary" @click="openAssetDialog">新增資產</baseButton>
     </div>
@@ -23,6 +33,7 @@
 // 套件
 // 共用型別
 import { type DataTableColumns } from 'naive-ui';
+import type { StockRow } from './api/index';
 // 元件
 import {
   trendChart,
@@ -33,34 +44,27 @@ import {
 } from './comps/index';
 import { baseTable, baseButton } from '@/components/index';
 import { formatPriceSmart } from '@/utils/index';
+import { loadingAreaOverlay } from '@/components/modules/loadingModule/index';
 // 商業邏輯
 // store
+import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
 import { usePortfolioStore } from '@/stores/index';
 // ---------------------------
 
 // ----------初始化----------
-const portfolioStore = usePortfolioStore();
+const portfolioStore = usePortfolioStore(); // 投資組合 store
+const loadingStore = useAreaLoadingStore(); // 讀取狀態 store
 
-onMounted(() => {
-  portfolioStore.fetchSummaryData(); // 請求資產配置資料
+// 獲取資金配置讀取狀態
+const isSummaryLoading = computed(() => loadingStore.isLoading(portfolioStore.summaryLoading));
+
+onMounted(async () => {
+  await portfolioStore.fetchSummaryData(); // 請求資產配置資料
+  await portfolioStore.fetchHoldingsData(1); // 請求持股配置資料
 });
 // -------------------------
 
 // ----------欄位設定----------
-interface StockRow {
-  assetId: string; // UUID
-  stockId: string; // 2330
-  stockName: string; // 台積電
-  quantity: number;
-  buyPrice: number;
-  currentPrice: number;
-  marketValue: number;
-  totalCost: number;
-  profitRate: number; // 3.16
-  created_at: string;
-  updated_at: string;
-  note?: string;
-}
 
 const columns: DataTableColumns<StockRow> = [
   {
@@ -139,67 +143,60 @@ const columns: DataTableColumns<StockRow> = [
 ];
 
 // ----------假資料----------
-// const data = {
-//   totalInvest: 170000,
-//   cashInvest: 65000,
-//   stockCost: 105000,
-//   stockValue: 110000,
-//   positionRatio: 0.617,
-//   stockProfit: 5000,
-//   profitRate: 4.76,
-// };
 
-const fakeData: StockRow[] = [
-  {
-    assetId: 'UUID-2330',
-    stockId: '2330',
-    stockName: '台積電',
-    quantity: 100,
-    buyPrice: 580,
-    currentPrice: 600.5,
-    marketValue: 60000,
-    totalCost: 58162,
-    profitRate: 3.16,
-    created_at: '2025/08/11',
-    updated_at: '2025/08/11',
-    note: '跌破月線停損停利',
-  },
-  {
-    assetId: 'UUID-0050',
-    stockId: '0050',
-    stockName: '元大台灣50',
-    quantity: 100,
-    buyPrice: 580,
-    currentPrice: 600,
-    marketValue: 60000,
-    totalCost: 58162,
-    profitRate: 3.16,
-    created_at: '2025/08/11',
-    updated_at: '2025/08/11',
-    note: '跌破月線停損停利',
-  },
-  {
-    assetId: 'UUID-00638L',
-    stockId: '00638L',
-    stockName: '台灣50',
-    quantity: 100,
-    buyPrice: 580,
-    currentPrice: 600,
-    marketValue: 60000,
-    totalCost: 58162,
-    profitRate: -3.16,
-    created_at: '2025/08/11',
-    updated_at: '2025/08/11',
-    note: '跌破月線停損停利',
-  },
-];
+// const fakeData: StockRow[] = [
+//   {
+//     assetId: 'UUID-2330',
+//     stockId: '2330',
+//     stockName: '台積電',
+//     quantity: 100,
+//     buyPrice: 580,
+//     currentPrice: 600.5,
+//     marketValue: 60000,
+//     totalCost: 58162,
+//     profitRate: 3.16,
+//     created_at: '2025/08/11',
+//     updated_at: '2025/08/11',
+//     note: '跌破月線停損停利',
+//   },
+//   {
+//     assetId: 'UUID-0050',
+//     stockId: '0050',
+//     stockName: '元大台灣50',
+//     quantity: 100,
+//     buyPrice: 580,
+//     currentPrice: 600,
+//     marketValue: 60000,
+//     totalCost: 58162,
+//     profitRate: 3.16,
+//     created_at: '2025/08/11',
+//     updated_at: '2025/08/11',
+//     note: '跌破月線停損停利',
+//   },
+//   {
+//     assetId: 'UUID-00638L',
+//     stockId: '00638L',
+//     stockName: '台灣50',
+//     quantity: 100,
+//     buyPrice: 580,
+//     currentPrice: 600,
+//     marketValue: 60000,
+//     totalCost: 58162,
+//     profitRate: -3.16,
+//     created_at: '2025/08/11',
+//     updated_at: '2025/08/11',
+//     note: '跌破月線停損停利',
+//   },
+// ];
 
 const expanded = ref<Array<string | number>>([]);
 // ----------斷言----------
 /** ✅ 這三個是「橋接變數」，把 TS 斷言放到 script */
 const bridgedColumns = columns as unknown as DataTableColumns<Record<string, unknown>>;
 
-const bridgedData = fakeData as unknown as Record<string, unknown>[];
+const bridgedData = computed(
+  () => portfolioStore.holdingsList as unknown as Record<string, unknown>[]
+);
 
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).assetId;
 // ------------------------

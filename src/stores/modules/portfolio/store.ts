@@ -2,9 +2,9 @@
 // 套件
 import { defineStore } from 'pinia';
 // API
-import { getSummaryData } from '@/views/App/portfolio/api/index';
+import { getSummaryData, getHoldingsData } from '@/views/App/portfolio/api/index';
 // 共用型別
-import type { summaryData } from '@/views/App/portfolio/api/index';
+import type { summaryData, StockRow } from '@/views/App/portfolio/api/index';
 // 元件
 // 商業邏輯
 import { getErrorMessage } from '@/utils/api/apiErrorMessage';
@@ -35,6 +35,8 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     loading.start(summaryLoading);
     error.value = null;
 
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     try {
       const res = await getSummaryData(userId.value);
       if (res.status) {
@@ -51,11 +53,51 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   };
   // ---------------------------
 
+  // ----------持股配置----------
+  const holdingsLoading = 'useHoldingsLoading';
+  const holdingsList = ref<StockRow[]>([]);
+  const holdingsPagination = ref({
+    total_page: 0,
+    current_page: 0,
+  });
+
+  const fetchHoldingsData = async (page: number) => {
+    if (!userId.value) {
+      error.value = '使用者尚未登入或ID無效';
+      return;
+    }
+
+    loading.start(holdingsLoading);
+    error.value = null;
+
+    try {
+      const res = await getHoldingsData(userId.value, page);
+      if (res.status) {
+        holdingsList.value = res.data.shareholding;
+        holdingsPagination.value = res.data.pagination;
+        console.log('檢視API回傳', holdingsList.value);
+      } else {
+        error.value = res.message || '取得持股配置失敗';
+      }
+    } catch (err) {
+      error.value = getErrorMessage(err);
+    } finally {
+      loading.stop(holdingsLoading);
+    }
+  };
+  // ---------------------------
+
   return {
     // ------------資產配置------------
     summaryList,
     fetchSummaryData,
     summaryLoading,
-    // --------------------------------
+    // -------------------------------
+    // ------------持股配置------------
+    holdingsLoading,
+    holdingsList,
+    fetchHoldingsData,
+    holdingsPagination,
+    // -------------------------------
   };
 });

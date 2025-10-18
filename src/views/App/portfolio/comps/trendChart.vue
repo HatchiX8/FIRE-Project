@@ -122,8 +122,6 @@ const getChartOption = (data: ChartData): echarts.EChartsCoreOption => ({
       data: [
         { value: data.cashInvest ?? 0, name: '現金' },
         { value: data.stockCost ?? 0, name: '股票' },
-        // { value: data.countG?.[0] ?? 0, name: '現金比重' },
-        // { value: data.countR?.[0] ?? 0, name: '持股水位' },
       ],
       label: {
         show: true,
