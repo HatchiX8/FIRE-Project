@@ -5,20 +5,22 @@
     <div class="text-textColor text-4 w-1.5/3 flex flex-col justify-center">
       <div class="mb-2 flex justify-between">
         <span>總資產</span>
-        <span>{{ props.chartData.totalInvest.toLocaleString() }} </span>
+        <span> {{ props.chartData.totalInvest?.toLocaleString?.() ?? '-' }}</span>
       </div>
       <div class="mb-2 flex justify-between">
         <span>持股成本</span>
-        <span>{{ props.chartData.stockCost.toLocaleString() }} </span>
+        <span>{{ props.chartData.stockCost?.toLocaleString?.() ?? '-' }} </span>
       </div>
       <div class="mb-2 flex justify-between">
         <span>股票市值</span>
-        <span>{{ props.chartData.stockValue.toLocaleString() }} </span>
+        <span>{{ props.chartData.stockValue?.toLocaleString?.() ?? '-' }} </span>
       </div>
       <div class="mb-2 flex justify-between">
         <span>未實現損益</span>
         <span
-          >{{ props.chartData.stockProfit.toLocaleString() }}({{ props.chartData.profitRate }})
+          >{{ props.chartData.stockProfit?.toLocaleString?.() ?? '-' }}({{
+            props.chartData.profitRate
+          }})
         </span>
       </div>
     </div>

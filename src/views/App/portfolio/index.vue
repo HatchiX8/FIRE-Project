@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div><trendChart class="h-45" :chartData="data" /></div>
+    <div><trendChart class="h-45" :chartData="portfolioStore.summaryList" /></div>
     <div class="mb-4 flex">
       <baseButton class="ml-auto" color="primary" @click="openAssetDialog">新增資產</baseButton>
     </div>
@@ -34,7 +34,17 @@ import {
 import { baseTable, baseButton } from '@/components/index';
 import { formatPriceSmart } from '@/utils/index';
 // 商業邏輯
+// store
+import { usePortfolioStore } from '@/stores/index';
 // ---------------------------
+
+// ----------初始化----------
+const portfolioStore = usePortfolioStore();
+
+onMounted(() => {
+  portfolioStore.fetchSummaryData(); // 請求資產配置資料
+});
+// -------------------------
 
 // ----------欄位設定----------
 interface StockRow {
@@ -129,15 +139,15 @@ const columns: DataTableColumns<StockRow> = [
 ];
 
 // ----------假資料----------
-const data = {
-  totalInvest: 170000,
-  cashInvest: 65000,
-  stockCost: 105000,
-  stockValue: 110000,
-  positionRatio: 0.617,
-  stockProfit: 5000,
-  profitRate: 4.76,
-};
+// const data = {
+//   totalInvest: 170000,
+//   cashInvest: 65000,
+//   stockCost: 105000,
+//   stockValue: 110000,
+//   positionRatio: 0.617,
+//   stockProfit: 5000,
+//   profitRate: 4.76,
+// };
 
 const fakeData: StockRow[] = [
   {
