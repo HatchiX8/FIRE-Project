@@ -70,6 +70,8 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     loading.start(holdingsLoading);
     error.value = null;
 
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     try {
       const res = await getHoldingsData(userId.value, page);
       if (res.status) {

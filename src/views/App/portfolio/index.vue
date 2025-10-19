@@ -8,20 +8,22 @@
           :chartData="portfolioStore.summaryList"
         />
       </div>
-      <div v-if="isSummaryLoading" class="my-25"></div>
+      <div v-if="isSummaryLoading" class="my-20"></div>
     </loadingAreaOverlay>
 
-    <div class="mb-4 flex">
+    <div v-show="!isHoldingsLoading && !isSummaryLoading" class="flex">
       <baseButton class="ml-auto" color="primary" @click="openAssetDialog">新增資產</baseButton>
     </div>
 
-    <baseTable
-      :columns="bridgedColumns"
-      :data="bridgedData"
-      :row-key="bridgedRowKey"
-      v-model:expanded-row-keys="expanded"
-      :page-size="10"
-    />
+    <loadingAreaOverlay :loadingId="portfolioStore.holdingsLoading" class="px-0">
+      <baseTable
+        v-if="!isHoldingsLoading && !isSummaryLoading"
+        :columns="bridgedColumns"
+        :data="bridgedData"
+        :row-key="bridgedRowKey"
+        v-model:expanded-row-keys="expanded"
+        :page-size="10"
+    /></loadingAreaOverlay>
   </div>
   <newAssetDialog v-model="newAssetDlgOpen" :loading="submitting" />
   <sellAssetDialog v-model="sellAssetDialogOpen" :loading="submitting" />
@@ -57,6 +59,8 @@ const loadingStore = useAreaLoadingStore(); // 讀取狀態 store
 
 // 獲取資金配置讀取狀態
 const isSummaryLoading = computed(() => loadingStore.isLoading(portfolioStore.summaryLoading));
+
+const isHoldingsLoading = computed(() => loadingStore.isLoading(portfolioStore.holdingsLoading));
 
 onMounted(async () => {
   await portfolioStore.fetchSummaryData(); // 請求資產配置資料
@@ -141,53 +145,6 @@ const columns: DataTableColumns<StockRow> = [
       ]),
   },
 ];
-
-// ----------假資料----------
-
-// const fakeData: StockRow[] = [
-//   {
-//     assetId: 'UUID-2330',
-//     stockId: '2330',
-//     stockName: '台積電',
-//     quantity: 100,
-//     buyPrice: 580,
-//     currentPrice: 600.5,
-//     marketValue: 60000,
-//     totalCost: 58162,
-//     profitRate: 3.16,
-//     created_at: '2025/08/11',
-//     updated_at: '2025/08/11',
-//     note: '跌破月線停損停利',
-//   },
-//   {
-//     assetId: 'UUID-0050',
-//     stockId: '0050',
-//     stockName: '元大台灣50',
-//     quantity: 100,
-//     buyPrice: 580,
-//     currentPrice: 600,
-//     marketValue: 60000,
-//     totalCost: 58162,
-//     profitRate: 3.16,
-//     created_at: '2025/08/11',
-//     updated_at: '2025/08/11',
-//     note: '跌破月線停損停利',
-//   },
-//   {
-//     assetId: 'UUID-00638L',
-//     stockId: '00638L',
-//     stockName: '台灣50',
-//     quantity: 100,
-//     buyPrice: 580,
-//     currentPrice: 600,
-//     marketValue: 60000,
-//     totalCost: 58162,
-//     profitRate: -3.16,
-//     created_at: '2025/08/11',
-//     updated_at: '2025/08/11',
-//     note: '跌破月線停損停利',
-//   },
-// ];
 
 const expanded = ref<Array<string | number>>([]);
 // ----------斷言----------
