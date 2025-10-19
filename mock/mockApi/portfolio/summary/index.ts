@@ -1,5 +1,5 @@
 export const getSummary = {
-  url: '/api/v1/users/:userId/portfolio/summary',
+  url: '/api/v1/users/portfolio/summary',
   method: 'get',
   response: () => ({
     status: true,

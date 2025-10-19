@@ -1,5 +1,5 @@
 export const getHoldings = {
-  url: '/api/v1/users/:userId/portfolio/holdings',
+  url: '/api/v1/users/portfolio/holdings',
   method: 'get',
   response: () => ({
     status: true,

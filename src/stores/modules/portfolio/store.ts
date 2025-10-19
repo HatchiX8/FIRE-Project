@@ -10,13 +10,10 @@ import type { summaryData, StockRow } from '@/views/App/portfolio/api/index';
 import { getErrorMessage } from '@/utils/api/apiErrorMessage';
 // store
 import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
-import { useUserStore } from '@/stores/modules/user/store';
+
 // --------------------------
 
 export const usePortfolioStore = defineStore('portfolio', () => {
-  // ----------登入id初始化----------
-  const userStore = useUserStore();
-  const userId = computed(() => userStore.userInfo?.user.id || '');
   // -------------------------------
 
   const loading = useAreaLoadingStore();
@@ -27,18 +24,13 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const summaryList = ref<summaryData>({} as summaryData);
 
   const fetchSummaryData = async () => {
-    if (!userId.value) {
-      error.value = '使用者尚未登入或ID無效';
-      return;
-    }
-
     loading.start(summaryLoading);
     error.value = null;
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
-      const res = await getSummaryData(userId.value);
+      const res = await getSummaryData();
       if (res.status) {
         summaryList.value = res.data;
         console.log('檢視API回傳', summaryList.value);
@@ -62,18 +54,13 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   });
 
   const fetchHoldingsData = async (page: number) => {
-    if (!userId.value) {
-      error.value = '使用者尚未登入或ID無效';
-      return;
-    }
-
     loading.start(holdingsLoading);
     error.value = null;
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
-      const res = await getHoldingsData(userId.value, page);
+      const res = await getHoldingsData(page);
       if (res.status) {
         holdingsList.value = res.data.shareholding;
         holdingsPagination.value = res.data.pagination;
