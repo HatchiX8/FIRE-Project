@@ -13,6 +13,7 @@
         :component="NInput"
         v-model="form.name"
         class="w-90%"
+        :component-props="{ disabled: true }"
       />
       <baseForm
         label="審核說明"
@@ -23,6 +24,7 @@
         :component-props="{
           type: 'textarea',
           autosize: { minRows: 4, maxRows: 8 }, // 內容區更高
+          placeholder: '輸入審核說明，以提高通過機率',
         }"
       />
     </n-form>
@@ -40,21 +42,45 @@ import { baseDialog, baseForm } from '@/components/index';
 // 商業邏輯
 // ---------------------------
 
+// ----------props&emit----------
+const props = defineProps<{
+  userName: string;
+}>();
+
+const emit = defineEmits<{
+  (e: 'close-dialog'): void;
+  (e: 'submit-upgrade', payload: { note: string }): void;
+}>();
+// ------------------------------
+
 const visible = defineModel<boolean>({ required: true });
 const submitting = ref(false);
 const formRef = ref<FormInst | null>(null);
-const form = reactive({ id: '', name: '', note: '' });
+const form = ref({ id: '', name: props.userName, note: '' });
 
 const rules: FormRules = {
   name: { required: true, message: '必填' },
   note: { required: false, message: '非必填' },
 };
 
-async function handleSubmit() {
-  console.log('往外emit去觸發請求API');
-}
+// 表單事件
+const handleSubmit = () => {
+  emit('submit-upgrade', { note: form.value.note });
+  reset();
+};
 
-function reset() {
-  // 可清空或還原
-}
+const reset = () => {
+  // 可清空或還原表單
+  form.value.note = '';
+  emit('close-dialog');
+};
+
+// 監聽props並更新表單數值
+watch(
+  () => props.userName,
+  (newName) => {
+    form.value.name = newName;
+  },
+  { immediate: true }
+);
 </script>

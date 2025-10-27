@@ -6,3 +6,9 @@ export interface userInfoData {
   avatar_url: string | null;
   upgrade_status: string;
 }
+
+export interface updateUserInfoPayload {
+  nickname: string;
+  email: string;
+  avatar_url: string | null;
+}

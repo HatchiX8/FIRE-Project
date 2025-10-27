@@ -20,21 +20,21 @@
           </div>
 
           <div class="mb-auto ml-auto">
-            <baseButton color="primary" @click="toggleEdit">
-              {{ isEditing ? '完成' : '編輯資料' }}</baseButton
-            >
+            <baseButton color="primary" @click="isEditing ? submitEdit() : startEdit()">
+              {{ isEditing ? '完成' : '編輯資料' }}
+            </baseButton>
           </div>
         </div>
 
         <div v-if="isEditing" class="mt-4">
           <p>暱稱 :</p>
-          <n-input v-model:value="form.nickname" placeholder="輸入暱稱" />
+          <n-input v-model:value="editForm.nickname" placeholder="輸入暱稱" />
         </div>
 
         <div class="mt-4">
           <p>電子郵件 :</p>
           <template v-if="isEditing">
-            <n-input v-model:value="form.email" placeholder="輸入電子郵件" />
+            <n-input v-model:value="editForm.email" placeholder="輸入電子郵件" />
           </template>
           <template v-else>
             <p>{{ form.email }}</p>
@@ -48,7 +48,12 @@
       </div>
     </loadingAreaOverlay>
   </n-card>
-  <accUpgradeDialog v-model="openAccUpgradeDialog" />
+  <accUpgradeDialog
+    v-model="openAccUpgradeDialog"
+    :userName="userProfileStore.userInfo.name"
+    @submit-upgrade="submitUpgrade"
+    @close-dialog="openAccUpgradeDialog = false"
+  />
 </template>
 <script setup lang="ts">
 // ----------import----------
@@ -65,7 +70,7 @@ import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/in
 
 // ----------初始化----------
 const userProfileStore = userInfoProfileStore();
-const loadingStore = useAreaLoadingStore(); // 讀取狀態 store
+const loadingStore = useAreaLoadingStore();
 
 const isInfoProfileLoading = computed(() =>
   loadingStore.isLoading(userProfileStore.userInfoLoading)
@@ -84,19 +89,39 @@ onMounted(async () => {
 });
 // -------------------------
 
+// ----------props&emit----------
+// const emit = defineEmits<{
+//   (e: 'update-profile', payload: updateUserInfoPayload): void;
+// }>();
+// ------------------------------
+
 // ----------編輯資料-----------
 const isEditing = ref(false);
 
 const form = computed(() => ({
   nickname: userProfileStore.userInfo.nickname,
   email: userProfileStore.userInfo.email,
+  avatar_url: userProfileStore.userInfo.avatar_url,
 }));
 
-const toggleEdit = () => {
-  isEditing.value = !isEditing.value;
+const editForm = ref<{ nickname: string; email: string; avatar_url: string | null }>({
+  nickname: '',
+  email: '',
+  avatar_url: null,
+});
+
+const startEdit = () => {
+  editForm.value.nickname = userProfileStore.userInfo.nickname;
+  editForm.value.email = userProfileStore.userInfo.email;
+  editForm.value.avatar_url = userProfileStore.userInfo.avatar_url ?? null;
+  isEditing.value = true;
+};
+
+const submitEdit = async () => {
+  isEditing.value = false;
 
   if (!isEditing.value) {
-    console.log('送出資料:', form.value);
+    await userProfileStore.editUpdateUserInfoData(editForm.value); // 直接呼叫 store 方法
   }
 };
 
@@ -105,5 +130,10 @@ const openAccUpgradeDialog = ref(false);
 
 const accUpgrade = () => {
   openAccUpgradeDialog.value = true;
+};
+
+const submitUpgrade = async (payload: { note: string }) => {
+  await userProfileStore.sendAccountUpgradeRequest(payload.note);
+  // 在這裡處理帳號升級的邏輯，例如呼叫 API 等
 };
 </script>

@@ -1,5 +1,13 @@
 import { MockMethod } from 'vite-plugin-mock';
-import { login, loginCheck, getSummary, getHoldings, userInfoData } from './mockApi/index';
+import {
+  login,
+  loginCheck,
+  getSummary,
+  getHoldings,
+  userInfoData,
+  userUpdate,
+  userAccountUpgrade,
+} from './mockApi/index';
 
 export default [
   // ----------使用者登入----------
@@ -14,5 +22,7 @@ export default [
 
   // ----------個人中心----------
   userInfoData,
+  userUpdate,
+  userAccountUpgrade,
   // ---------------------------
 ] as MockMethod[];
