@@ -1,6 +1,16 @@
 <template>
   <div class="text-textColor">
-    <div class="mb-4"><trendChart class="h-70" :chartData="data" /></div>
+    <loadingAreaOverlay :loadingId="profitOverviewStore.trendChartLoading" class="px-0">
+      <div class="mb-4">
+        <trendChart
+          v-show="!isTrendChartLoading"
+          class="h-70"
+          :chartData="profitOverviewStore.trendChartData"
+        />
+      </div>
+      <div v-if="isTrendChartLoading" class="my-20"></div>
+    </loadingAreaOverlay>
+
     <div class="flex items-center justify-between">
       <baseButton color="primary" @click="openTotalInvestDialog">資金管理</baseButton>
       <div class="flex items-center">
@@ -15,14 +25,18 @@
 
       <baseButton color="primary" @click="openAssetDialog">新增資產</baseButton>
     </div>
-    <baseTable
-      :columns="bridgedColumns"
-      :data="bridgedData"
-      :row-key="bridgedRowKey"
-      v-model:expanded-row-keys="expanded"
-      :page-size="10"
-      class="mt-4"
-    />
+    <loadingAreaOverlay :loadingId="profitOverviewStore.totalTradesLoading" class="px-0">
+      <baseTable
+        v-if="!isTrendChartLoading && !isTotalTradesLoading"
+        :columns="bridgedColumns"
+        :data="bridgedData"
+        :row-key="bridgedRowKey"
+        v-model:expanded-row-keys="expanded"
+        :page-size="10"
+        class="mt-4"
+      />
+      <div v-if="isTotalTradesLoading" class="my-20"></div>
+    </loadingAreaOverlay>
   </div>
   <totalInvestDialog
     v-model="totalInvestDlgOpen"
@@ -40,6 +54,7 @@
 // 套件
 // 共用型別
 import type { DataTableColumns } from 'naive-ui';
+import type { TradeItem } from './api/index';
 // 元件
 import {
   trendChart,
@@ -49,19 +64,29 @@ import {
   deleteAssetDialog,
 } from './comps/index';
 import { baseButton, baseTable } from '@/components/index';
+import { loadingAreaOverlay } from '@/components/modules/loadingModule/index';
 // 商業邏輯
-
+// store
+import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
+import { useProfitOverviewStore } from '@/stores/index';
 // ---------------------------
 
-// ----------區域----------
-const data = {
-  date: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-  countW: [150, 200, 170, 250, 300, 220, 180, 160, 140, 120, 130, 150],
-  countG: [120, 180, 160, 240, 290, 210, 190, 170, 150, 130, 140, 160],
-  countR: [100, 160, 140, 220, 270, 200, 180, 160, 140, 120, 130, 150],
-  countY: [80, 140, 120, 200, 250, 190, 170, 150, 130, 110, 120, 140],
-  all_Count: [650, 820, 710, 930, 1110, 1010, 900, 800, 700, 600, 650, 720],
-};
+// ----------初始化----------
+const profitOverviewStore = useProfitOverviewStore(); // 投資組合 store
+const loadingStore = useAreaLoadingStore(); // 讀取狀態 store
+
+const isTrendChartLoading = computed(() =>
+  loadingStore.isLoading(profitOverviewStore.trendChartLoading)
+);
+// 損益概況讀取狀態
+const isTotalTradesLoading = computed(() =>
+  loadingStore.isLoading(profitOverviewStore.totalTradesLoading)
+);
+
+onMounted(async () => {
+  await profitOverviewStore.fetchTrendChartData(2025); // 請求趨勢圖點位資料
+  await profitOverviewStore.fetchTotalTradesData(2025, 10, 1); // 請求損益概況資料
+});
 // -------------------------
 
 // ----------欄位設定----------
@@ -80,7 +105,7 @@ interface StockRow {
   note: string;
 }
 
-const columns: DataTableColumns<StockRow> = [
+const columns: DataTableColumns<TradeItem> = [
   {
     title: '股票名稱',
     key: 'stockName',
@@ -151,57 +176,14 @@ const columns: DataTableColumns<StockRow> = [
   },
 ];
 
-const fakeData: StockRow[] = [
-  {
-    tradesId: 'UUID-2330',
-    stockId: '2330',
-    stockName: '台積電',
-    tradesDate: '2025/08/11',
-    buyPrice: 113,
-    sellPrice: 120,
-    quantity: 1000,
-    buyCost: 113000,
-    actualRealizedPnl: 120000,
-    stockProfit: -7000,
-    profitLossRate: -3,
-    note: '跌破10日線清倉',
-  },
-  {
-    tradesId: 'UUID-0050',
-    stockId: '0050',
-    stockName: '元大台灣50',
-    tradesDate: '2025/08/11',
-    buyPrice: 113,
-    sellPrice: 120,
-    quantity: 1000,
-    buyCost: 113000,
-    actualRealizedPnl: 120000,
-    stockProfit: 7000,
-    profitLossRate: 3,
-    note: '跌破10日線清倉',
-  },
-  {
-    tradesId: 'UUID-00638L',
-    stockId: '00638L',
-    stockName: '台灣50',
-    tradesDate: '2025/08/11',
-    buyPrice: 113,
-    sellPrice: 120,
-    quantity: 1000,
-    buyCost: 113000,
-    actualRealizedPnl: 120000,
-    stockProfit: 7000,
-    profitLossRate: 3,
-    note: '跌破10日線清倉',
-  },
-];
-
 const expanded = ref<Array<string | number>>([]);
 // ----------斷言----------
 /** ✅ 這三個是「橋接變數」，把 TS 斷言放到 script */
 const bridgedColumns = columns as unknown as DataTableColumns<Record<string, unknown>>;
 
-const bridgedData = fakeData as unknown as Record<string, unknown>[];
+const bridgedData = computed(
+  () => profitOverviewStore.totalTradesList as unknown as Record<string, unknown>[]
+);
 
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).tradesId;
 // ------------------------

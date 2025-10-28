@@ -7,6 +7,8 @@ import {
   userInfoData,
   userUpdate,
   userAccountUpgrade,
+  dashboardReports,
+  dashboardTrendChart,
 } from './mockApi/index';
 
 export default [
@@ -24,5 +26,10 @@ export default [
   userInfoData,
   userUpdate,
   userAccountUpgrade,
+  // ---------------------------
+
+  // ----------損益概況----------
+  dashboardReports,
+  dashboardTrendChart,
   // ---------------------------
 ] as MockMethod[];

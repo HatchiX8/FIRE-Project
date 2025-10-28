@@ -8,27 +8,16 @@
 // 套件
 import { ref, markRaw, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import * as echarts from 'echarts';
-// store
 // 共用型別
+import type { TrendChartData } from '../api/index';
 // 元件
 // 商業邏輯
 
 // ---------------------------
 
-// ----------type----------
-interface ChartData {
-  date: string[];
-  countW: number[];
-  countG: number[];
-  countR: number[];
-  countY: number[];
-  all_Count: number[];
-}
-// ------------------------
-
 // ----------props&emit----------
 const props = defineProps<{
-  chartData: ChartData;
+  chartData: TrendChartData;
 }>();
 
 // const emit = defineEmits<{
@@ -88,17 +77,17 @@ const renderCharts = () => {
 };
 
 // 可抽換趨勢圖內容
-const getChartOption = (data: ChartData): echarts.EChartsCoreOption => ({
+const getChartOption = (data: TrendChartData): echarts.EChartsCoreOption => ({
   xAxis: {
     type: 'category',
-    data: data.date, // 月度數據
+    data: data.period, // 月度數據
   },
   yAxis: {
     type: 'value',
   },
   series: [
     {
-      data: [150, 200, 170, 250, 300, 220], // 模擬數據
+      data: data.pnl, // 模擬數據
       type: 'line',
 
       label: {
