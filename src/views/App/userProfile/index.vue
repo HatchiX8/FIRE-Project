@@ -42,7 +42,10 @@
         </div>
 
         <div class="mt-6 flex justify-center gap-4">
-          <baseButton color="primary" @click="accUpgrade">帳號升級</baseButton>
+          <baseButton v-if="memberTypeText !== '管理員'" color="primary" @click="accUpgrade"
+            >帳號升級</baseButton
+          >
+          <baseButton v-else color="primary" @click="goToAdminPage">會員管理</baseButton>
           <baseButton color="primary">資金投入/提領</baseButton>
         </div>
       </div>
@@ -71,6 +74,7 @@ import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/in
 // ----------初始化----------
 const userProfileStore = userInfoProfileStore();
 const loadingStore = useAreaLoadingStore();
+const router = useRouter();
 
 const isInfoProfileLoading = computed(() =>
   loadingStore.isLoading(userProfileStore.userInfoLoading)
@@ -128,6 +132,7 @@ const submitEdit = async () => {
 const openAccUpgradeDialog = ref(false);
 // ----------------------------
 
+// ----------帳號升級----------
 const accUpgrade = () => {
   openAccUpgradeDialog.value = true;
 };
@@ -136,4 +141,11 @@ const submitUpgrade = async (payload: { note: string }) => {
   await userProfileStore.sendAccountUpgradeRequest(payload.note);
   // 在這裡處理帳號升級的邏輯，例如呼叫 API 等
 };
+// ---------------------------
+
+// ----------管理員事件----------
+const goToAdminPage = () => {
+  router.push('/App/adminPage'); // 這裡填寫你的管理員頁面路徑
+};
+// -----------------------------
 </script>
