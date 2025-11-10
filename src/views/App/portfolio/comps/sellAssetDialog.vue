@@ -83,10 +83,11 @@ import { baseDialog, baseForm } from '@/components/index';
 // ---------------------------
 
 // ----------彈窗運作----------
-const visible = defineModel<boolean>({ required: true });
-const submitting = ref(false);
-const formRef = ref<FormInst | null>(null);
-const form = reactive({
+const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
+const submitting = ref(false); // 送出時的讀取狀態
+const formRef = ref<FormInst | null>(null); // 表單實例
+// 表單資料
+const form = ref({
   id: '',
   name: '',
   quantity: null,
@@ -109,10 +110,10 @@ const nonNegative =
 const integerOnly: FormItemRule['validator'] = (_r, v: number) =>
   Number.isInteger(v) ? true : new Error('須為整數');
 
-function isLeapYear(y: number) {
-  return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
-}
+// 共用：判斷是否為閏年
+const isLeapYear = (y: number) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
 
+// 共用：YYYY-MM-DD 日期格式驗證器
 const ymdValidator: FormItemRule['validator'] = (_r, v: string) => {
   if (typeof v !== 'string') return new Error('日期需為字串');
   const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -131,6 +132,7 @@ const ymdValidator: FormItemRule['validator'] = (_r, v: string) => {
   return true;
 };
 
+// 表單驗證規則
 const rules: FormRules = {
   sellPrice: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },

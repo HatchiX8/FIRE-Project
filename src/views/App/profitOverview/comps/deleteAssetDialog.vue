@@ -71,10 +71,11 @@ import { baseDialog, baseForm } from '@/components/index';
 // ---------------------------
 
 // ----------彈窗運作----------
-const visible = defineModel<boolean>({ required: true });
-const submitting = ref(false);
-const formRef = ref<FormInst | null>(null);
-const form = reactive({
+const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
+const submitting = ref(false); // 送出時的讀取狀態
+const formRef = ref<FormInst | null>(null); // 表單實例
+// 表單資料
+const form = ref({
   id: '',
   name: '',
   buyCost: null,
@@ -86,11 +87,13 @@ const form = reactive({
 });
 // ---------------------------
 
-// ----------表單提交----------
-async function handleSubmit() {
+// ----------表單事件----------
+// 提交表單
+const handleSubmit = async () => {
   console.log('往外emit去觸發請求API');
-}
+};
 
+// 表單重置
 function reset() {
   // 可清空或還原
 }

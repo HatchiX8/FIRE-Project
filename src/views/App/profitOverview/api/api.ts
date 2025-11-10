@@ -3,6 +3,7 @@ import type { apiResponse } from '@/api/type';
 import type { TotalTradesData, TrendChartData } from './index';
 
 // ----------損益概況資訊----------
+// 取得損益概況資訊
 export const getTotalTradesData = async (year: number, month: number, page: number) => {
   const params = new URLSearchParams({
     year: String(year),
@@ -17,6 +18,7 @@ export const getTotalTradesData = async (year: number, month: number, page: numb
 // -------------------------------
 
 // ----------趨勢圖點位資料----------
+// 取得損益概況趨勢資料
 export const getTrendChartData = async (year: number) => {
   const params = new URLSearchParams({
     year: String(year),

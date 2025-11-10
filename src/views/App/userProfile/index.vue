@@ -76,10 +76,12 @@ const userProfileStore = userInfoProfileStore();
 const loadingStore = useAreaLoadingStore();
 const router = useRouter();
 
+// 讀取狀態
 const isInfoProfileLoading = computed(() =>
   loadingStore.isLoading(userProfileStore.userInfoLoading)
 );
 
+// 帳號權限類型
 const memberTypeText = computed(() => {
   const role = userProfileStore.userInfo.role;
   if (role === 'guest') return '體驗會員';
@@ -102,18 +104,21 @@ onMounted(async () => {
 // ----------編輯資料-----------
 const isEditing = ref(false);
 
+// 表單資料
 const form = computed(() => ({
   nickname: userProfileStore.userInfo.nickname,
   email: userProfileStore.userInfo.email,
   avatar_url: userProfileStore.userInfo.avatar_url,
 }));
 
+// 編輯表單資料
 const editForm = ref<{ nickname: string; email: string; avatar_url: string | null }>({
   nickname: '',
   email: '',
   avatar_url: null,
 });
 
+// 開始編輯
 const startEdit = () => {
   editForm.value.nickname = userProfileStore.userInfo.nickname;
   editForm.value.email = userProfileStore.userInfo.email;
@@ -121,6 +126,7 @@ const startEdit = () => {
   isEditing.value = true;
 };
 
+// 送出編輯
 const submitEdit = async () => {
   isEditing.value = false;
 
@@ -133,10 +139,12 @@ const openAccUpgradeDialog = ref(false);
 // ----------------------------
 
 // ----------帳號升級----------
+// 開啟帳號升級對話框
 const accUpgrade = () => {
   openAccUpgradeDialog.value = true;
 };
 
+// 送出帳號升級請求
 const submitUpgrade = async (payload: { note: string }) => {
   await userProfileStore.sendAccountUpgradeRequest(payload.note);
   // 在這裡處理帳號升級的邏輯，例如呼叫 API 等
@@ -144,8 +152,9 @@ const submitUpgrade = async (payload: { note: string }) => {
 // ---------------------------
 
 // ----------管理員事件----------
+// 前往會員管理頁面
 const goToAdminPage = () => {
-  router.push('/App/adminPage'); // 這裡填寫你的管理員頁面路徑
+  router.push('/App/adminPage');
 };
 // -----------------------------
 </script>
