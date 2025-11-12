@@ -37,3 +37,20 @@ export interface TrendChartData {
 }
 
 // ---------------------------------
+
+// ----------欄位型別----------
+export interface StockRow {
+  tradesId: string;
+  stockId: string;
+  stockName: string;
+  tradesDate: string;
+  buyPrice: number;
+  sellPrice: number;
+  quantity: number;
+  buyCost: number;
+  actualRealizedPnl: number;
+  stockProfit: number;
+  profitLossRate: number;
+  note: string;
+}
+// ---------------------------

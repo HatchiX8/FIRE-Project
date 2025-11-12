@@ -54,7 +54,7 @@
 // 套件
 // 共用型別
 import type { DataTableColumns } from 'naive-ui';
-import type { TradeItem } from './api/index';
+import type { TradeItem, StockRow } from './api/index';
 // 元件
 import {
   trendChart,
@@ -84,27 +84,12 @@ const isTotalTradesLoading = computed(() =>
 );
 
 onMounted(async () => {
-  await profitOverviewStore.fetchTrendChartData(2025); // 請求趨勢圖點位資料
-  await profitOverviewStore.fetchTotalTradesData(2025, 10, 1); // 請求損益概況資料
+  await getTrendChartData(2025); // 請求趨勢圖點位資料
+  getTotalTradesData(2025, 10, 1); // 請求損益概況資料
 });
 // -------------------------
 
 // ----------欄位設定----------
-interface StockRow {
-  tradesId: string;
-  stockId: string;
-  stockName: string;
-  tradesDate: string;
-  buyPrice: number;
-  sellPrice: number;
-  quantity: number;
-  buyCost: number;
-  actualRealizedPnl: number;
-  stockProfit: number;
-  profitLossRate: number;
-  note: string;
-}
-
 const columns: DataTableColumns<TradeItem> = [
   {
     title: '股票名稱',
@@ -177,8 +162,7 @@ const columns: DataTableColumns<TradeItem> = [
 ];
 
 const expanded = ref<Array<string | number>>([]);
-// ----------斷言----------
-/** ✅ 這三個是「橋接變數」，把 TS 斷言放到 script */
+// 斷言 - ✅ 這三個是「橋接變數」，把 TS 斷言放到 script
 const bridgedColumns = columns as unknown as DataTableColumns<Record<string, unknown>>;
 
 const bridgedData = computed(
@@ -217,7 +201,6 @@ async function onSubmit(payload: { mode: 'deposit' | 'withdraw'; amount: number 
 // ---------------------------
 
 // ----------新增資產----------
-
 const openAssetDialog = () => {
   newAssetDlgOpen.value = true;
 };
@@ -240,6 +223,32 @@ const deleteAssetDlgOpen = ref(false);
 const openDeleteAssetDialog = (stockId: string) => {
   console.log('觸發點擊，ID為:', stockId);
   deleteAssetDlgOpen.value = true;
+};
+// ---------------------------
+
+// ----------API請求----------
+// 趨勢圖資料請求
+const getTrendChartData = async (year: number) => {
+  const res = await profitOverviewStore.fetchTrendChartData(year);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功取得趨勢圖資料:', res.data);
+  }
+};
+
+// 損益概況資料請求
+const getTotalTradesData = async (year: number, month: number, page: number) => {
+  const res = await profitOverviewStore.fetchTotalTradesData(year, month, page);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功取得損益概況資料:', res.data);
+  }
 };
 // ---------------------------
 </script>
