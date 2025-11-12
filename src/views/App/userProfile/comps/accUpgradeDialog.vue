@@ -48,7 +48,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'close-dialog'): void;
   (e: 'submit-upgrade', payload: { note: string }): void;
 }>();
 // ------------------------------
@@ -74,7 +73,6 @@ const handleSubmit = () => {
 const reset = () => {
   // 可清空或還原表單
   form.value.note = '';
-  emit('close-dialog');
 };
 
 // 監聽props並更新表單數值

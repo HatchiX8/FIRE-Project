@@ -19,7 +19,7 @@ const handleApiAsync = async <T, K extends string = string>(
   options?: {
     loadingStore?: LoadingLike<K>;
     loadingKey?: K;
-    target?: Ref<T>;
+    target?: Ref<T | undefined>;
   }
 ): Promise<Result<T>> => {
   const loading = options?.loadingStore; // 接收傳入的store 不在工具函式內連接pinia
@@ -30,8 +30,8 @@ const handleApiAsync = async <T, K extends string = string>(
 
   try {
     const data = await task();
-    if (options?.target) {
-      options.target.value = data;
+    if (options?.target && typeof data !== 'undefined') {
+      options.target.value = data as T;
     }
     return ok(data);
   } catch (err) {
@@ -47,11 +47,11 @@ export const handleApiResponse = <T, K extends string = string>(
   options?: {
     loadingStore?: LoadingLike<K>;
     loadingKey?: K;
-    target?: Ref<T>;
+    target?: Ref<T | undefined>;
   }
 ) =>
-  handleApiAsync<T, K>(async () => {
+  handleApiAsync<T | undefined, K>(async () => {
     const api = await task();
     if (!api.status) throw new Error(api.message ?? 'Request failed');
-    return api.data as T;
+    return api.data as T | undefined;
   }, options);

@@ -55,13 +55,13 @@
     v-model="openAccUpgradeDialog"
     :userName="userProfileStore.userInfo.name"
     @submit-upgrade="submitUpgrade"
-    @close-dialog="openAccUpgradeDialog = false"
   />
 </template>
 <script setup lang="ts">
 // ----------import----------
 // 套件
 // 共用型別
+import type { updateUserInfoPayload } from '@/views/App/userProfile/api/index';
 // 元件
 import { baseButton } from '@/components/index';
 import accUpgradeDialog from './comps/accUpgradeDialog.vue';
@@ -117,6 +117,7 @@ const getUserInfo = async () => {
 
 // ----------編輯資料-----------
 const isEditing = ref(false);
+const openAccUpgradeDialog = ref(false); // 控制帳號升級對話框顯示
 
 // 表單資料
 const form = computed(() => ({
@@ -141,15 +142,26 @@ const startEdit = () => {
 };
 
 // 送出編輯
-const submitEdit = async () => {
+const submitEdit = () => {
   isEditing.value = false;
 
   if (!isEditing.value) {
-    await userProfileStore.editUpdateUserInfoData(editForm.value); // 直接呼叫 store 方法
+    requestEdit(editForm.value);
   }
 };
 
-const openAccUpgradeDialog = ref(false);
+// 送出編輯請求
+const requestEdit = async (editForm: updateUserInfoPayload) => {
+  const res = await userProfileStore.editUpdateUserInfoData(editForm);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    getUserInfo(); // 重新取得使用者資料以更新狀態
+    console.log('API:請求編輯成功', res);
+  }
+};
 // ----------------------------
 
 // ----------帳號升級----------
@@ -158,10 +170,23 @@ const accUpgrade = () => {
   openAccUpgradeDialog.value = true;
 };
 
+// 送出帳號升級
+const submitUpgrade = (payload: { note: string }) => {
+  requestUpgrade(payload.note);
+  openAccUpgradeDialog.value = false;
+};
+
 // 送出帳號升級請求
-const submitUpgrade = async (payload: { note: string }) => {
-  await userProfileStore.sendAccountUpgradeRequest(payload.note);
-  // 在這裡處理帳號升級的邏輯，例如呼叫 API 等
+const requestUpgrade = async (note: string) => {
+  const res = await userProfileStore.sendAccountUpgradeRequest(note);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    getUserInfo(); // 重新取得使用者資料以更新狀態
+    console.log('API:請求帳號升級成功', res);
+  }
 };
 // ---------------------------
 
