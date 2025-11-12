@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@/utils/index';
+import { getErrorMessage } from './apiErrorMessage';
 
 interface apiResponse<T> {
   status: boolean;
@@ -9,7 +9,7 @@ interface apiResponse<T> {
 type Result<T> = { success: true; data: T } | { success: false; message: string };
 const ok = <T>(data: T): Result<T> => ({ success: true, data });
 const fail = (message: string): Result<never> => ({ success: false, message });
-export type LoadingLike<K extends string = string> = {
+type LoadingLike<K extends string = string> = {
   start: (key: K) => void;
   stop: (key: K) => void;
 };
