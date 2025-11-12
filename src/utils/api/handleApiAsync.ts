@@ -23,13 +23,16 @@ const handleApiAsync = async <T, K extends string = string>(
   }
 ): Promise<Result<T>> => {
   const loading = options?.loadingStore; // 接收傳入的store 不在工具函式內連接pinia
+
+  if (loading && options?.loadingKey) loading.start(options.loadingKey);
+
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // 開發階段用於測試 loading 效果
+
   try {
-    if (loading && options?.loadingKey) loading.start(options.loadingKey);
     const data = await task();
     if (options?.target) {
       options.target.value = data;
     }
-
     return ok(data);
   } catch (err) {
     const msg = getErrorMessage(err);

@@ -90,9 +90,10 @@ const memberTypeText = computed(() => {
   return '體驗會員';
 });
 
-onMounted(async () => {
-  await userProfileStore.fetchUserInfoData();
+onMounted(() => {
+  getUserInfo();
 });
+
 // -------------------------
 
 // ----------props&emit----------
@@ -100,6 +101,19 @@ onMounted(async () => {
 //   (e: 'update-profile', payload: updateUserInfoPayload): void;
 // }>();
 // ------------------------------
+
+// ----------取得使用者資料----------
+const getUserInfo = async () => {
+  const res = await userProfileStore.fetchUserInfoData();
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  }
+
+  console.log('✅ 成功取得使用者資料:', res.data);
+};
+// ---------------------------------
 
 // ----------編輯資料-----------
 const isEditing = ref(false);

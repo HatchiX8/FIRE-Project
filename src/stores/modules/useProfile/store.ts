@@ -19,7 +19,7 @@ import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/in
 
 export const userInfoProfileStore = defineStore('userInfoProfile', () => {
   // ----------初始化----------
-  const areaLoading = useAreaLoadingStore();
+  // const areaLoading = useAreaLoadingStore();
   const loading = useAreaLoadingStore();
   const error = ref<string | null>(null);
 
@@ -31,7 +31,7 @@ export const userInfoProfileStore = defineStore('userInfoProfile', () => {
 
   const fetchUserInfoData = async () =>
     handleApiResponse(() => getUserInfoData(), {
-      loadingStore: areaLoading,
+      loadingStore: loading,
       loadingKey: userInfoLoading,
       target: userInfo,
     });
