@@ -16,7 +16,7 @@
         color="primary"
         class="text-4 mr-2"
         ghost
-        @click="userStore.requestLogin"
+        @click="userLogin"
         >登入</baseButton
       >
       <a
@@ -43,5 +43,14 @@ import { useUserStore } from '@/stores/modules/user/store';
 
 // ----------初始化-----------
 const userStore = useUserStore();
+
+const userLogin = async () => {
+  const res = await userStore.requestLogin();
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  }
+  console.log('API:登入成功', res);
+};
 // ---------------------------
 </script>

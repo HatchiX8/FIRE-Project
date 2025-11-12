@@ -30,7 +30,7 @@ export const userInfoProfileStore = defineStore('userInfoProfile', () => {
   const userInfo = ref<userInfoData>({} as userInfoData);
 
   const fetchUserInfoData = async () =>
-    handleApiResponse(() => getUserInfoData(), {
+    await handleApiResponse(() => getUserInfoData(), {
       loadingStore: loading,
       loadingKey: userInfoLoading,
       target: userInfo,
