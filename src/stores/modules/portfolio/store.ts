@@ -7,7 +7,7 @@ import { getSummaryData, getHoldingsData } from '@/views/App/portfolio/api/index
 import type { summaryData, StockRow } from '@/views/App/portfolio/api/index';
 // 元件
 // 商業邏輯
-import { getErrorMessage } from '@/utils/api/apiErrorMessage';
+// import { getErrorMessage } from '@/utils/api/apiErrorMessage';
 // store
 import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
 
@@ -38,7 +38,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
         error.value = res.message || '取得資產配置失敗';
       }
     } catch (err) {
-      error.value = getErrorMessage(err);
+      console.log(err);
     } finally {
       loading.stop(summaryLoading);
     }
@@ -69,7 +69,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
         error.value = res.message || '取得持股配置失敗';
       }
     } catch (err) {
-      error.value = getErrorMessage(err);
+      console.log(err);
     } finally {
       loading.stop(holdingsLoading);
     }

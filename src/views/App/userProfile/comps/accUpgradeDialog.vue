@@ -44,7 +44,7 @@ import { baseDialog, baseForm } from '@/components/index';
 
 // ----------props&emit----------
 const props = defineProps<{
-  userName: string;
+  userName: string | undefined;
 }>();
 
 const emit = defineEmits<{

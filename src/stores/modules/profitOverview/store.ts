@@ -7,7 +7,7 @@ import { getTotalTradesData, getTrendChartData } from '@/views/App/profitOvervie
 import type { TradeItem, TrendChartData } from '@/views/App/profitOverview/api/index';
 // 元件
 // 商業邏輯
-import { getErrorMessage } from '@/utils/api/apiErrorMessage';
+// import { getErrorMessage } from '@/utils/api/apiErrorMessage';
 // store
 import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
 // --------------------------
@@ -42,7 +42,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
         error.value = res.message || '取得損益概況趨勢失敗';
       }
     } catch (err) {
-      error.value = getErrorMessage(err);
+      console.log(err);
     } finally {
       loading.stop(trendChartLoading);
     }
@@ -68,7 +68,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
         error.value = res.message || '取得損益概況失敗';
       }
     } catch (err) {
-      error.value = getErrorMessage(err);
+      console.log(err);
     } finally {
       loading.stop(totalTradesLoading);
     }

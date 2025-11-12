@@ -11,7 +11,7 @@ import {
 import type { userInfoData, updateUserInfoPayload } from '@/views/App/userProfile/api/index';
 // 元件
 // 商業邏輯
-import { getErrorMessage } from '@/utils/api/apiErrorMessage';
+import { handleApiResponse } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
 
@@ -19,6 +19,7 @@ import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/in
 
 export const userInfoProfileStore = defineStore('userInfoProfile', () => {
   // ----------初始化----------
+  const areaLoading = useAreaLoadingStore();
   const loading = useAreaLoadingStore();
   const error = ref<string | null>(null);
 
@@ -28,26 +29,12 @@ export const userInfoProfileStore = defineStore('userInfoProfile', () => {
   const userInfoLoading = 'useUserInfoLoading';
   const userInfo = ref<userInfoData>({} as userInfoData);
 
-  const fetchUserInfoData = async () => {
-    loading.start(userInfoLoading);
-    error.value = null;
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    try {
-      const res = await getUserInfoData();
-      if (res.status) {
-        userInfo.value = res.data;
-        console.log('檢視API回傳', userInfo.value);
-      } else {
-        error.value = res.message || '取得使用者資料失敗';
-      }
-    } catch (err) {
-      error.value = getErrorMessage(err);
-    } finally {
-      loading.stop(userInfoLoading);
-    }
-  };
+  const fetchUserInfoData = async () =>
+    handleApiResponse(() => getUserInfoData(), {
+      loadingStore: areaLoading,
+      loadingKey: userInfoLoading,
+      target: userInfo,
+    });
   // -----------------------------------
 
   // ----------編輯個人資料----------
@@ -64,7 +51,8 @@ export const userInfoProfileStore = defineStore('userInfoProfile', () => {
         error.value = res.message || '更新使用者資料失敗';
       }
     } catch (err) {
-      error.value = getErrorMessage(err);
+      // error.value = getErrorMessage(err);
+      console.log(err);
     } finally {
       loading.stop(updateInfoLoading);
     }
@@ -85,7 +73,7 @@ export const userInfoProfileStore = defineStore('userInfoProfile', () => {
         error.value = res.message || '帳號升級申請失敗';
       }
     } catch (err) {
-      error.value = getErrorMessage(err);
+      console.log(err);
     } finally {
       loading.stop(accountUpgradeLoading);
     }
