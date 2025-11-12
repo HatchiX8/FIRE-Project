@@ -44,20 +44,20 @@ import { baseDialog, baseForm } from '@/components/index';
 
 // ----------props&emit----------
 const props = defineProps<{
-  userName: string;
+  userName: string | undefined;
 }>();
 
 const emit = defineEmits<{
-  (e: 'close-dialog'): void;
   (e: 'submit-upgrade', payload: { note: string }): void;
 }>();
 // ------------------------------
 
-const visible = defineModel<boolean>({ required: true });
-const submitting = ref(false);
-const formRef = ref<FormInst | null>(null);
-const form = ref({ id: '', name: props.userName, note: '' });
+const visible = defineModel<boolean>({ required: true }); // 彈窗顯示狀態
+const submitting = ref(false); // 送出時的讀取狀態
+const formRef = ref<FormInst | null>(null); // 表單實例
+const form = ref({ id: '', name: props.userName, note: '' }); // 表單資料
 
+// 表單驗證規則
 const rules: FormRules = {
   name: { required: true, message: '必填' },
   note: { required: false, message: '非必填' },
@@ -69,10 +69,10 @@ const handleSubmit = () => {
   reset();
 };
 
+// 重置表單
 const reset = () => {
   // 可清空或還原表單
   form.value.note = '';
-  emit('close-dialog');
 };
 
 // 監聽props並更新表單數值

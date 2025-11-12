@@ -30,7 +30,18 @@ const userStore = useUserStore();
 
 // 每次進入頁面檢查登入狀態
 onMounted(() => {
-  userStore.requestLoginCheck();
+  userLoginCheck();
 });
+
+const userLoginCheck = async () => {
+  const res = await userStore.requestLoginCheck();
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+
+    return;
+  }
+
+  console.log('API:登入驗證成功', res);
+};
 // --------------------------
 </script>

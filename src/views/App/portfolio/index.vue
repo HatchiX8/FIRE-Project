@@ -63,13 +63,12 @@ const isSummaryLoading = computed(() => loadingStore.isLoading(portfolioStore.su
 const isHoldingsLoading = computed(() => loadingStore.isLoading(portfolioStore.holdingsLoading));
 
 onMounted(async () => {
-  await portfolioStore.fetchSummaryData(); // 請求資產配置資料
-  await portfolioStore.fetchHoldingsData(1); // 請求持股配置資料
+  getSummaryData(); // 請求資產配置資料
+  getHoldingsData(1); // 請求持股配置資料
 });
 // -------------------------
 
 // ----------欄位設定----------
-
 const columns: DataTableColumns<StockRow> = [
   {
     title: '股票名稱',
@@ -147,8 +146,7 @@ const columns: DataTableColumns<StockRow> = [
 ];
 
 const expanded = ref<Array<string | number>>([]);
-// ----------斷言----------
-/** ✅ 這三個是「橋接變數」，把 TS 斷言放到 script */
+// 斷言 - ✅ 這三個是「橋接變數」，把 TS 斷言放到 script
 const bridgedColumns = columns as unknown as DataTableColumns<Record<string, unknown>>;
 
 const bridgedData = computed(
@@ -192,6 +190,32 @@ const deleteAssetDlgOpen = ref(false);
 const openDeleteAssetDialog = (stockId: string) => {
   console.log('觸發點擊，ID為:', stockId);
   deleteAssetDlgOpen.value = true;
+};
+// ---------------------------
+
+// ----------API請求----------
+// 請求資產一覽
+const getSummaryData = async () => {
+  const res = await portfolioStore.fetchSummaryData();
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功取得資產配置資料:', res.data);
+  }
+};
+
+// 請求持股一覽
+const getHoldingsData = async (page: number) => {
+  const res = await portfolioStore.fetchHoldingsData(page);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功取得持股配置資料:', res.data);
+  }
 };
 // ---------------------------
 </script>

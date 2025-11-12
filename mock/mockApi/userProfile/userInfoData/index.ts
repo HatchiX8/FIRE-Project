@@ -9,6 +9,7 @@ export const userInfoData = {
       nickname: '沒事多喝水',
       email: 'ogsmj116@gmail.com',
       role: 'user',
+      // role: 'admin',
       avatar_url: null,
       upgrade_status: 'trial',
     },

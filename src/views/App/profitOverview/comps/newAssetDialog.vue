@@ -83,17 +83,19 @@
 // 套件
 import { NInput, NInputNumber } from 'naive-ui';
 // 共用型別
-import type { FormInst, FormRules, FormItemRule } from 'naive-ui';
+import type { FormInst, FormRules } from 'naive-ui';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
 // 商業邏輯
+import { nonNegative, integerOnly, ymdValidator } from '@/utils/index';
 // ---------------------------
 
 // ----------彈窗運作----------
-const visible = defineModel<boolean>({ required: true });
-const submitting = ref(false);
-const formRef = ref<FormInst | null>(null);
-const form = reactive({
+const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
+const submitting = ref(false); // 送出時的讀取狀態
+const formRef = ref<FormInst | null>(null); // 表單實例
+// 表單資料
+const form = ref({
   id: '',
   name: '',
   buyPrice: null,
@@ -107,38 +109,7 @@ const form = reactive({
 // ---------------------------
 
 // ----------表單驗證----------
-// 共用：不可小於 0 驗證器
-const nonNegative =
-  (label = '數值'): FormItemRule['validator'] =>
-  (_rule, v: number) =>
-    v >= 0 ? true : new Error(`${label}不可小於 0`);
-
-// 共用：需為整數驗證（股數用）
-const integerOnly: FormItemRule['validator'] = (_r, v: number) =>
-  Number.isInteger(v) ? true : new Error('須為整數');
-
-function isLeapYear(y: number) {
-  return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
-}
-
-const ymdValidator: FormItemRule['validator'] = (_r, v: string) => {
-  if (typeof v !== 'string') return new Error('日期需為字串');
-  const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!m) return new Error('格式需為 YYYY-MM-DD，例如 2025-09-02');
-
-  const year = Number(m[1]);
-  const month = Number(m[2]);
-  const day = Number(m[3]);
-
-  if (month < 1 || month > 12) return new Error('月份需為 01–12');
-
-  const daysInMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  const maxDay = daysInMonth[month - 1];
-  if (day < 1 || day > maxDay) return new Error(`該月天數為 ${maxDay} 天`);
-
-  return true;
-};
-
+// 表單驗證規則
 const rules: FormRules = {
   name: [{ required: true, message: '必填', trigger: ['input', 'blur'] }],
 
@@ -175,11 +146,13 @@ const rules: FormRules = {
 
 // ---------------------------
 
-// ----------表單提交----------
-async function handleSubmit() {
+// ----------表單事件----------
+// 提交表單
+const handleSubmit = async () => {
   console.log('往外emit去觸發請求API');
-}
+};
 
+// 表單重置
 function reset() {
   // 可清空或還原
 }

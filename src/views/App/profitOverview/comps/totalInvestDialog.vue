@@ -31,14 +31,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+// ----------import----------
+// 套件
 import { NInputNumber } from 'naive-ui';
+// 共用型別
 import type { FormInst, FormRules } from 'naive-ui';
+// 元件
+// 商業邏輯
+// ---------------------------
 
-type Mode = 'deposit' | 'withdraw';
-
-const visible = defineModel<boolean>({ required: true });
-
+// ----------props&emit----------
 const props = defineProps<{
   currentInvest: number;
   loading?: boolean; // 父層 API 進行中傳進來 → 綁到 ok-loading
@@ -49,16 +51,25 @@ const emit = defineEmits<{
   (e: 'submit', payload: { mode: Mode; amount: number }): void;
   (e: 'cancel'): void;
 }>();
+// ------------------------------
 
-const mode = ref<Mode>(props.initialMode ?? 'deposit');
-const isDeposit = computed(() => mode.value === 'deposit');
-const isWithdraw = computed(() => mode.value === 'withdraw');
+// ----------狀態判定----------
+type Mode = 'deposit' | 'withdraw'; // 操作模式
+const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
 
-const dialogTitle = computed(() => (isDeposit.value ? '投入' : '提領'));
-const amountLabel = computed(() => (isDeposit.value ? '投入金額' : '提領金額'));
+const mode = ref<Mode>(props.initialMode ?? 'deposit'); // 當前操作模式
+const isDeposit = computed(() => mode.value === 'deposit'); // 是否為投入模式
+const isWithdraw = computed(() => mode.value === 'withdraw'); // 是否為提領模式
 
-const formRef = ref<FormInst | null>(null);
-const form = reactive({ amount: 0 as number });
+const dialogTitle = computed(() => (isDeposit.value ? '投入' : '提領')); // 對話框標題
+const amountLabel = computed(() => (isDeposit.value ? '投入金額' : '提領金額')); // 金額欄位標題
+
+const loading = computed(() => props.loading === true);
+// ---------------------------
+
+// ----------表單驗證----------
+const formRef = ref<FormInst | null>(null); // 表單實例
+const form = ref({ amount: 0 as number }); // 表單資料
 
 const rules: FormRules = {
   amount: [
@@ -80,30 +91,34 @@ const rules: FormRules = {
   ],
 };
 
-function formatAmount(n: number) {
-  return n.toLocaleString('zh-TW');
-}
+// ---------------------------
 
-async function onOk() {
+// ----------事件函式----------
+// 金額格式化
+const formatAmount = (n: number) => n.toLocaleString('zh-TW');
+
+// 確定送出
+const onOk = async () => {
   await formRef.value?.validate();
-  emit('submit', { mode: mode.value, amount: Number(form.amount) });
-}
+  emit('submit', { mode: mode.value, amount: Number(form.value.amount) });
+};
 
-function onCancel() {
+// 取消關閉
+const onCancel = () => {
   emit('cancel');
   reset();
-}
+};
 
-function reset() {
+// 重置表單
+const reset = () => {
   mode.value = props.initialMode ?? 'deposit';
-  form.amount = 0;
+  form.value.amount = 0;
   formRef.value?.restoreValidation();
-}
+};
 
-// 每次開窗重置（也可改為開窗時帶入草稿值）
+// 每次開窗重置
 watch(visible, (v) => {
   if (v) reset();
 });
-
-const loading = computed(() => props.loading === true);
+// ---------------------------
 </script>
