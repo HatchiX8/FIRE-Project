@@ -4,49 +4,35 @@ import { defineStore } from 'pinia';
 // API
 import { getSummaryData, getHoldingsData } from '@/views/App/portfolio/api/index';
 // 共用型別
-import type { summaryData, StockRow } from '@/views/App/portfolio/api/index';
+import type { summaryData, holdingsData, StockRow } from '@/views/App/portfolio/api/index';
 // 元件
 // 商業邏輯
-// import { getErrorMessage } from '@/utils/api/apiErrorMessage';
+import { handleApiResponse } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
 
 // --------------------------
 
 export const usePortfolioStore = defineStore('portfolio', () => {
-  // -------------------------------
+  // ----------初始化----------
+  const areaLoading = useAreaLoadingStore();
+  // -------------------------
 
-  const loading = useAreaLoadingStore();
-  const error = ref<string | null>(null);
-
-  // ----------資產配置----------
+  // ----------資產一覽----------
   const summaryLoading = 'useSummaryLoading';
   const summaryList = ref<summaryData>({} as summaryData);
 
-  const fetchSummaryData = async () => {
-    loading.start(summaryLoading);
-    error.value = null;
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    try {
-      const res = await getSummaryData();
-      if (res.status) {
-        summaryList.value = res.data;
-        console.log('檢視API回傳', summaryList.value);
-      } else {
-        error.value = res.message || '取得資產配置失敗';
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      loading.stop(summaryLoading);
-    }
-  };
+  const fetchSummaryData = async () =>
+    await handleApiResponse(() => getSummaryData(), {
+      loadingStore: areaLoading,
+      loadingKey: summaryLoading,
+      target: summaryList,
+    });
   // ---------------------------
 
   // ----------持股配置----------
   const holdingsLoading = 'useHoldingsLoading';
+  const holdingsResponse = ref<holdingsData>({} as holdingsData);
   const holdingsList = ref<StockRow[]>([]);
   const holdingsPagination = ref({
     total_page: 0,
@@ -54,25 +40,18 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   });
 
   const fetchHoldingsData = async (page: number) => {
-    loading.start(holdingsLoading);
-    error.value = null;
+    const res = await handleApiResponse(() => getHoldingsData(page), {
+      loadingStore: areaLoading,
+      loadingKey: holdingsLoading,
+      target: holdingsResponse,
+    });
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    try {
-      const res = await getHoldingsData(page);
-      if (res.status) {
-        holdingsList.value = res.data.shareholding;
-        holdingsPagination.value = res.data.pagination;
-        console.log('檢視API回傳', holdingsList.value);
-      } else {
-        error.value = res.message || '取得持股配置失敗';
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      loading.stop(holdingsLoading);
+    if (res.success) {
+      holdingsList.value = res.data?.shareholding ?? [];
+      holdingsPagination.value = res.data?.pagination ?? { total_page: 0, current_page: 0 };
     }
+
+    return res;
   };
   // ---------------------------
 

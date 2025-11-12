@@ -21,7 +21,7 @@ export const getHoldings = {
           updated_at: '2025/08/11',
         },
         {
-          assetId: 'UUID',
+          assetId: 'UUID12',
           stockId: '2330',
           stockName: '台積電',
           quantity: 100,
