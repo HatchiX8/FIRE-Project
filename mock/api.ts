@@ -9,6 +9,7 @@ import {
   userAccountUpgrade,
   dashboardReports,
   dashboardTrendChart,
+  editAssets,
 } from './mockApi/index';
 
 export default [
@@ -20,6 +21,7 @@ export default [
   // ----------投資組合----------
   getSummary,
   getHoldings,
+  editAssets,
   // ---------------------------
 
   // ----------個人中心----------
