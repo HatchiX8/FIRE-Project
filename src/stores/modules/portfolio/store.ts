@@ -2,9 +2,14 @@
 // 套件
 import { defineStore } from 'pinia';
 // API
-import { getSummaryData, getHoldingsData } from '@/views/App/portfolio/api/index';
+import { getSummaryData, getHoldingsData, editStockData } from '@/views/App/portfolio/api/index';
 // 共用型別
-import type { summaryData, holdingsData, StockRow } from '@/views/App/portfolio/api/index';
+import type {
+  SummaryData,
+  HoldingsData,
+  StockRow,
+  EditStockPayload,
+} from '@/views/App/portfolio/api/index';
 // 元件
 // 商業邏輯
 import { handleApiResponse } from '@/utils/index';
@@ -20,7 +25,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
 
   // ----------資產一覽----------
   const summaryLoading = 'useSummaryLoading';
-  const summaryList = ref<summaryData>({} as summaryData);
+  const summaryList = ref<SummaryData>({} as SummaryData);
 
   const fetchSummaryData = async () =>
     await handleApiResponse(() => getSummaryData(), {
@@ -32,7 +37,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
 
   // ----------持股配置----------
   const holdingsLoading = 'useHoldingsLoading';
-  const holdingsResponse = ref<holdingsData>({} as holdingsData);
+  const holdingsResponse = ref<HoldingsData>({} as HoldingsData);
   const holdingsList = ref<StockRow[]>([]);
   const holdingsPagination = ref({
     total_page: 0,
@@ -55,17 +60,35 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   };
   // ---------------------------
 
+  // ----------編輯資產----------
+  const editAssetLoading = 'useEditAssetLoading';
+
+  const patchEditAsset = async (assetId: string, payload: EditStockPayload) => {
+    const res = await handleApiResponse(() => editStockData(assetId, payload), {
+      loadingStore: areaLoading,
+      loadingKey: editAssetLoading,
+    });
+
+    return res;
+  };
+  // ---------------------------
+
   return {
     // ------------資產配置------------
     summaryList,
     fetchSummaryData,
     summaryLoading,
     // -------------------------------
+
     // ------------持股配置------------
     holdingsLoading,
     holdingsList,
     fetchHoldingsData,
     holdingsPagination,
     // -------------------------------
+
+    // ----------編輯持股----------
+    patchEditAsset,
+    // ---------------------------
   };
 });

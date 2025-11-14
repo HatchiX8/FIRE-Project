@@ -1,5 +1,6 @@
+// ----------資產配置----------
 // 資產配置型別
-export interface summaryData {
+export interface SummaryData {
   totalInvest: number;
   cashInvest: number;
   stockValue: number;
@@ -8,9 +9,11 @@ export interface summaryData {
   stockProfit: number;
   profitRate: number;
 }
+// ---------------------------
 
+// ----------持股配置----------
 // 持有股票API資料型別
-export interface holdingsData {
+export interface HoldingsData {
   shareholding: StockRow[];
   pagination: {
     total_page: number;
@@ -28,8 +31,18 @@ export interface StockRow {
   currentPrice: number;
   marketValue: number;
   totalCost: number;
+  stockProfit: number;
   profitRate: number;
   note?: string;
-  created_at: string;
-  updated_at: string;
+  buyDate: string;
 }
+// 編輯股票資訊型別
+export interface EditStockPayload {
+  stockId: string;
+  buyPrice: number;
+  quantity: number;
+  totalCost: number;
+  buyDate: string;
+  note: string;
+}
+// ---------------------------

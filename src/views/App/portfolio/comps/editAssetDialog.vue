@@ -11,41 +11,30 @@
         label="股票代碼"
         path="name"
         :component="NInput"
-        v-model="form.name"
+        v-model="form.stockId"
         class="w-90%"
-        :component-props="{ disabled: true }"
       />
       <baseForm
         label="買進價格"
         path="avgPrice"
         :component="NInputNumber"
-        v-model="form.avgPrice"
-        class="w-90%"
-        :component-props="{ disabled: true }"
-      />
-      <baseForm
-        label="損益平衡點"
-        path="buyPrice"
-        :component="NInputNumber"
         v-model="form.buyPrice"
         class="w-90%"
-        :component-props="{ disabled: true }"
       />
+
       <baseForm
         label="買進股數"
         path="quantity"
         :component="NInputNumber"
         v-model="form.quantity"
         class="w-90%"
-        :component-props="{ disabled: true }"
       />
       <baseForm
         label="買進成本"
-        path="buyCost"
+        path="totalCost"
         :component="NInputNumber"
-        v-model="form.buyCost"
+        v-model="form.totalCost"
         class="w-90%"
-        :component-props="{ disabled: true }"
       />
       <baseForm
         label="買進日期"
@@ -53,7 +42,6 @@
         :component="NInput"
         v-model="form.buyDate"
         class="w-90%"
-        :component-props="{ disabled: true }"
       />
       <baseForm
         label="備註"
@@ -79,25 +67,34 @@
 import { NInput, NInputNumber } from 'naive-ui';
 // 共用型別
 import type { FormInst, FormRules } from 'naive-ui';
+import type { EditStockPayload, StockRow } from '../api/index';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
 // 商業邏輯
 // ---------------------------
+
+// ----------props&emit----------
+const props = defineProps<{
+  assetValue: StockRow;
+}>();
+
+const emit = defineEmits<{
+  (e: 'submitEditAsset', payload: { assetId: string | null; formValue: EditStockPayload }): void;
+}>();
+// ------------------------------
 
 // ----------彈窗運作----------
 const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
 const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
-const form = ref({
-  id: '',
-  name: '',
-  buyPrice: 0,
-  avgPrice: 0,
-  quantity: null,
-  buyCost: null,
-  buyDate: '',
-  note: '',
+const form = ref<EditStockPayload>({
+  stockId: props.assetValue.stockId || '',
+  buyPrice: props.assetValue.buyPrice || 0,
+  quantity: props.assetValue.quantity || 0,
+  totalCost: props.assetValue.totalCost || 0,
+  buyDate: props.assetValue.buyDate || '',
+  note: props.assetValue.note || '',
 });
 // ---------------------------
 
@@ -108,8 +105,29 @@ const rules: FormRules = {
 // ---------------------------
 
 // ----------表單事件----------
+// 當父層傳入 assetValue 時把資料複製到 local form
+watch(
+  () => props.assetValue,
+  (v) => {
+    if (v) {
+      form.value = {
+        stockId: v.stockId ?? '',
+        buyPrice: v.buyPrice ?? 0,
+        quantity: v.quantity ?? 0,
+        totalCost: v.totalCost ?? 0,
+        buyDate: v.buyDate ?? '',
+        note: v.note ?? '',
+      };
+    } else {
+      form.value = { stockId: '', buyPrice: 0, quantity: 0, totalCost: 0, buyDate: '', note: '' };
+    }
+  },
+  { immediate: true }
+);
+
 // 提交表單
 const handleSubmit = async () => {
+  emit('submitEditAsset', { assetId: props.assetValue.assetId, formValue: form.value });
   console.log('往外emit去觸發請求API');
 };
 

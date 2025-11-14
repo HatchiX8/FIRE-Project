@@ -149,7 +149,7 @@ const columns: DataTableColumns<TradeItem> = [
           h(
             baseButton,
             { size: 'small', color: 'success', onClick: () => openEditAssetDialog(row.stockId) },
-            { default: () => '編輯備註' }
+            { default: () => '編輯' }
           ),
           h(
             baseButton,

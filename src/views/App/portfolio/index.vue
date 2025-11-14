@@ -27,7 +27,12 @@
   </div>
   <newAssetDialog v-model="newAssetDlgOpen" :loading="submitting" />
   <sellAssetDialog v-model="sellAssetDialogOpen" :loading="submitting" />
-  <editAssetDialog v-model="editAssetDlgOpen" :loading="submitting" />
+  <editAssetDialog
+    :assetValue="selectedAsset"
+    v-model="editAssetDlgOpen"
+    :loading="submitting"
+    @submitEditAsset="requestEditAsset"
+  />
   <deleteAssetDialog v-model="deleteAssetDlgOpen" :loading="submitting" />
 </template>
 <script setup lang="ts">
@@ -35,7 +40,7 @@
 // 套件
 // 共用型別
 import { type DataTableColumns } from 'naive-ui';
-import type { StockRow } from './api/index';
+import type { StockRow, EditStockPayload } from './api/index';
 // 元件
 import {
   trendChart,
@@ -62,8 +67,10 @@ const isSummaryLoading = computed(() => loadingStore.isLoading(portfolioStore.su
 
 const isHoldingsLoading = computed(() => loadingStore.isLoading(portfolioStore.holdingsLoading));
 
+const selectedAsset = ref<StockRow>({} as StockRow); // 紀錄當前所選擇的資產ID
+
 onMounted(async () => {
-  getSummaryData(); // 請求資產配置資料
+  await getSummaryData(); // 請求資產配置資料
   getHoldingsData(1); // 請求持股配置資料
 });
 // -------------------------
@@ -78,7 +85,7 @@ const columns: DataTableColumns<StockRow> = [
     render: (row: StockRow) => row.stockName,
   },
   {
-    title: '市價/持有均價',
+    title: '市價/買進價格',
     key: 'currentPrice', // key 可以對應一個欄位，但顯示內容自訂
     align: 'center',
     minWidth: 20,
@@ -112,10 +119,26 @@ const columns: DataTableColumns<StockRow> = [
     renderExpand: (row) =>
       h('div', { class: ' flex' }, [
         h('div', { class: 'mt-2 flex flex-col gap-2 p-3 text-left' }, [
-          h('div', `總市值：${row.marketValue.toLocaleString()}`),
           h('div', `總成本：${row.totalCost.toLocaleString()}`),
-          h('div', `建倉日期：${row.created_at}`),
-          h('div', `最後一筆更新日期：${row.updated_at}`),
+          h('div', `總市值：${row.marketValue.toLocaleString()}`),
+          // 未實現損益樣式較複雜，改用自執行函式處理
+          (() => {
+            const val = typeof row.stockProfit === 'number' ? row.stockProfit : null;
+            const cls =
+              val === null
+                ? 'text-neutral_300'
+                : val > 0
+                  ? 'text-danger'
+                  : val < 0
+                    ? 'text-success'
+                    : 'text-neutral_300';
+            return h('div', { class: 'flex items-center' }, [
+              h('span', '未實現損益：'),
+              h('span', { class: `${cls} ml-1` }, val !== null ? val.toLocaleString() : '-'),
+            ]);
+          })(),
+
+          h('div', `建倉日期：${row.buyDate}`),
           h('div', `備註：${row.note ?? '-'}`),
           h(
             baseButton,
@@ -123,7 +146,7 @@ const columns: DataTableColumns<StockRow> = [
               class: 'w-20',
               size: 'small',
               color: 'primary',
-              onClick: () => openSellAssetDialog(row.stockId),
+              onClick: () => openSellAssetDialog(row.assetId),
             },
             { default: () => '賣出' }
           ),
@@ -132,12 +155,12 @@ const columns: DataTableColumns<StockRow> = [
         h('div', { class: 'mt-2 ml-auto flex flex-col gap-4' }, [
           h(
             baseButton,
-            { size: 'small', color: 'success', onClick: () => openEditAssetDialog(row.stockId) },
-            { default: () => '編輯備註' }
+            { size: 'small', color: 'success', onClick: () => openEditAssetDialog(row) },
+            { default: () => '編輯' }
           ),
           h(
             baseButton,
-            { size: 'small', color: 'danger', onClick: () => openDeleteAssetDialog(row.stockId) },
+            { size: 'small', color: 'danger', onClick: () => openDeleteAssetDialog(row.assetId) },
             { default: () => '刪除資產' }
           ),
         ]),
@@ -178,8 +201,9 @@ const sellAssetDialogOpen = ref(false);
 // ----------編輯資產----------
 const editAssetDlgOpen = ref(false);
 
-const openEditAssetDialog = (stockId: string) => {
-  console.log('觸發點擊，ID為:', stockId);
+const openEditAssetDialog = (assetRow: StockRow) => {
+  selectedAsset.value = assetRow;
+
   editAssetDlgOpen.value = true;
 };
 // ---------------------------
@@ -215,6 +239,27 @@ const getHoldingsData = async (page: number) => {
     return;
   } else {
     console.log('✅ 成功取得持股配置資料:', res.data);
+  }
+};
+
+const requestEditAsset = async (payload: {
+  assetId: string | null;
+  formValue: EditStockPayload;
+}) => {
+  const { assetId, formValue } = payload;
+
+  if (!assetId) {
+    console.log('❌ 編輯資產失敗，缺少 assetId');
+    return;
+  }
+
+  const res = await portfolioStore.patchEditAsset(assetId, formValue);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功編輯資產:', res.data);
   }
 };
 // ---------------------------

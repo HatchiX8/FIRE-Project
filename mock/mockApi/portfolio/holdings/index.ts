@@ -3,7 +3,7 @@ export const getHoldings = {
   method: 'get',
   response: () => ({
     status: true,
-    message: '成功取得使用者資料',
+    message: '成功取得持股配置',
     data: {
       shareholding: [
         {
@@ -11,28 +11,28 @@ export const getHoldings = {
           stockId: '2344',
           stockName: '華邦電',
           quantity: 100,
-          buyPrice: 581.62,
+          buyPrice: 580,
           currentPrice: 600,
           marketValue: 60000,
           totalCost: 58162,
+          stockProfit: 1838,
           profitRate: 3.16,
           note: '跌破月線停損停利',
-          created_at: '2025/08/11',
-          updated_at: '2025/08/11',
+          buyDate: '2025/08/11',
         },
         {
           assetId: 'UUID12',
           stockId: '2330',
           stockName: '台積電',
           quantity: 100,
-          buyPrice: 581.62,
+          buyPrice: 580,
           currentPrice: 600,
           marketValue: 60000,
           totalCost: 58162,
+          stockProfit: 1838,
           profitRate: 3.16,
           note: '跌破月線停損停利',
-          created_at: '2025/08/11',
-          updated_at: '2025/08/11',
+          buyDate: '2025/08/11',
         },
       ],
       pagination: {
@@ -40,5 +40,14 @@ export const getHoldings = {
         current_page: 1,
       },
     },
+  }),
+};
+
+export const editAssets = {
+  url: '/api/v1/assets/edit-assets/:assetId',
+  method: 'patch',
+  response: () => ({
+    status: true,
+    message: '編輯成功',
   }),
 };
