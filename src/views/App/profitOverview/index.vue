@@ -250,6 +250,5 @@ const getTotalTradesData = async (year: number, month: number, page: number) => 
     console.log('✅ 成功取得損益概況資料:', res.data);
   }
 };
-
 // ---------------------------
 </script>
