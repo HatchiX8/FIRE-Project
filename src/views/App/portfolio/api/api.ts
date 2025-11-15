@@ -9,7 +9,8 @@ export const getSummaryData = async () => {
 };
 // -------------------------------------
 
-// ----------取得使用者股票配置----------
+// ----------持股配置----------
+// 取得使用者持股配置
 export const getHoldingsData = async (page: number) => {
   const res = await instance.get<apiResponse<HoldingsData>>(
     `/api/v1/users/portfolio/holdings?page=${page}`
@@ -17,11 +18,15 @@ export const getHoldingsData = async (page: number) => {
   return res.data;
 };
 
+// 編輯使用者持股配置
 export const editStockData = async (assetId: string, payload: EditStockPayload) => {
-  const res = await instance.patch<apiResponse<null>>(
-    `/api/v1/assets/edit-assets/${assetId}`,
-    payload
-  );
+  const res = await instance.patch<apiResponse<null>>(`/api/v1/assets/${assetId}`, payload);
   return res.data;
 };
-// -------------------------------------
+
+// 刪除使用者持股配置
+export const deleteStockData = async (assetId: string) => {
+  const res = await instance.delete<apiResponse<null>>(`/api/v1/assets/${assetId}`);
+  return res.data;
+};
+// ---------------------------

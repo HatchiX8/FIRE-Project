@@ -44,10 +44,19 @@ export const getHoldings = {
 };
 
 export const editAssets = {
-  url: '/api/v1/assets/edit-assets/:assetId',
+  url: '/api/v1/assets/:assetId',
   method: 'patch',
   response: () => ({
     status: true,
     message: '編輯成功',
+  }),
+};
+
+export const deleteAssets = {
+  url: '/api/v1/assets/:assetId',
+  method: 'delete',
+  response: () => ({
+    status: true,
+    message: '刪除成功',
   }),
 };

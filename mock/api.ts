@@ -10,6 +10,7 @@ import {
   dashboardReports,
   dashboardTrendChart,
   editAssets,
+  deleteAssets,
 } from './mockApi/index';
 
 export default [
@@ -22,6 +23,7 @@ export default [
   getSummary,
   getHoldings,
   editAssets,
+  deleteAssets,
   // ---------------------------
 
   // ----------個人中心----------

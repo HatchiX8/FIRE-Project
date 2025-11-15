@@ -23,21 +23,21 @@
       />
 
       <baseForm
-        label="買進股數"
+        label="持有股數"
         path="quantity"
         :component="NInputNumber"
         v-model="form.quantity"
         class="w-90%"
       />
       <baseForm
-        label="買進成本"
+        label="總成本"
         path="totalCost"
         :component="NInputNumber"
         v-model="form.totalCost"
         class="w-90%"
       />
       <baseForm
-        label="買進日期"
+        label="日期"
         path="buyDate"
         :component="NInput"
         v-model="form.buyDate"

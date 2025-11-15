@@ -33,7 +33,12 @@
     :loading="submitting"
     @submitEditAsset="requestEditAsset"
   />
-  <deleteAssetDialog v-model="deleteAssetDlgOpen" :loading="submitting" />
+  <deleteAssetDialog
+    :assetValue="selectedAsset"
+    v-model="deleteAssetDlgOpen"
+    :loading="submitting"
+    @submitDeleteAsset="requestDeleteAsset"
+  />
 </template>
 <script setup lang="ts">
 // ----------import----------
@@ -68,6 +73,7 @@ const isSummaryLoading = computed(() => loadingStore.isLoading(portfolioStore.su
 const isHoldingsLoading = computed(() => loadingStore.isLoading(portfolioStore.holdingsLoading));
 
 const selectedAsset = ref<StockRow>({} as StockRow); // 紀錄當前所選擇的資產ID
+const submitting = ref(false); // 表單提交狀態
 
 onMounted(async () => {
   await getSummaryData(); // 請求資產配置資料
@@ -160,7 +166,7 @@ const columns: DataTableColumns<StockRow> = [
           ),
           h(
             baseButton,
-            { size: 'small', color: 'danger', onClick: () => openDeleteAssetDialog(row.assetId) },
+            { size: 'small', color: 'danger', onClick: () => openDeleteAssetDialog(row) },
             { default: () => '刪除資產' }
           ),
         ]),
@@ -179,40 +185,47 @@ const bridgedData = computed(
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).assetId;
 // ------------------------
 
+// ----------工具函式----------
+// 清除所選資產
+const clearSelectedAsset = () => {
+  selectedAsset.value = {} as StockRow;
+  console.log('觸發清除', selectedAsset.value);
+};
+// ---------------------------
+
 // ----------新增資產----------
-const submitting = ref(false); // 提交狀態
+const newAssetDlgOpen = ref(false); // 新增資產彈窗開關
 
 const openAssetDialog = () => {
   newAssetDlgOpen.value = true;
 };
-
-const newAssetDlgOpen = ref(false);
 // ---------------------------
 
 // ----------賣出資產----------
+const sellAssetDialogOpen = ref(false); // 賣出資產彈窗開關
+
 const openSellAssetDialog = (stockId: string) => {
   console.log('觸發點擊，ID為:', stockId);
   sellAssetDialogOpen.value = true;
 };
-
-const sellAssetDialogOpen = ref(false);
 // ---------------------------
 
 // ----------編輯資產----------
-const editAssetDlgOpen = ref(false);
+const editAssetDlgOpen = ref(false); // 編輯資產彈窗開關
 
 const openEditAssetDialog = (assetRow: StockRow) => {
+  clearSelectedAsset();
   selectedAsset.value = assetRow;
-
   editAssetDlgOpen.value = true;
 };
 // ---------------------------
 
 // ----------刪除資產----------
-const deleteAssetDlgOpen = ref(false);
+const deleteAssetDlgOpen = ref(false); // 刪除資產彈窗開關
 
-const openDeleteAssetDialog = (stockId: string) => {
-  console.log('觸發點擊，ID為:', stockId);
+const openDeleteAssetDialog = (assetRow: StockRow) => {
+  clearSelectedAsset();
+  selectedAsset.value = assetRow;
   deleteAssetDlgOpen.value = true;
 };
 // ---------------------------
@@ -242,6 +255,7 @@ const getHoldingsData = async (page: number) => {
   }
 };
 
+// 請求編輯資產
 const requestEditAsset = async (payload: {
   assetId: string | null;
   formValue: EditStockPayload;
@@ -253,15 +267,30 @@ const requestEditAsset = async (payload: {
     return;
   }
 
-  const res = await portfolioStore.patchEditAsset(assetId, formValue);
+  const res = await portfolioStore.editAsset(assetId, formValue);
 
   if (!res.success) {
     // 這裡可以根據需求做錯誤提示或重導
     return;
   } else {
     console.log('✅ 成功編輯資產:', res.data);
+    clearSelectedAsset();
+    editAssetDlgOpen.value = false;
+  }
+};
+
+// 請求刪除資產
+const requestDeleteAsset = async (assetId: string) => {
+  const res = await portfolioStore.deleteAsset(assetId);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功刪除資產:', res.data);
+    clearSelectedAsset();
+    deleteAssetDlgOpen.value = false;
   }
 };
 // ---------------------------
-// 測試git用註記
 </script>
