@@ -13,6 +13,7 @@
         :component="NInput"
         v-model="form.stockId"
         class="w-90%"
+        :component-props="{ disabled: true }"
       />
       <baseForm
         label="買進價格"
@@ -20,6 +21,7 @@
         :component="NInputNumber"
         v-model="form.buyPrice"
         class="w-90%"
+        :component-props="{ disabled: true }"
       />
 
       <baseForm
@@ -28,6 +30,7 @@
         :component="NInputNumber"
         v-model="form.quantity"
         class="w-90%"
+        :component-props="{ disabled: true }"
       />
       <baseForm
         label="總成本"
@@ -35,6 +38,7 @@
         :component="NInputNumber"
         v-model="form.totalCost"
         class="w-90%"
+        :component-props="{ disabled: true }"
       />
       <baseForm
         label="總市值"
@@ -42,6 +46,7 @@
         :component="NInputNumber"
         v-model="form.marketValue"
         class="w-90%"
+        :component-props="{ disabled: true }"
       />
       <baseForm
         label="日期"
@@ -49,6 +54,7 @@
         :component="NInput"
         v-model="form.buyDate"
         class="w-90%"
+        :component-props="{ disabled: true }"
       />
       <baseForm
         label="備註"
@@ -62,6 +68,7 @@
           maxlength: 200,
           showCount: true,
           placeholder: '請輸入備註（可留空）',
+          disabled: true,
         }"
       />
     </n-form>
