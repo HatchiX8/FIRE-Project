@@ -26,7 +26,12 @@
     /></loadingAreaOverlay>
   </div>
   <newAssetDialog v-model="newAssetDlgOpen" :loading="submitting" />
-  <sellAssetDialog v-model="sellAssetDialogOpen" :loading="submitting" />
+  <sellAssetDialog
+    :assetValue="selectedAsset"
+    v-model="sellAssetDialogOpen"
+    :loading="submitting"
+    @submitSellAsset="requestSellAsset"
+  />
   <editAssetDialog
     :assetValue="selectedAsset"
     v-model="editAssetDlgOpen"
@@ -45,7 +50,7 @@
 // 套件
 // 共用型別
 import { type DataTableColumns } from 'naive-ui';
-import type { StockRow, EditStockPayload } from './api/index';
+import type { StockRow, EditStockPayload, SellStockPayload } from './api/index';
 // 元件
 import {
   trendChart,
@@ -55,9 +60,9 @@ import {
   deleteAssetDialog,
 } from './comps/index';
 import { baseTable, baseButton } from '@/components/index';
-import { formatPriceSmart } from '@/utils/index';
 import { loadingAreaOverlay } from '@/components/modules/loadingModule/index';
 // 商業邏輯
+import { formatPriceSmart } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
 import { usePortfolioStore } from '@/stores/index';
@@ -152,7 +157,7 @@ const columns: DataTableColumns<StockRow> = [
               class: 'w-20',
               size: 'small',
               color: 'primary',
-              onClick: () => openSellAssetDialog(row.assetId),
+              onClick: () => openSellAssetDialog(row),
             },
             { default: () => '賣出' }
           ),
@@ -204,8 +209,9 @@ const openAssetDialog = () => {
 // ----------賣出資產----------
 const sellAssetDialogOpen = ref(false); // 賣出資產彈窗開關
 
-const openSellAssetDialog = (stockId: string) => {
-  console.log('觸發點擊，ID為:', stockId);
+const openSellAssetDialog = (assetRow: StockRow) => {
+  clearSelectedAsset();
+  selectedAsset.value = assetRow;
   sellAssetDialogOpen.value = true;
 };
 // ---------------------------
@@ -273,7 +279,7 @@ const requestEditAsset = async (payload: {
     // 這裡可以根據需求做錯誤提示或重導
     return;
   } else {
-    console.log('✅ 成功編輯資產:', res.data);
+    console.log('✅ 成功編輯資產:', res.success);
     clearSelectedAsset();
     editAssetDlgOpen.value = false;
   }
@@ -287,9 +293,33 @@ const requestDeleteAsset = async (assetId: string) => {
     // 這裡可以根據需求做錯誤提示或重導
     return;
   } else {
-    console.log('✅ 成功刪除資產:', res.data);
+    console.log('✅ 成功刪除資產:', res.success);
     clearSelectedAsset();
     deleteAssetDlgOpen.value = false;
+  }
+};
+
+// 請求賣出資產
+const requestSellAsset = async (payload: {
+  assetId: string | null;
+  formValue: SellStockPayload;
+}) => {
+  const { assetId, formValue } = payload;
+
+  if (!assetId) {
+    console.log('❌ 編輯資產失敗，缺少 assetId');
+    return;
+  }
+
+  const res = await portfolioStore.sellAsset(assetId, formValue);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功賣出資產:', res.success);
+    clearSelectedAsset();
+    sellAssetDialogOpen.value = false;
   }
 };
 // ---------------------------

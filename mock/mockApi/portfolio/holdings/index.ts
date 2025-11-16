@@ -60,3 +60,12 @@ export const deleteAssets = {
     message: '刪除成功',
   }),
 };
+
+export const sellAssets = {
+  url: '/api/v1/assets/:assetId',
+  method: 'post',
+  response: () => ({
+    status: true,
+    message: '賣出成功',
+  }),
+};

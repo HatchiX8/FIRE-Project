@@ -7,6 +7,7 @@ import {
   getHoldingsData,
   editStockData,
   deleteStockData,
+  sellStockData,
 } from '@/views/App/portfolio/api/index';
 // 共用型別
 import type {
@@ -14,6 +15,7 @@ import type {
   HoldingsData,
   StockRow,
   EditStockPayload,
+  SellStockPayload,
 } from '@/views/App/portfolio/api/index';
 // 元件
 // 商業邏輯
@@ -91,6 +93,19 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   };
   // ---------------------------
 
+  // ----------賣出資產----------
+  const sellAssetLoading = 'useSellAssetLoading';
+
+  const sellAsset = async (assetId: string, payload: SellStockPayload) => {
+    const res = await handleApiResponse(() => sellStockData(assetId, payload), {
+      loadingStore: areaLoading,
+      loadingKey: sellAssetLoading,
+    });
+
+    return res;
+  };
+  // ---------------------------
+
   return {
     // ------------資產配置------------
     summaryList,
@@ -108,6 +123,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     // ----------持股操作----------
     editAsset,
     deleteAsset,
+    sellAsset,
     // ---------------------------
   };
 });

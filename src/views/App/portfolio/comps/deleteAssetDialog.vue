@@ -1,11 +1,5 @@
 <template>
-  <baseDialog
-    v-model="visible"
-    title="刪除資產"
-    :ok-loading="submitting"
-    @ok="handleSubmit"
-    @cancel="reset"
-  >
+  <baseDialog v-model="visible" title="刪除資產" :ok-loading="submitting" @ok="handleSubmit">
     <n-form ref="formRef" :model="form" label-width="80">
       <baseForm
         label="股票代碼"
@@ -152,13 +146,8 @@ watch(
 
 // 提交表單
 const handleSubmit = async () => {
-  console.log('往外emit去觸發請求API');
   emit('submitDeleteAsset', props.assetValue.assetId || '');
 };
 
-// 表單重置
-function reset() {
-  // 可清空或還原
-}
 // ---------------------------
 </script>

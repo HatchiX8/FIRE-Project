@@ -1,11 +1,5 @@
 <template>
-  <baseDialog
-    v-model="visible"
-    title="編輯資產"
-    :ok-loading="submitting"
-    @ok="handleSubmit"
-    @cancel="reset"
-  >
+  <baseDialog v-model="visible" title="編輯資產" :ok-loading="submitting" @ok="handleSubmit">
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
       <baseForm
         label="股票代碼"
@@ -128,12 +122,7 @@ watch(
 // 提交表單
 const handleSubmit = async () => {
   emit('submitEditAsset', { assetId: props.assetValue.assetId, formValue: form.value });
-  console.log('往外emit去觸發請求API');
 };
 
-// 表單重置
-function reset() {
-  // 可清空或還原
-}
 // ---------------------------
 </script>

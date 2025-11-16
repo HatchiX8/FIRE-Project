@@ -45,4 +45,13 @@ export interface EditStockPayload {
   buyDate: string;
   note: string;
 }
+
+// 賣出股票資訊型別
+export interface SellStockPayload {
+  sellPrice: number | null;
+  sellQty: number | null;
+  actualRealizedPnl: number | null;
+  sellDate: string;
+  note: string;
+}
 // ---------------------------
