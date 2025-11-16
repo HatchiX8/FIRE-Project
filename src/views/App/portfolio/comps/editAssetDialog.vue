@@ -1,11 +1,5 @@
 <template>
-  <baseDialog
-    v-model="visible"
-    title="編輯資產"
-    :ok-loading="submitting"
-    @ok="handleSubmit"
-    @cancel="reset"
-  >
+  <baseDialog v-model="visible" title="編輯資產" :ok-loading="submitting" @ok="handleSubmit">
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
       <baseForm
         label="股票代碼"
@@ -23,21 +17,21 @@
       />
 
       <baseForm
-        label="買進股數"
+        label="持有股數"
         path="quantity"
         :component="NInputNumber"
         v-model="form.quantity"
         class="w-90%"
       />
       <baseForm
-        label="買進成本"
+        label="總成本"
         path="totalCost"
         :component="NInputNumber"
         v-model="form.totalCost"
         class="w-90%"
       />
       <baseForm
-        label="買進日期"
+        label="日期"
         path="buyDate"
         :component="NInput"
         v-model="form.buyDate"
@@ -128,12 +122,7 @@ watch(
 // 提交表單
 const handleSubmit = async () => {
   emit('submitEditAsset', { assetId: props.assetValue.assetId, formValue: form.value });
-  console.log('往外emit去觸發請求API');
 };
 
-// 表單重置
-function reset() {
-  // 可清空或還原
-}
 // ---------------------------
 </script>

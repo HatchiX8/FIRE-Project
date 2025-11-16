@@ -2,13 +2,20 @@
 // 套件
 import { defineStore } from 'pinia';
 // API
-import { getSummaryData, getHoldingsData, editStockData } from '@/views/App/portfolio/api/index';
+import {
+  getSummaryData,
+  getHoldingsData,
+  editStockData,
+  deleteStockData,
+  sellStockData,
+} from '@/views/App/portfolio/api/index';
 // 共用型別
 import type {
   SummaryData,
   HoldingsData,
   StockRow,
   EditStockPayload,
+  SellStockPayload,
 } from '@/views/App/portfolio/api/index';
 // 元件
 // 商業邏輯
@@ -63,10 +70,36 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   // ----------編輯資產----------
   const editAssetLoading = 'useEditAssetLoading';
 
-  const patchEditAsset = async (assetId: string, payload: EditStockPayload) => {
+  const editAsset = async (assetId: string, payload: EditStockPayload) => {
     const res = await handleApiResponse(() => editStockData(assetId, payload), {
       loadingStore: areaLoading,
       loadingKey: editAssetLoading,
+    });
+
+    return res;
+  };
+  // ---------------------------
+
+  // ----------刪除資產----------
+  const deleteAssetLoading = 'useDeleteAssetLoading';
+
+  const deleteAsset = async (assetId: string) => {
+    const res = await handleApiResponse(() => deleteStockData(assetId), {
+      loadingStore: areaLoading,
+      loadingKey: deleteAssetLoading,
+    });
+
+    return res;
+  };
+  // ---------------------------
+
+  // ----------賣出資產----------
+  const sellAssetLoading = 'useSellAssetLoading';
+
+  const sellAsset = async (assetId: string, payload: SellStockPayload) => {
+    const res = await handleApiResponse(() => sellStockData(assetId, payload), {
+      loadingStore: areaLoading,
+      loadingKey: sellAssetLoading,
     });
 
     return res;
@@ -87,8 +120,10 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     holdingsPagination,
     // -------------------------------
 
-    // ----------編輯持股----------
-    patchEditAsset,
+    // ----------持股操作----------
+    editAsset,
+    deleteAsset,
+    sellAsset,
     // ---------------------------
   };
 });
