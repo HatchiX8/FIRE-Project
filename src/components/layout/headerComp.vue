@@ -38,11 +38,12 @@
 import { baseButton } from '@/components/index';
 // 商業邏輯
 // store
-import { useUserStore } from '@/stores/modules/user/store';
+import { useUserStore, useStockMetaStore } from '@/stores/index';
 // ---------------------------
 
 // ----------初始化-----------
 const userStore = useUserStore();
+const stockMetaStore = useStockMetaStore();
 
 const userLogin = async () => {
   const res = await userStore.requestLogin();
@@ -51,6 +52,7 @@ const userLogin = async () => {
     return;
   }
   console.log('API:登入成功', res);
+  await stockMetaStore.fetchStockMeta();
 };
 // ---------------------------
 </script>
