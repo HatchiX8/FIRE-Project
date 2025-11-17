@@ -2,6 +2,7 @@ import { MockMethod } from 'vite-plugin-mock';
 import {
   login,
   loginCheck,
+  getStockInfo,
   getSummary,
   getHoldings,
   userInfoData,
@@ -19,6 +20,10 @@ export default [
   login, // 登入Api
   loginCheck, // 登入檢查Api
   // -----------------------------
+
+  // ----------股票資訊----------
+  getStockInfo,
+  // ---------------------------
 
   // ----------投資組合----------
   getSummary,
