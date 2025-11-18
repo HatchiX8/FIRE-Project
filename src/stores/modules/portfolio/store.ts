@@ -21,7 +21,7 @@ import type {
 // 商業邏輯
 import { handleApiResponse } from '@/utils/index';
 // store
-import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
+import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 
 // --------------------------
 

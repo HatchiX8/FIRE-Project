@@ -64,10 +64,10 @@ import {
   deleteAssetDialog,
 } from './comps/index';
 import { baseButton, baseTable } from '@/components/index';
-import { loadingAreaOverlay } from '@/components/modules/loadingModule/index';
+import { loadingAreaOverlay } from '@/modules/loadingModule/index';
 // 商業邏輯
 // store
-import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
+import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 import { useProfitOverviewStore } from '@/stores/index';
 // ---------------------------
 

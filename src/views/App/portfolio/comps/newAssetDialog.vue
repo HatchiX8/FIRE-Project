@@ -1,20 +1,22 @@
 <template>
-  <baseDialog
-    v-model="visible"
-    title="新增資產"
-    :ok-loading="submitting"
-    @ok="handleSubmit"
-    @cancel="reset"
-  >
+  <baseDialog v-model="visible" title="新增資產" :ok-loading="submitting" @ok="handleSubmit">
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
-      <baseForm
+      <stockInputModule
+        label="股票代碼"
+        path="stock"
+        v-model="form.stockId"
+        :options="stockOptions"
+        class="w-90%"
+        :component-props="{ placeholder: '請輸入股票代碼或名稱' }"
+      />
+      <!-- <baseForm
         label="股票代碼"
         path="name"
         :component="NInput"
         v-model="form.name"
         class="w-90%"
         :component-props="{ placeholder: '請輸入股票代碼或名稱' }"
-      />
+      /> -->
       <baseForm
         label="買進價格"
         path="buyPrice"
@@ -78,6 +80,7 @@ import { NInput, NInputNumber } from 'naive-ui';
 import type { FormInst, FormRules } from 'naive-ui';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
+import { stockInputModule } from '@/modules/index';
 // 商業邏輯
 import { nonNegative, integerOnly, ymdValidator } from '@/utils/index';
 // ---------------------------
@@ -88,6 +91,7 @@ const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref({
+  stockId: { stockId: '', stockName: '' } as StockOption,
   id: '',
   name: '',
   buyPrice: null,
@@ -98,6 +102,10 @@ const form = ref({
   note: '',
 });
 // ---------------------------
+interface StockOption {
+  stockId: string;
+  stockName: string;
+}
 
 // ----------表單驗證----------
 // 表單驗證規則
@@ -135,14 +143,22 @@ const rules: FormRules = {
 // ---------------------------
 
 // ----------表單事件----------
+
+interface StockOption {
+  stockId: string;
+  stockName: string;
+}
+
+const stockOptions = ref<StockOption[]>([
+  { stockId: '2330', stockName: '台積電' },
+  { stockId: '2317', stockName: '鴻海' },
+  // 真實狀況可以從你的股票資訊 API 拉
+]);
+
 // 提交表單
 const handleSubmit = async () => {
   console.log('往外emit去觸發請求API');
 };
 
-// 表單重置
-function reset() {
-  // 可清空或還原
-}
 // ---------------------------
 </script>
