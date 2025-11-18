@@ -60,11 +60,11 @@ import {
   deleteAssetDialog,
 } from './comps/index';
 import { baseTable, baseButton } from '@/components/index';
-import { loadingAreaOverlay } from '@/components/modules/loadingModule/index';
+import { loadingAreaOverlay } from '@/modules/loadingModule/index';
 // 商業邏輯
 import { formatPriceSmart } from '@/utils/index';
 // store
-import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
+import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 import { usePortfolioStore } from '@/stores/index';
 // ---------------------------
 
