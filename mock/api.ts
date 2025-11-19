@@ -10,6 +10,7 @@ import {
   userAccountUpgrade,
   dashboardReports,
   dashboardTrendChart,
+  addAssets,
   editAssets,
   deleteAssets,
   sellAssets,
@@ -28,6 +29,7 @@ export default [
   // ----------投資組合----------
   getSummary,
   getHoldings,
+  addAssets,
   editAssets,
   deleteAssets,
   sellAssets,

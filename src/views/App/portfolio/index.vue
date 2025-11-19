@@ -25,7 +25,11 @@
         :page-size="10"
     /></loadingAreaOverlay>
   </div>
-  <newAssetDialog v-model="newAssetDlgOpen" :loading="submitting" />
+  <newAssetDialog
+    :stockOptions="stockMetaStore.stocks"
+    v-model="newAssetDlgOpen"
+    :loading="submitting"
+  />
   <sellAssetDialog
     :assetValue="selectedAsset"
     v-model="sellAssetDialogOpen"
@@ -65,12 +69,13 @@ import { loadingAreaOverlay } from '@/modules/loadingModule/index';
 import { formatPriceSmart } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
-import { usePortfolioStore } from '@/stores/index';
+import { usePortfolioStore, useStockMetaStore } from '@/stores/index';
 // ---------------------------
 
 // ----------初始化----------
 const portfolioStore = usePortfolioStore(); // 投資組合 store
 const loadingStore = useAreaLoadingStore(); // 讀取狀態 store
+const stockMetaStore = useStockMetaStore(); // 股票資訊 store
 
 // 獲取資金配置讀取狀態
 const isSummaryLoading = computed(() => loadingStore.isLoading(portfolioStore.summaryLoading));

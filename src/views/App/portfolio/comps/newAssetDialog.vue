@@ -5,7 +5,7 @@
         label="股票代碼"
         path="stock"
         v-model="form.stockId"
-        :options="stockOptions"
+        :options="props.stockOptions"
         class="w-90%"
         :component-props="{ placeholder: '請輸入股票代碼或名稱' }"
       />
@@ -24,14 +24,6 @@
         v-model="form.buyPrice"
         class="w-90%"
         :component-props="{ min: 0, step: 0.05, precision: 2, placeholder: '請輸入買進價格' }"
-      />
-      <baseForm
-        label="損益平衡點"
-        path="avgPrice"
-        :component="NInputNumber"
-        v-model="form.avgPrice"
-        class="w-90%"
-        :component-props="{ min: 0, step: 0.05, precision: 2, placeholder: '請輸入損益平衡點' }"
       />
       <baseForm
         label="買進股數"
@@ -85,6 +77,20 @@ import { stockInputModule } from '@/modules/index';
 import { nonNegative, integerOnly, ymdValidator } from '@/utils/index';
 // ---------------------------
 
+// ----------type----------
+interface StockOption {
+  stockId: string;
+  stockName: string;
+}
+// ------------------------
+
+// ----------props&emit----------
+const props = defineProps<{
+  stockOptions: StockOption[];
+}>();
+
+// ------------------------------
+
 // ----------彈窗運作----------
 const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
 const submitting = ref(false); // 送出時的讀取狀態
@@ -92,20 +98,13 @@ const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref({
   stockId: { stockId: '', stockName: '' } as StockOption,
-  id: '',
-  name: '',
   buyPrice: null,
-  avgPrice: null,
   quantity: null,
   buyCost: null,
   buyDate: '',
   note: '',
 });
 // ---------------------------
-interface StockOption {
-  stockId: string;
-  stockName: string;
-}
 
 // ----------表單驗證----------
 // 表單驗證規則
@@ -143,17 +142,6 @@ const rules: FormRules = {
 // ---------------------------
 
 // ----------表單事件----------
-
-interface StockOption {
-  stockId: string;
-  stockName: string;
-}
-
-const stockOptions = ref<StockOption[]>([
-  { stockId: '2330', stockName: '台積電' },
-  { stockId: '2317', stockName: '鴻海' },
-  // 真實狀況可以從你的股票資訊 API 拉
-]);
 
 // 提交表單
 const handleSubmit = async () => {
