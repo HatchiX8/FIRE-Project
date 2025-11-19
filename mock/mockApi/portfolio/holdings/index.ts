@@ -43,6 +43,15 @@ export const getHoldings = {
   }),
 };
 
+export const addAssets = {
+  url: '/api/v1/assets/new-asset',
+  method: 'post',
+  response: () => ({
+    status: true,
+    message: '成功新增資產',
+  }),
+};
+
 export const editAssets = {
   url: '/api/v1/assets/:assetId',
   method: 'patch',
