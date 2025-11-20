@@ -29,6 +29,7 @@
     :stockOptions="stockMetaStore.stocks"
     v-model="newAssetDlgOpen"
     :loading="submitting"
+    @submitNewAsset="requestAddAsset"
   />
   <sellAssetDialog
     :assetValue="selectedAsset"
@@ -54,7 +55,7 @@
 // 套件
 // 共用型別
 import { type DataTableColumns } from 'naive-ui';
-import type { StockRow, EditStockPayload, SellStockPayload } from './api/index';
+import type { StockRow, EditStockPayload, SellStockPayload, AddStockPayload } from './api/index';
 // 元件
 import {
   trendChart,
@@ -263,6 +264,19 @@ const getHoldingsData = async (page: number) => {
     return;
   } else {
     console.log('✅ 成功取得持股配置資料:', res.data);
+  }
+};
+
+// 請求新增資產
+const requestAddAsset = async (payload: AddStockPayload) => {
+  const res = await portfolioStore.addAsset(payload);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功新增資產:', res.success);
+    newAssetDlgOpen.value = false;
   }
 };
 
