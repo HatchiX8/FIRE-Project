@@ -70,6 +70,7 @@
 import { NInput, NInputNumber } from 'naive-ui';
 // 共用型別
 import type { FormInst, FormRules } from 'naive-ui';
+import type { AddStockPayload } from '../api/index';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
 import { stockInputModule } from '@/modules/index';
@@ -89,6 +90,9 @@ const props = defineProps<{
   stockOptions: StockOption[];
 }>();
 
+const emit = defineEmits<{
+  (e: 'submitNewAsset', payload: AddStockPayload): void;
+}>();
 // ------------------------------
 
 // ----------彈窗運作----------
@@ -102,7 +106,7 @@ const form = ref({
   quantity: null,
   buyCost: null,
   buyDate: '',
-  note: '',
+  note: null,
 });
 // ---------------------------
 
@@ -145,8 +149,28 @@ const rules: FormRules = {
 
 // 提交表單
 const handleSubmit = async () => {
-  console.log('往外emit去觸發請求API');
+  emit('submitNewAsset', {
+    stockId: form.value.stockId.stockId,
+    buyPrice: form.value.buyPrice!,
+    quantity: form.value.quantity!,
+    buyCost: form.value.buyCost!,
+    buyDate: form.value.buyDate,
+    note: form.value.note || undefined,
+  });
+
+  resetForm();
 };
 
+// 新增：重置表單
+const resetForm = () => {
+  form.value = {
+    stockId: { stockId: '', stockName: '' } as StockOption,
+    buyPrice: null,
+    quantity: null,
+    buyCost: null,
+    buyDate: '',
+    note: null,
+  };
+};
 // ---------------------------
 </script>

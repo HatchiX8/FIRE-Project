@@ -1,6 +1,12 @@
 import instance from '@/api/axios';
 import type { apiResponse } from '@/api/type';
-import type { SummaryData, HoldingsData, EditStockPayload, SellStockPayload } from './index';
+import type {
+  SummaryData,
+  HoldingsData,
+  AddStockPayload,
+  EditStockPayload,
+  SellStockPayload,
+} from './index';
 
 // ----------取得使用者資金配置----------
 export const getSummaryData = async () => {
@@ -15,6 +21,11 @@ export const getHoldingsData = async (page: number) => {
   const res = await instance.get<apiResponse<HoldingsData>>(
     `/api/v1/users/portfolio/holdings?page=${page}`
   );
+  return res.data;
+};
+
+export const addStockData = async (payload: AddStockPayload) => {
+  const res = await instance.post<apiResponse<null>>(`/api/v1/assets/new-asset`, payload);
   return res.data;
 };
 

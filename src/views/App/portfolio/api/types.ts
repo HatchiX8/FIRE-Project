@@ -21,6 +21,15 @@ export interface HoldingsData {
   };
 }
 
+export interface AddStockPayload {
+  stockId: string;
+  buyPrice: number;
+  quantity: number;
+  buyCost: number;
+  buyDate: string;
+  note?: string;
+}
+
 // 持有股票資訊型別
 export interface StockRow {
   assetId: string;

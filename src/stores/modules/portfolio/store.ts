@@ -5,6 +5,7 @@ import { defineStore } from 'pinia';
 import {
   getSummaryData,
   getHoldingsData,
+  addStockData,
   editStockData,
   deleteStockData,
   sellStockData,
@@ -14,6 +15,7 @@ import type {
   SummaryData,
   HoldingsData,
   StockRow,
+  AddStockPayload,
   EditStockPayload,
   SellStockPayload,
 } from '@/views/App/portfolio/api/index';
@@ -62,6 +64,19 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       holdingsList.value = res.data?.shareholding ?? [];
       holdingsPagination.value = res.data?.pagination ?? { total_page: 0, current_page: 0 };
     }
+
+    return res;
+  };
+  // ---------------------------
+
+  // ----------新增資產----------
+  const addAssetLoading = 'useAddAssetLoading';
+
+  const addAsset = async (payload: AddStockPayload) => {
+    const res = await handleApiResponse(() => addStockData(payload), {
+      loadingStore: areaLoading,
+      loadingKey: addAssetLoading,
+    });
 
     return res;
   };
@@ -121,6 +136,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     // -------------------------------
 
     // ----------持股操作----------
+    addAsset,
     editAsset,
     deleteAsset,
     sellAsset,
