@@ -7,32 +7,19 @@
     @cancel="reset"
   >
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
-      <baseForm
-        label="股票代碼"
-        path="name"
-        :component="NInput"
-        v-model="form.name"
-        class="w-90%"
-        :component-props="{ disabled: true }"
-      />
+      <n-form-item label="股票代碼" class="w-90%">
+        <n-input :value="stockLabel" disabled />
+      </n-form-item>
       <baseForm
         label="買進價格"
         path="avgPrice"
-        :component="NInputNumber"
-        v-model="form.avgPrice"
-        class="w-90%"
-        :component-props="{ disabled: true }"
-      />
-      <baseForm
-        label="損益平衡點"
-        path="buyPrice"
         :component="NInputNumber"
         v-model="form.buyPrice"
         class="w-90%"
         :component-props="{ disabled: true }"
       />
       <baseForm
-        label="買進股數"
+        label="持有股數"
         path="quantity"
         :component="NInputNumber"
         v-model="form.quantity"
@@ -51,7 +38,7 @@
         label="買進日期"
         path="buyDate"
         :component="NInput"
-        v-model="form.buyDate"
+        v-model="form.tradesDate"
         class="w-90%"
         :component-props="{ disabled: true }"
       />
@@ -79,10 +66,22 @@
 import { NInput, NInputNumber } from 'naive-ui';
 // 共用型別
 import type { FormInst, FormRules } from 'naive-ui';
+import type { StockRow, StockOption, EditReportPayload } from '../api/index';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
 // 商業邏輯
+import { useStockLabel } from '@/utils/index';
 // ---------------------------
+
+// ----------props&emit----------
+const props = defineProps<{
+  reportValue: StockRow;
+}>();
+
+const emit = defineEmits<{
+  (e: 'submitEditReport', payload: { reportId: string | null; formValue: EditReportPayload }): void;
+}>();
+// ------------------------------
 
 // ----------彈窗運作----------
 const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
@@ -90,13 +89,11 @@ const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref({
-  id: '',
-  name: '',
-  buyPrice: null,
-  avgPrice: null,
-  quantity: null,
-  buyCost: null,
-  buyDate: '',
+  stock: { stockId: '', stockName: '' } as StockOption,
+  buyPrice: 0,
+  quantity: 0,
+  buyCost: 0,
+  tradesDate: '',
   note: '',
 });
 // ---------------------------
@@ -110,9 +107,43 @@ const rules: FormRules = {
 // ---------------------------
 
 // ----------表單事件----------
+// 當父層傳入 assetValue 時把資料複製到 local form
+watch(
+  () => props.reportValue,
+  (v) => {
+    if (v) {
+      form.value = {
+        stock: { stockId: v.stockId ?? '', stockName: v.stockName ?? '' } as StockOption,
+        buyPrice: v.buyPrice ?? 0,
+        quantity: v.quantity ?? 0,
+        buyCost: v.buyCost ?? 0,
+        tradesDate: v.tradesDate ?? '',
+        note: v.note ?? '',
+      };
+    } else {
+      form.value = {
+        stock: { stockId: '', stockName: '' },
+        buyPrice: 0,
+        quantity: 0,
+        buyCost: 0,
+        tradesDate: '',
+        note: '',
+      };
+    }
+  },
+  { immediate: true }
+);
+
+const { stockLabel } = useStockLabel(computed(() => form.value.stock));
+
 // 提交表單
 const handleSubmit = async () => {
-  console.log('往外emit去觸發請求API');
+  const payload: EditReportPayload = {
+    // 不包含 stockId / stockName 等多餘欄位
+    note: form.value.note ?? '',
+  };
+
+  emit('submitEditReport', { reportId: props.reportValue.stockId, formValue: payload });
 };
 
 // 表單重置

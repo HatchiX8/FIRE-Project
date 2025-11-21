@@ -23,7 +23,7 @@
         <baseButton color="primary"><div class="i-mdi:chevron-right text-5"></div></baseButton>
       </div>
 
-      <baseButton color="primary" @click="openAssetDialog">新增資產</baseButton>
+      <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
     </div>
     <loadingAreaOverlay :loadingId="profitOverviewStore.totalTradesLoading" class="px-0">
       <baseTable
@@ -45,35 +45,46 @@
     initial-mode="deposit"
     @submit="onSubmit"
   />
-  <newAssetDialog v-model="newAssetDlgOpen" :loading="submitting" />
-  <editAssetDialog v-model="editAssetDlgOpen" :loading="submitting" />
-  <deleteAssetDialog v-model="deleteAssetDlgOpen" :loading="submitting" />
+  <newReportDialog
+    :stockOptions="stockMetaStore.stocks"
+    v-model="newReportDlgOpen"
+    :loading="submitting"
+    @submitNewReport="requestAddReport"
+  />
+  <editReportDialog
+    :reportValue="selectedReport"
+    v-model="editReportDlgOpen"
+    :loading="submitting"
+    @submitEditReport="requestEditReport"
+  />
+  <deleteReportDialog v-model="deleteReportDlgOpen" :loading="submitting" />
 </template>
 <script setup lang="ts">
 // ----------import----------
 // 套件
 // 共用型別
 import type { DataTableColumns } from 'naive-ui';
-import type { TradeItem, StockRow } from './api/index';
+import type { TradeItem, StockRow, NewReportPayload, EditReportPayload } from './api/index';
 // 元件
 import {
   trendChart,
   totalInvestDialog,
-  newAssetDialog,
-  editAssetDialog,
-  deleteAssetDialog,
+  newReportDialog,
+  editReportDialog,
+  deleteReportDialog,
 } from './comps/index';
 import { baseButton, baseTable } from '@/components/index';
 import { loadingAreaOverlay } from '@/modules/loadingModule/index';
 // 商業邏輯
 // store
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
-import { useProfitOverviewStore } from '@/stores/index';
+import { useProfitOverviewStore, useStockMetaStore } from '@/stores/index';
 // ---------------------------
 
 // ----------初始化----------
 const profitOverviewStore = useProfitOverviewStore(); // 投資組合 store
 const loadingStore = useAreaLoadingStore(); // 讀取狀態 store
+const stockMetaStore = useStockMetaStore(); // 股票資訊 store
 
 const isTrendChartLoading = computed(() =>
   loadingStore.isLoading(profitOverviewStore.trendChartLoading)
@@ -82,6 +93,9 @@ const isTrendChartLoading = computed(() =>
 const isTotalTradesLoading = computed(() =>
   loadingStore.isLoading(profitOverviewStore.totalTradesLoading)
 );
+
+const selectedReport = ref<StockRow>({} as StockRow); // 紀錄當前所選擇的資產ID
+const submitting = ref(false); // 提交狀態
 
 onMounted(async () => {
   await getTrendChartData(2025); // 請求趨勢圖點位資料
@@ -148,12 +162,12 @@ const columns: DataTableColumns<TradeItem> = [
         h('div', { class: 'mt-2 ml-auto flex flex-col gap-4' }, [
           h(
             baseButton,
-            { size: 'small', color: 'success', onClick: () => openEditAssetDialog(row.stockId) },
+            { size: 'small', color: 'success', onClick: () => openEditReportDialog(row) },
             { default: () => '編輯' }
           ),
           h(
             baseButton,
-            { size: 'small', color: 'danger', onClick: () => openDeleteAssetDialog(row.stockId) },
+            { size: 'small', color: 'danger', onClick: () => openDeleteReportDialog(row) },
             { default: () => '刪除資產' }
           ),
         ]),
@@ -172,13 +186,21 @@ const bridgedData = computed(
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).tradesId;
 // ------------------------
 
+// ----------工具函式----------
+// 清除所選資產
+const clearSelectedAsset = () => {
+  selectedReport.value = {} as StockRow;
+  console.log('觸發清除', selectedReport.value);
+};
+// ---------------------------
+
 // ----------資金管理----------
 const openTotalInvestDialog = () => {
   totalInvestDlgOpen.value = true;
 };
 
 const totalInvestDlgOpen = ref(false);
-const submitting = ref(false); // 提交狀態
+
 const currentInvest = ref(1250000);
 
 async function onSubmit(payload: { mode: 'deposit' | 'withdraw'; amount: number }) {
@@ -201,28 +223,31 @@ async function onSubmit(payload: { mode: 'deposit' | 'withdraw'; amount: number 
 // ---------------------------
 
 // ----------新增資產----------
-const openAssetDialog = () => {
-  newAssetDlgOpen.value = true;
+const newReportDlgOpen = ref(false);
+
+const openReportDialog = () => {
+  newReportDlgOpen.value = true;
 };
 
-const newAssetDlgOpen = ref(false);
 // ---------------------------
 
 // ----------編輯資產----------
-const editAssetDlgOpen = ref(false);
+const editReportDlgOpen = ref(false);
 
-const openEditAssetDialog = (stockId: string) => {
-  console.log('觸發點擊，ID為:', stockId);
-  editAssetDlgOpen.value = true;
+const openEditReportDialog = (reportRow: StockRow) => {
+  clearSelectedAsset();
+  selectedReport.value = reportRow;
+  console.log('觸發點擊，ID為:', reportRow);
+  editReportDlgOpen.value = true;
 };
 // ---------------------------
 
 // ----------刪除資產----------
-const deleteAssetDlgOpen = ref(false);
+const deleteReportDlgOpen = ref(false);
 
-const openDeleteAssetDialog = (stockId: string) => {
-  console.log('觸發點擊，ID為:', stockId);
-  deleteAssetDlgOpen.value = true;
+const openDeleteReportDialog = (reportRow: StockRow) => {
+  console.log('觸發點擊，ID為:', reportRow);
+  deleteReportDlgOpen.value = true;
 };
 // ---------------------------
 
@@ -248,6 +273,39 @@ const getTotalTradesData = async (year: number, month: number, page: number) => 
     return;
   } else {
     console.log('✅ 成功取得損益概況資料:', res.data);
+  }
+};
+
+// 新增歷史交易數據
+const requestAddReport = async (payload: NewReportPayload) => {
+  const res = await profitOverviewStore.addReport(payload);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功新增資產:', res.success);
+    newReportDlgOpen.value = false;
+  }
+};
+
+// 編輯歷史交易數據
+const requestEditReport = async (payload: {
+  reportId: string | null;
+  formValue: EditReportPayload;
+}) => {
+  const { reportId, formValue } = payload;
+  if (!reportId) {
+    console.log('❌ 編輯資產失敗，缺少 assetId');
+    return;
+  }
+  const res = await profitOverviewStore.editReport(reportId, formValue);
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功編輯資產:', res.success);
+    editReportDlgOpen.value = false;
   }
 };
 // ---------------------------
