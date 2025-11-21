@@ -45,9 +45,15 @@ export interface StockRow {
   note?: string;
   buyDate: string;
 }
+
+export interface StockOption {
+  stockId: string;
+  stockName: string;
+}
+
 // 編輯股票資訊型別
 export interface EditStockPayload {
-  stockId: string;
+  stock: StockOption;
   buyPrice: number;
   quantity: number;
   totalCost: number;

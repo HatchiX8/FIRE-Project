@@ -1,13 +1,10 @@
 <template>
   <baseDialog v-model="visible" title="編輯資產" :ok-loading="submitting" @ok="handleSubmit">
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
-      <baseForm
-        label="股票代碼"
-        path="name"
-        :component="NInput"
-        v-model="form.stockId"
-        class="w-90%"
-      />
+      <n-form-item label="股票代碼" class="w-90%">
+        <n-input :value="stockLabel" disabled />
+      </n-form-item>
+
       <baseForm
         label="買進價格"
         path="avgPrice"
@@ -15,7 +12,6 @@
         v-model="form.buyPrice"
         class="w-90%"
       />
-
       <baseForm
         label="持有股數"
         path="quantity"
@@ -61,10 +57,11 @@
 import { NInput, NInputNumber } from 'naive-ui';
 // 共用型別
 import type { FormInst, FormRules } from 'naive-ui';
-import type { EditStockPayload, StockRow } from '../api/index';
+import type { EditStockPayload, StockRow, StockOption } from '../api/index';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
 // 商業邏輯
+import { useStockLabel } from '@/utils/index';
 // ---------------------------
 
 // ----------props&emit----------
@@ -83,7 +80,7 @@ const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref<EditStockPayload>({
-  stockId: '',
+  stock: { stockId: '', stockName: '' } as StockOption,
   buyPrice: 0,
   quantity: 0,
   totalCost: 0,
@@ -105,7 +102,7 @@ watch(
   (v) => {
     if (v) {
       form.value = {
-        stockId: v.stockId ?? '',
+        stock: { stockId: v.stockId ?? '', stockName: v.stockName ?? '' } as StockOption,
         buyPrice: v.buyPrice ?? 0,
         quantity: v.quantity ?? 0,
         totalCost: v.totalCost ?? 0,
@@ -113,11 +110,20 @@ watch(
         note: v.note ?? '',
       };
     } else {
-      form.value = { stockId: '', buyPrice: 0, quantity: 0, totalCost: 0, buyDate: '', note: '' };
+      form.value = {
+        stock: { stockId: '', stockName: '' },
+        buyPrice: 0,
+        quantity: 0,
+        totalCost: 0,
+        buyDate: '',
+        note: '',
+      };
     }
   },
   { immediate: true }
 );
+
+const { stockLabel } = useStockLabel(computed(() => form.value.stock));
 
 // 提交表單
 const handleSubmit = async () => {

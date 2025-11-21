@@ -1,14 +1,10 @@
 <template>
   <baseDialog v-model="visible" title="刪除資產" :ok-loading="submitting" @ok="handleSubmit">
     <n-form ref="formRef" :model="form" label-width="80">
-      <baseForm
-        label="股票代碼"
-        path="name"
-        :component="NInput"
-        v-model="form.stockId"
-        class="w-90%"
-        :component-props="{ disabled: true }"
-      />
+      <n-form-item label="股票代碼" class="w-90%">
+        <n-input :value="stockLabel" disabled />
+      </n-form-item>
+
       <baseForm
         label="買進價格"
         path="avgPrice"
@@ -17,7 +13,6 @@
         class="w-90%"
         :component-props="{ disabled: true }"
       />
-
       <baseForm
         label="持有股數"
         path="quantity"
@@ -75,10 +70,11 @@
 import { NInput, NInputNumber } from 'naive-ui';
 // 共用型別
 import type { FormInst } from 'naive-ui';
-import type { StockRow } from '../api/index';
+import type { StockRow, StockOption } from '../api/index';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
 // 商業邏輯
+import { useStockLabel } from '@/utils/index';
 // ---------------------------
 
 // ----------props&emit----------
@@ -97,15 +93,13 @@ const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref({
-  assetId: props.assetValue.assetId || '',
-  stockId: props.assetValue.stockId || '',
-  stockName: props.assetValue.stockName || '',
-  buyPrice: props.assetValue.buyPrice || 0,
-  quantity: props.assetValue.quantity || 0,
-  totalCost: props.assetValue.totalCost || 0,
-  marketValue: props.assetValue.marketValue || 0,
-  buyDate: props.assetValue.buyDate || '',
-  note: props.assetValue.note || '',
+  stock: { stockId: '', stockName: '' } as StockOption,
+  buyPrice: 0,
+  quantity: 0,
+  totalCost: 0,
+  marketValue: 0,
+  buyDate: '',
+  note: '',
 });
 
 // ---------------------------
@@ -117,9 +111,7 @@ watch(
   (v) => {
     if (v) {
       form.value = {
-        assetId: v.assetId ?? '',
-        stockId: v.stockId ?? '',
-        stockName: v.stockName ?? '',
+        stock: { stockId: v.stockId ?? '', stockName: v.stockName ?? '' } as StockOption,
         buyPrice: v.buyPrice ?? 0,
         quantity: v.quantity ?? 0,
         totalCost: v.totalCost ?? 0,
@@ -129,9 +121,7 @@ watch(
       };
     } else {
       form.value = {
-        assetId: '',
-        stockId: '',
-        stockName: '',
+        stock: { stockId: '', stockName: '' },
         buyPrice: 0,
         quantity: 0,
         totalCost: 0,
@@ -143,6 +133,8 @@ watch(
   },
   { immediate: true }
 );
+
+const { stockLabel } = useStockLabel(computed(() => form.value.stock));
 
 // 提交表單
 const handleSubmit = async () => {
