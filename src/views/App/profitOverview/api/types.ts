@@ -53,10 +53,16 @@ export interface StockRow {
   profitLossRate: number;
   note: string;
 }
+
+export interface StockOption {
+  stockId: string;
+  stockName: string;
+}
 // ---------------------------
 
 // ----------歷史資訊操作----------
-export interface NewReportData {
+// 新增歷史交易資料型別
+export interface NewReportPayload {
   stockId: string;
   buyPrice: number;
   sellPrice: number;
@@ -67,4 +73,11 @@ export interface NewReportData {
   note?: string;
   isCalculateTotal: boolean;
 }
+
+// 編輯歷史交易資料型別
+export interface EditReportPayload {
+  note: string;
+}
+
+// 刪除歷史交易資料型別
 // -------------------------------

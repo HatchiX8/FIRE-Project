@@ -5,14 +5,16 @@ import { defineStore } from 'pinia';
 import {
   getTotalTradesData,
   getTrendChartData,
-  addNewReport,
+  addReportData,
+  editReportData,
 } from '@/views/App/profitOverview/api/index';
 // 共用型別
 import type {
   TotalTradesData,
   TradeItem,
   TrendChartData,
-  NewReportData,
+  NewReportPayload,
+  EditReportPayload,
 } from '@/views/App/profitOverview/api/index';
 // 元件
 // 商業邏輯
@@ -66,10 +68,23 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   // ----------新增資產----------
   const addReportLoading = 'useAddReportLoading';
 
-  const addReport = async (payload: NewReportData) => {
-    const res = await handleApiResponse(() => addNewReport(payload), {
+  const addReport = async (payload: NewReportPayload) => {
+    const res = await handleApiResponse(() => addReportData(payload), {
       loadingStore: areaLoading,
       loadingKey: addReportLoading,
+    });
+
+    return res;
+  };
+  // ---------------------------
+
+  // ----------編輯資產----------
+  const editReportLoading = 'useEditReportLoading';
+
+  const editReport = async (tradesId: string, payload: EditReportPayload) => {
+    const res = await handleApiResponse(() => editReportData(tradesId, payload), {
+      loadingStore: areaLoading,
+      loadingKey: editReportLoading,
     });
 
     return res;
@@ -91,6 +106,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
 
     // ----------歷史資料操作----------
     addReport,
+    editReport,
     // -------------------------------
   };
 });

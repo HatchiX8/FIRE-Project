@@ -83,12 +83,12 @@ const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref<EditStockPayload>({
-  stockId: props.assetValue.stockId || '',
-  buyPrice: props.assetValue.buyPrice || 0,
-  quantity: props.assetValue.quantity || 0,
-  totalCost: props.assetValue.totalCost || 0,
-  buyDate: props.assetValue.buyDate || '',
-  note: props.assetValue.note || '',
+  stockId: '',
+  buyPrice: 0,
+  quantity: 0,
+  totalCost: 0,
+  buyDate: '',
+  note: '',
 });
 // ---------------------------
 

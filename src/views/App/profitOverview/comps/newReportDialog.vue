@@ -83,7 +83,7 @@
 import { NInput, NInputNumber } from 'naive-ui';
 // 共用型別
 import type { FormInst, FormRules } from 'naive-ui';
-import type { NewReportData } from '../api/index';
+import type { NewReportPayload } from '../api/index';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
 import { stockInputModule } from '@/modules/index';
@@ -104,7 +104,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'submitNewAsset', payload: NewReportData): void;
+  (e: 'submitNewReport', payload: NewReportPayload): void;
 }>();
 // ------------------------------
 
@@ -167,7 +167,7 @@ const rules: FormRules = {
 // ----------表單事件----------
 // 提交表單
 const handleSubmit = async () => {
-  emit('submitNewAsset', {
+  emit('submitNewReport', {
     stockId: form.value.stock.stockId,
     buyPrice: form.value.buyPrice!,
     sellPrice: form.value.sellPrice!,
