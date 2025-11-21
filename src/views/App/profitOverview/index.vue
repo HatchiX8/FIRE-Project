@@ -45,7 +45,12 @@
     initial-mode="deposit"
     @submit="onSubmit"
   />
-  <newAssetDialog v-model="newAssetDlgOpen" :loading="submitting" />
+  <newReportDialog
+    :stockOptions="stockMetaStore.stocks"
+    v-model="newAssetDlgOpen"
+    :loading="submitting"
+    @submitNewAsset="requestAddReport"
+  />
   <editAssetDialog v-model="editAssetDlgOpen" :loading="submitting" />
   <deleteAssetDialog v-model="deleteAssetDlgOpen" :loading="submitting" />
 </template>
@@ -54,12 +59,12 @@
 // 套件
 // 共用型別
 import type { DataTableColumns } from 'naive-ui';
-import type { TradeItem, StockRow } from './api/index';
+import type { TradeItem, StockRow, NewReportData } from './api/index';
 // 元件
 import {
   trendChart,
   totalInvestDialog,
-  newAssetDialog,
+  newReportDialog,
   editAssetDialog,
   deleteAssetDialog,
 } from './comps/index';
@@ -68,12 +73,13 @@ import { loadingAreaOverlay } from '@/modules/loadingModule/index';
 // 商業邏輯
 // store
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
-import { useProfitOverviewStore } from '@/stores/index';
+import { useProfitOverviewStore, useStockMetaStore } from '@/stores/index';
 // ---------------------------
 
 // ----------初始化----------
 const profitOverviewStore = useProfitOverviewStore(); // 投資組合 store
 const loadingStore = useAreaLoadingStore(); // 讀取狀態 store
+const stockMetaStore = useStockMetaStore(); // 股票資訊 store
 
 const isTrendChartLoading = computed(() =>
   loadingStore.isLoading(profitOverviewStore.trendChartLoading)
@@ -248,6 +254,19 @@ const getTotalTradesData = async (year: number, month: number, page: number) => 
     return;
   } else {
     console.log('✅ 成功取得損益概況資料:', res.data);
+  }
+};
+
+// 新增歷史交易數據
+const requestAddReport = async (payload: NewReportData) => {
+  const res = await profitOverviewStore.addReport(payload);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功新增資產:', res.success);
+    newAssetDlgOpen.value = false;
   }
 };
 // ---------------------------

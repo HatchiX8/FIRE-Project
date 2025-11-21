@@ -3,7 +3,7 @@ export const dashboardReports = {
   method: 'get',
   response: () => ({
     status: true,
-    message: '成功取得使用者資料',
+    message: '成功取得當月歷史數據',
     data: {
       totalTrades: [
         {
@@ -48,7 +48,7 @@ export const dashboardTrendChart = {
   method: 'get',
   response: () => ({
     status: true,
-    message: '成功取得使用者資料',
+    message: '成功取得歷史走勢數據',
     data: {
       period: [
         '2025-01',

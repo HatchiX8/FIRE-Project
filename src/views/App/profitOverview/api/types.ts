@@ -38,7 +38,7 @@ export interface TrendChartData {
 
 // ---------------------------------
 
-// ----------欄位型別----------
+// ----------表格欄位型別----------
 export interface StockRow {
   tradesId: string;
   stockId: string;
@@ -54,3 +54,17 @@ export interface StockRow {
   note: string;
 }
 // ---------------------------
+
+// ----------歷史資訊操作----------
+export interface NewReportData {
+  stockId: string;
+  buyPrice: number;
+  sellPrice: number;
+  quantity: number;
+  buyCost: number;
+  actualRealizedPnl: number;
+  tradesDate: string;
+  note?: string;
+  isCalculateTotal: boolean;
+}
+// -------------------------------

@@ -1,17 +1,11 @@
 <template>
-  <baseDialog
-    v-model="visible"
-    title="新增資產"
-    :ok-loading="submitting"
-    @ok="handleSubmit"
-    @cancel="reset"
-  >
+  <baseDialog v-model="visible" title="新增資產" :ok-loading="submitting" @ok="handleSubmit">
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
-      <baseForm
+      <stockInputModule
         label="股票代碼"
-        path="name"
-        :component="NInput"
-        v-model="form.name"
+        path="stock"
+        v-model="form.stock"
+        :options="props.stockOptions"
         class="w-90%"
         :component-props="{ placeholder: '請輸入股票代碼或名稱' }"
       />
@@ -74,6 +68,11 @@
           autosize: { minRows: 2, maxRows: 3 }, // 內容區更高
         }"
       />
+      <n-form-item label="是否已算入總資金" class="w-90%">
+        <n-checkbox v-model:checked="form.isCalculateTotal"
+          >是(如勾選是，該筆紀錄將不會計算進總資金)</n-checkbox
+        >
+      </n-form-item>
     </n-form>
   </baseDialog>
 </template>
@@ -84,11 +83,30 @@
 import { NInput, NInputNumber } from 'naive-ui';
 // 共用型別
 import type { FormInst, FormRules } from 'naive-ui';
+import type { NewReportData } from '../api/index';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
+import { stockInputModule } from '@/modules/index';
 // 商業邏輯
 import { nonNegative, integerOnly, ymdValidator } from '@/utils/index';
 // ---------------------------
+
+// ----------type----------
+interface StockOption {
+  stockId: string;
+  stockName: string;
+}
+// ------------------------
+
+// ----------props&emit----------
+const props = defineProps<{
+  stockOptions: StockOption[];
+}>();
+
+const emit = defineEmits<{
+  (e: 'submitNewAsset', payload: NewReportData): void;
+}>();
+// ------------------------------
 
 // ----------彈窗運作----------
 const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
@@ -96,8 +114,7 @@ const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref({
-  id: '',
-  name: '',
+  stock: { stockId: '', stockName: '' } as StockOption,
   buyPrice: null,
   sellPrice: null,
   quantity: null,
@@ -105,6 +122,7 @@ const form = ref({
   actualRealizedPnl: null,
   tradesDate: '',
   note: '',
+  isCalculateTotal: false,
 });
 // ---------------------------
 
@@ -149,12 +167,34 @@ const rules: FormRules = {
 // ----------表單事件----------
 // 提交表單
 const handleSubmit = async () => {
-  console.log('往外emit去觸發請求API');
+  emit('submitNewAsset', {
+    stockId: form.value.stock.stockId,
+    buyPrice: form.value.buyPrice!,
+    sellPrice: form.value.sellPrice!,
+    actualRealizedPnl: form.value.actualRealizedPnl!,
+    quantity: form.value.quantity!,
+    buyCost: form.value.buyCost!,
+    tradesDate: form.value.tradesDate,
+    note: form.value.note || undefined,
+    isCalculateTotal: form.value.isCalculateTotal,
+  });
+
+  resetForm();
 };
 
-// 表單重置
-function reset() {
-  // 可清空或還原
-}
+// 新增：重置表單
+const resetForm = () => {
+  form.value = {
+    stock: { stockId: '', stockName: '' } as StockOption,
+    buyPrice: null,
+    sellPrice: null,
+    actualRealizedPnl: null,
+    quantity: null,
+    buyCost: null,
+    tradesDate: '',
+    note: '',
+    isCalculateTotal: false,
+  };
+};
 // ---------------------------
 </script>
