@@ -8,6 +8,8 @@ export { default as menuComp } from './layout/menuComp.vue';
 export { default as baseButton } from './base/baseButton.vue';
 export { default as baseDialog } from './base/baseDialog.vue';
 export { default as baseForm } from './form/baseForm.vue';
+
+export { default as baseStockInput } from './form/baseStockInput.vue';
 // ------------------------
 
 // ----------data----------

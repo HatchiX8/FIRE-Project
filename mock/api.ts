@@ -2,6 +2,7 @@ import { MockMethod } from 'vite-plugin-mock';
 import {
   login,
   loginCheck,
+  getStockInfo,
   getSummary,
   getHoldings,
   userInfoData,
@@ -9,9 +10,12 @@ import {
   userAccountUpgrade,
   dashboardReports,
   dashboardTrendChart,
+  addAssets,
   editAssets,
   deleteAssets,
   sellAssets,
+  addReports,
+  editReports,
 } from './mockApi/index';
 
 export default [
@@ -20,9 +24,14 @@ export default [
   loginCheck, // 登入檢查Api
   // -----------------------------
 
+  // ----------股票資訊----------
+  getStockInfo,
+  // ---------------------------
+
   // ----------投資組合----------
   getSummary,
   getHoldings,
+  addAssets,
   editAssets,
   deleteAssets,
   sellAssets,
@@ -37,5 +46,7 @@ export default [
   // ----------損益概況----------
   dashboardReports,
   dashboardTrendChart,
+  addReports,
+  editReports,
   // ---------------------------
 ] as MockMethod[];

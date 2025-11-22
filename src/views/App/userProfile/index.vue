@@ -68,7 +68,7 @@ import accUpgradeDialog from './comps/accUpgradeDialog.vue';
 // 商業邏輯
 // store
 import { userInfoProfileStore } from '@/stores/index';
-import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
+import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 // ---------------------------
 
 // ----------初始化----------

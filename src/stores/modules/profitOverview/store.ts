@@ -2,23 +2,30 @@
 // 套件
 import { defineStore } from 'pinia';
 // API
-import { getTotalTradesData, getTrendChartData } from '@/views/App/profitOverview/api/index';
+import {
+  getTotalTradesData,
+  getTrendChartData,
+  addReportData,
+  editReportData,
+} from '@/views/App/profitOverview/api/index';
 // 共用型別
 import type {
   TotalTradesData,
   TradeItem,
   TrendChartData,
+  NewReportPayload,
+  EditReportPayload,
 } from '@/views/App/profitOverview/api/index';
 // 元件
 // 商業邏輯
 import { handleApiResponse } from '@/utils/index';
 // store
-import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
+import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 // --------------------------
 
 export const useProfitOverviewStore = defineStore('profitOverview', () => {
   // ----------初始化----------
-  const loading = useAreaLoadingStore();
+  const areaLoading = useAreaLoadingStore();
   // ---------------------------
 
   // ----------損益概況趨勢----------
@@ -32,7 +39,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
 
   const fetchTrendChartData = async (year: number) =>
     await handleApiResponse(() => getTrendChartData(year), {
-      loadingStore: loading,
+      loadingStore: areaLoading,
       loadingKey: trendChartLoading,
       target: trendChartData,
     });
@@ -45,7 +52,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
 
   const fetchTotalTradesData = async (year: number, month: number, page: number) => {
     const res = await handleApiResponse(() => getTotalTradesData(year, month, page), {
-      loadingStore: loading,
+      loadingStore: areaLoading,
       loadingKey: totalTradesLoading,
       target: totalTradesResponse,
     });
@@ -58,6 +65,32 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   };
   // -------------------------------
 
+  // ----------新增資產----------
+  const addReportLoading = 'useAddReportLoading';
+
+  const addReport = async (payload: NewReportPayload) => {
+    const res = await handleApiResponse(() => addReportData(payload), {
+      loadingStore: areaLoading,
+      loadingKey: addReportLoading,
+    });
+
+    return res;
+  };
+  // ---------------------------
+
+  // ----------編輯資產----------
+  const editReportLoading = 'useEditReportLoading';
+
+  const editReport = async (tradesId: string, payload: EditReportPayload) => {
+    const res = await handleApiResponse(() => editReportData(tradesId, payload), {
+      loadingStore: areaLoading,
+      loadingKey: editReportLoading,
+    });
+
+    return res;
+  };
+  // ---------------------------
+
   return {
     // ----------趨勢圖資訊----------
     trendChartData,
@@ -69,6 +102,11 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
     totalTradesList,
     fetchTotalTradesData,
     totalTradesLoading,
+    // -------------------------------
+
+    // ----------歷史資料操作----------
+    addReport,
+    editReport,
     // -------------------------------
   };
 });

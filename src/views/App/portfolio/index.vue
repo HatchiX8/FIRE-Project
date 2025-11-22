@@ -25,7 +25,12 @@
         :page-size="10"
     /></loadingAreaOverlay>
   </div>
-  <newAssetDialog v-model="newAssetDlgOpen" :loading="submitting" />
+  <newAssetDialog
+    :stockOptions="stockMetaStore.stocks"
+    v-model="newAssetDlgOpen"
+    :loading="submitting"
+    @submitNewAsset="requestAddAsset"
+  />
   <sellAssetDialog
     :assetValue="selectedAsset"
     v-model="sellAssetDialogOpen"
@@ -50,7 +55,7 @@
 // 套件
 // 共用型別
 import { type DataTableColumns } from 'naive-ui';
-import type { StockRow, EditStockPayload, SellStockPayload } from './api/index';
+import type { StockRow, EditStockPayload, SellStockPayload, AddStockPayload } from './api/index';
 // 元件
 import {
   trendChart,
@@ -60,17 +65,18 @@ import {
   deleteAssetDialog,
 } from './comps/index';
 import { baseTable, baseButton } from '@/components/index';
-import { loadingAreaOverlay } from '@/components/modules/loadingModule/index';
+import { loadingAreaOverlay } from '@/modules/loadingModule/index';
 // 商業邏輯
 import { formatPriceSmart } from '@/utils/index';
 // store
-import { useAreaLoadingStore } from '@/components/modules/loadingModule/store/index';
-import { usePortfolioStore } from '@/stores/index';
+import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
+import { usePortfolioStore, useStockMetaStore } from '@/stores/index';
 // ---------------------------
 
 // ----------初始化----------
 const portfolioStore = usePortfolioStore(); // 投資組合 store
 const loadingStore = useAreaLoadingStore(); // 讀取狀態 store
+const stockMetaStore = useStockMetaStore(); // 股票資訊 store
 
 // 獲取資金配置讀取狀態
 const isSummaryLoading = computed(() => loadingStore.isLoading(portfolioStore.summaryLoading));
@@ -258,6 +264,19 @@ const getHoldingsData = async (page: number) => {
     return;
   } else {
     console.log('✅ 成功取得持股配置資料:', res.data);
+  }
+};
+
+// 請求新增資產
+const requestAddAsset = async (payload: AddStockPayload) => {
+  const res = await portfolioStore.addAsset(payload);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功新增資產:', res.success);
+    newAssetDlgOpen.value = false;
   }
 };
 

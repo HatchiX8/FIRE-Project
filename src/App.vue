@@ -13,7 +13,7 @@ import { NConfigProvider, darkTheme } from 'naive-ui';
 // 商業邏輯
 import { themeColors } from '@/utils/index';
 // store
-import { useUserStore } from '@/stores/index';
+import { useUserStore, useStockMetaStore } from '@/stores/index';
 // ---------------------------
 
 // ----------初始化----------
@@ -27,6 +27,7 @@ const themeOverrides = {
   },
 };
 const userStore = useUserStore();
+const stockMetaStore = useStockMetaStore();
 
 // 每次進入頁面檢查登入狀態
 onMounted(() => {
@@ -42,6 +43,7 @@ const userLoginCheck = async () => {
   }
 
   console.log('API:登入驗證成功', res);
+  stockMetaStore.fetchStockMeta();
 };
 // --------------------------
 </script>
