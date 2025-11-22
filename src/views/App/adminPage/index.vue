@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="md:(px-4 mx-auto) max-w-6xl">
     <upgradeTable />
     <memberTable />
   </div>
