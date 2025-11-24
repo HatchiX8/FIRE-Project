@@ -1,6 +1,6 @@
 <template>
   <n-modal v-model:show="show" :mask-closable="false">
-    <n-card :style="{ width }" :title="title" :bordered="false">
+    <n-card :style="{ width }" :title="title" :bordered="false" :closable="true" @close="onCancel">
       <slot />
       <template #footer>
         <div class="flex justify-end gap-2">

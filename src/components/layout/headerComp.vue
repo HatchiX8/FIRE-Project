@@ -16,7 +16,7 @@
         color="primary"
         class="text-4 mr-2"
         ghost
-        @click="userStore.requestLogin"
+        @click="userLogin"
         >登入</baseButton
       >
       <a
@@ -38,10 +38,21 @@
 import { baseButton } from '@/components/index';
 // 商業邏輯
 // store
-import { useUserStore } from '@/stores/modules/user/store';
+import { useUserStore, useStockMetaStore } from '@/stores/index';
 // ---------------------------
 
 // ----------初始化-----------
 const userStore = useUserStore();
+const stockMetaStore = useStockMetaStore();
+
+const userLogin = async () => {
+  const res = await userStore.requestLogin();
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  }
+  console.log('API:登入成功', res);
+  await stockMetaStore.fetchStockMeta();
+};
 // ---------------------------
 </script>

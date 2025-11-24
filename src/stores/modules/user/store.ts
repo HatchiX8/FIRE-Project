@@ -7,7 +7,7 @@ import { login, loginCheck } from '@/api/index';
 import type { userInfo } from '@/api/index';
 // 元件
 // 商業邏輯
-import { getErrorMessage } from '@/utils/index';
+import { handleApiResponse } from '@/utils/index';
 // store
 // --------------------------
 
@@ -23,31 +23,25 @@ export const useUserStore = defineStore('user', () => {
 
   // 登入請求
   const requestLogin = async () => {
-    error.value = null;
-    try {
-      const res = await login();
-      userInfo.value = res.data;
-
-      const fakeToken = userInfo.value.token;
-      setToken(fakeToken);
-    } catch (err) {
-      error.value = getErrorMessage(err);
+    const res = await handleApiResponse(() => login(), {
+      loadingStore: undefined,
+      loadingKey: 'useLoginLoading',
+      target: userInfo,
+    });
+    if (userInfo.value?.token) {
+      setToken(userInfo.value.token);
     }
+
+    return res;
   };
 
   // 登入驗證請求
-  const requestLoginCheck = async (): Promise<boolean> => {
-    if (!token.value) return false;
-
-    try {
-      const res = await loginCheck();
-      userInfo.value = res.data;
-      return true;
-    } catch (err) {
-      error.value = getErrorMessage(err);
-      return false;
-    }
-  };
+  const requestLoginCheck = async () =>
+    await handleApiResponse(() => loginCheck(), {
+      loadingStore: undefined,
+      loadingKey: 'useLoginLoading',
+      target: userInfo,
+    });
 
   // 寫入 token
   const setToken = (newToken: string) => {

@@ -6,7 +6,7 @@
       </div>
       <div class="">
         <router-link to="/App/profitOverview" class="text-textColor no-underline"
-          >歷史趨勢</router-link
+          >歷史紀錄</router-link
         >
       </div>
       <div>
