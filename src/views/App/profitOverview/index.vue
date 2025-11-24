@@ -11,7 +11,7 @@
       <div v-if="isTrendChartLoading" class="my-20"></div>
     </loadingAreaOverlay>
 
-    <div class="flex items-center justify-between">
+    <div class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between">
       <baseButton color="primary" @click="openTotalInvestDialog">資金管理</baseButton>
       <div class="flex items-center">
         <baseButton color="primary"><div class="i-mdi:chevron-left text-5"></div></baseButton>
@@ -25,7 +25,10 @@
 
       <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
     </div>
-    <loadingAreaOverlay :loadingId="profitOverviewStore.totalTradesLoading" class="px-0">
+    <loadingAreaOverlay
+      :loadingId="profitOverviewStore.totalTradesLoading"
+      class="mx-auto max-w-6xl px-0 px-4"
+    >
       <baseTable
         v-if="!isTrendChartLoading && !isTotalTradesLoading"
         :columns="bridgedColumns"

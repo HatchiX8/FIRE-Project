@@ -15,7 +15,10 @@
       <baseButton class="ml-auto" color="primary" @click="openAssetDialog">新增資產</baseButton>
     </div>
 
-    <loadingAreaOverlay :loadingId="portfolioStore.holdingsLoading" class="px-0">
+    <loadingAreaOverlay
+      :loadingId="portfolioStore.holdingsLoading"
+      class="mx-auto max-w-6xl px-0 px-4"
+    >
       <baseTable
         v-if="!isHoldingsLoading && !isSummaryLoading"
         :columns="bridgedColumns"
