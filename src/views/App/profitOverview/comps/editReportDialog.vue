@@ -107,7 +107,7 @@ const rules: FormRules = {
 // ---------------------------
 
 // ----------表單事件----------
-// 當父層傳入 assetValue 時把資料複製到 local form
+// 當父層傳入 reportValue 時把資料複製到 local form
 watch(
   () => props.reportValue,
   (v) => {

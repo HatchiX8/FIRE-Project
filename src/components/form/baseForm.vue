@@ -1,13 +1,6 @@
 <template>
   <n-form-item :label="label" :path="path">
-    <component
-      :is="component"
-      v-bind="{
-        ...componentProps,
-        [valueProp]: modelValue,
-      }"
-      @[updateEvent]="onUpdate"
-    />
+    <component :is="component" v-bind="mergedProps" @[updateEvent]="onUpdate" />
   </n-form-item>
 </template>
 
@@ -31,4 +24,13 @@ const emit = defineEmits<{
 const valueProp = props.valueProp ?? 'value';
 const updateEvent = props.updateEvent ?? 'update:value';
 const onUpdate = (v: unknown) => emit('update:modelValue', v);
+
+// 若 componentProps 已有該 valueProp 則優先，否則塞 modelValue
+const mergedProps = computed(() => {
+  const cp = { ...(props.componentProps ?? {}) } as Record<string, unknown>;
+  if (cp[valueProp] === undefined) {
+    cp[valueProp] = props.modelValue;
+  }
+  return cp;
+});
 </script>

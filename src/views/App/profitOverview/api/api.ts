@@ -41,4 +41,9 @@ export const editReportData = async (tradesId: string, payload: EditReportPayloa
   const res = await instance.patch<apiResponse<null>>(`/api/v1/dashboard/${tradesId}`, payload);
   return res.data;
 };
+
+export const deleteReportData = async (tradesId: string) => {
+  const res = await instance.delete<apiResponse<null>>(`/api/v1/dashboard/${tradesId}`);
+  return res.data;
+};
 // -------------------------------
