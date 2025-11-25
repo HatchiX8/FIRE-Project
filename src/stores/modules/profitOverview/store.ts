@@ -7,6 +7,7 @@ import {
   getTrendChartData,
   addReportData,
   editReportData,
+  deleteReportData,
 } from '@/views/App/profitOverview/api/index';
 // 共用型別
 import type {
@@ -91,6 +92,19 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   };
   // ---------------------------
 
+  // ----------刪除資產----------
+  const deleteReportLoading = 'useDeleteReportLoading';
+
+  const deleteReport = async (tradesId: string) => {
+    const res = await handleApiResponse(() => deleteReportData(tradesId), {
+      loadingStore: areaLoading,
+      loadingKey: deleteReportLoading,
+    });
+
+    return res;
+  };
+  // ---------------------------
+
   return {
     // ----------趨勢圖資訊----------
     trendChartData,
@@ -107,6 +121,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
     // ----------歷史資料操作----------
     addReport,
     editReport,
+    deleteReport,
     // -------------------------------
   };
 });

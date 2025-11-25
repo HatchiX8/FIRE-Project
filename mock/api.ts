@@ -16,6 +16,7 @@ import {
   sellAssets,
   addReports,
   editReports,
+  deleteReports,
 } from './mockApi/index';
 
 export default [
@@ -48,5 +49,6 @@ export default [
   dashboardTrendChart,
   addReports,
   editReports,
+  deleteReports,
   // ---------------------------
 ] as MockMethod[];

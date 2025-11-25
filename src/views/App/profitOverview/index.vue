@@ -60,7 +60,12 @@
     :loading="submitting"
     @submitEditReport="requestEditReport"
   />
-  <deleteReportDialog v-model="deleteReportDlgOpen" :loading="submitting" />
+  <deleteReportDialog
+    :reportValue="selectedReport"
+    v-model="deleteReportDlgOpen"
+    :loading="submitting"
+    @submitDeleteReport="requestDeleteReport"
+  />
 </template>
 <script setup lang="ts">
 // ----------import----------
@@ -249,6 +254,8 @@ const openEditReportDialog = (reportRow: StockRow) => {
 const deleteReportDlgOpen = ref(false);
 
 const openDeleteReportDialog = (reportRow: StockRow) => {
+  clearSelectedAsset();
+  selectedReport.value = reportRow;
   console.log('觸發點擊，ID為:', reportRow);
   deleteReportDlgOpen.value = true;
 };
@@ -309,6 +316,18 @@ const requestEditReport = async (payload: {
   } else {
     console.log('✅ 成功編輯資產:', res.success);
     editReportDlgOpen.value = false;
+  }
+};
+
+// 刪除歷史交易數據
+const requestDeleteReport = async (reportId: string) => {
+  const res = await profitOverviewStore.deleteReport(reportId);
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功刪除資產:', res.success);
+    deleteReportDlgOpen.value = false;
   }
 };
 // ---------------------------
