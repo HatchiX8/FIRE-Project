@@ -18,6 +18,16 @@ import { baseButton, baseTable } from '@/components/index';
 // 商業邏輯
 // ---------------------------
 
+// ----------props&emit----------
+const props = defineProps<{
+  tableData: StockRow[];
+}>();
+
+// const emit = defineEmits<{
+//   (e: 'emit', emitValue): void;
+// }>();
+// ------------------------------
+
 // ----------欄位設定----------
 interface StockRow {
   id: string;
@@ -68,51 +78,12 @@ const columns: DataTableColumns<StockRow> = [
   },
 ];
 
-const fakeData: StockRow[] = [
-  {
-    id: 'uuid-1234',
-    name: '陳大大',
-    upgradeReason: '我想要申請成為正式會員',
-    createdAt: '2025/07/28 10:32',
-  },
-  {
-    id: 'uuid-2345',
-    name: '張大大',
-    upgradeReason: '你好，我想申請成為會員',
-    createdAt: '2025/07/28 10:42',
-  },
-  {
-    id: 'uuid-2345',
-    name: '張大大',
-    upgradeReason: '你好，我想申請成為會員',
-    createdAt: '2025/07/28 10:42',
-  },
-  {
-    id: 'uuid-2345',
-    name: '張大大',
-    upgradeReason: '你好，我想申請成為會員',
-    createdAt: '2025/07/28 10:42',
-  },
-  {
-    id: 'uuid-2345',
-    name: '張大大',
-    upgradeReason: '你好，我想申請成為會員',
-    createdAt: '2025/07/28 10:42',
-  },
-  {
-    id: 'uuid-2345',
-    name: '張大大',
-    upgradeReason: '你好，我想申請成為會員',
-    createdAt: '2025/07/28 10:42',
-  },
-];
-
 const expanded = ref<Array<string | number>>([]);
 // ----------斷言----------
 /** ✅ 這三個是「橋接變數」，把 TS 斷言放到 script */
 const bridgedColumns = columns as unknown as DataTableColumns<Record<string, unknown>>;
 
-const bridgedData = fakeData as unknown as Record<string, unknown>[];
+const bridgedData = computed(() => props.tableData as unknown as Record<string, unknown>[]);
 
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).id;
 // ------------------------

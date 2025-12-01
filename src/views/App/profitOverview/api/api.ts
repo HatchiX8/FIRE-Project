@@ -47,3 +47,24 @@ export const deleteReportData = async (tradesId: string) => {
   return res.data;
 };
 // -------------------------------
+
+// ----------資金操作----------
+// 投入
+export const investDeposit = async (amount: number) => {
+  const res = await instance.post<apiResponse<null>>(`/api/v1/users/update/totalInvest/deposit`, {
+    amount,
+  });
+  return res.data;
+};
+
+// 提領
+export const investWithdrawal = async (amount: number) => {
+  const res = await instance.post<apiResponse<null>>(
+    `/api/v1/users/update/totalInvest/withdrawal`,
+    {
+      amount,
+    }
+  );
+  return res.data;
+};
+// ---------------------------

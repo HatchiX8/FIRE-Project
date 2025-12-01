@@ -112,7 +112,7 @@ const expanded = ref<Array<string | number>>([]);
 /** ✅ 這三個是「橋接變數」，把 TS 斷言放到 script */
 const bridgedColumns = columns as unknown as DataTableColumns<Record<string, unknown>>;
 
-const bridgedData = fakeData as unknown as Record<string, unknown>[];
+const bridgedData = computed(() => fakeData as unknown as Record<string, unknown>[]);
 
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).id;
 // ------------------------

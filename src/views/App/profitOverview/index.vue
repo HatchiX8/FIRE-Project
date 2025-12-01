@@ -25,6 +25,7 @@
 
       <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
     </div>
+
     <loadingAreaOverlay
       :loadingId="profitOverviewStore.totalTradesLoading"
       class="mx-auto max-w-6xl px-0 px-4"
@@ -211,15 +212,15 @@ const totalInvestDlgOpen = ref(false);
 
 const currentInvest = ref(1250000);
 
-async function onSubmit(payload: { mode: 'deposit' | 'withdraw'; amount: number }) {
+const onSubmit = async (payload: { mode: 'deposit' | 'withdraw'; amount: number }) => {
   submitting.value = true;
   try {
     if (payload.mode === 'deposit') {
       console.log('觸發投入資金API');
-      // ← 實作你的 API
+      requestDepositInvest(payload.amount);
     } else {
       console.log('觸發提領資金API');
-      // ← 實作你的 API
+      requestWithdrawInvest(payload.amount);
     }
     // 成功後：關窗 + refresh
     // dlgOpen.value = false;
@@ -227,7 +228,7 @@ async function onSubmit(payload: { mode: 'deposit' | 'withdraw'; amount: number 
   } finally {
     submitting.value = false;
   }
-}
+};
 // ---------------------------
 
 // ----------新增資產----------
@@ -328,6 +329,28 @@ const requestDeleteReport = async (reportId: string) => {
   } else {
     console.log('✅ 成功刪除資產:', res.success);
     deleteReportDlgOpen.value = false;
+  }
+};
+
+const requestDepositInvest = async (amount: number) => {
+  const res = await profitOverviewStore.deposit(amount);
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功投入資金:', res.success);
+    totalInvestDlgOpen.value = false;
+  }
+};
+
+const requestWithdrawInvest = async (amount: number) => {
+  const res = await profitOverviewStore.withdrawal(amount);
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    return;
+  } else {
+    console.log('✅ 成功提領資金:', res.success);
+    totalInvestDlgOpen.value = false;
   }
 };
 // ---------------------------
