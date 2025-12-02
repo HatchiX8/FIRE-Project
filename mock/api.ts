@@ -20,6 +20,7 @@ import {
   investDeposit,
   investWithdrawal,
   userUpgradeList,
+  userMemberList,
 } from './mockApi/index';
 
 export default [
@@ -62,5 +63,6 @@ export default [
 
   // ----------管理者頁面----------
   userUpgradeList,
+  userMemberList,
   // -----------------------------
 ] as MockMethod[];

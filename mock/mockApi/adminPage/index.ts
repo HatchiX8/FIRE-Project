@@ -3,7 +3,7 @@ export const userUpgradeList = {
   method: 'get',
   response: () => ({
     status: true,
-    message: '成功取得使用者資料',
+    message: '成功取得申請者資料',
     data: [
       {
         id: 'uuid-1234',
@@ -16,6 +16,29 @@ export const userUpgradeList = {
         name: '張大大',
         upgradeReason: '你好，我想申請成為會員',
         createdAt: '2025/07/28 10:42',
+      },
+    ],
+  }),
+};
+
+export const userMemberList = {
+  url: '/api/v1/admin/member',
+  method: 'get',
+  response: () => ({
+    status: true,
+    message: '成功取得使用者資料',
+    data: [
+      {
+        id: 'uuid-9453',
+        name: '吳大大',
+        memberAge: 364,
+        adminNote: '正常會員',
+      },
+      {
+        id: 'uui-5379',
+        name: '王大大',
+        memberAge: 256,
+        adminNote: '正常會員',
       },
     ],
   }),

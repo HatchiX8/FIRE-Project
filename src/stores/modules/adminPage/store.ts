@@ -1,9 +1,9 @@
 // ----------import----------
 // 套件
 // API
-import { getUserUpgradeList } from '@/views/App/adminPage/api/index';
+import { getUserUpgradeList, getUserMemberList } from '@/views/App/adminPage/api/index';
 // 共用型別
-import type { UserUpgradeRequest } from '@/views/App/adminPage/api/index';
+import type { UserUpgradeRequest, UserMemberRequest } from '@/views/App/adminPage/api/index';
 // 元件
 // 商業邏輯
 import { handleApiResponse } from '@/utils/index';
@@ -28,5 +28,17 @@ export const useAdminPageStore = defineStore('adminPage', () => {
     });
   // -------------------------------
 
-  return { upgradeList, fetchUserUpgradeList };
+  // ----------取得使用者列表----------
+  const memberList = ref<UserMemberRequest[]>([]);
+  const memberListLoading = 'useMemberListLoading';
+
+  const fetchUserMemberList = async () =>
+    await handleApiResponse(() => getUserMemberList(), {
+      loadingStore: areaLoading,
+      loadingKey: memberListLoading,
+      target: memberList,
+    });
+  // ---------------------------------
+
+  return { upgradeList, fetchUserUpgradeList, memberList, fetchUserMemberList };
 });

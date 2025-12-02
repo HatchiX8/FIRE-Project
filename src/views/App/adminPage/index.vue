@@ -1,7 +1,7 @@
 <template>
   <div class="md:(px-4 mx-auto) max-w-6xl">
     <upgradeTable :tableData="adminPageStore.upgradeList" />
-    <memberTable />
+    <memberTable :tableData="adminPageStore.memberList" />
   </div>
 </template>
 <script setup lang="ts">
@@ -23,9 +23,15 @@ const requestUserUpgradeList = async () => {
   await adminPageStore.fetchUserUpgradeList();
 };
 
+const requestUserMemberList = async () => {
+  await adminPageStore.fetchUserMemberList();
+};
+
 onMounted(async () => {
   await requestUserUpgradeList();
+  await requestUserMemberList();
   console.log('檢視表格資料', adminPageStore.upgradeList);
+  console.log('檢視表格資料', adminPageStore.memberList);
 });
 // -------------------------
 </script>
