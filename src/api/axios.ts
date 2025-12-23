@@ -43,6 +43,7 @@ instance.interceptors.response.use(
   }
 );
 
+// API 請求包裝函式
 export const requestApi = async <T>(
   task: () => Promise<AxiosResponse<ApiBody<T>>>
 ): Promise<ApiResult<T>> => {

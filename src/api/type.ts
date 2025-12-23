@@ -1,7 +1,3 @@
-export interface apiResponse<T> {
-  message?: string;
-  data?: T;
-}
 export interface ApiBody<T> {
   message?: string;
   data?: T;
