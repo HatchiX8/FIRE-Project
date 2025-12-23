@@ -7,7 +7,8 @@ import { login, loginCheck } from '@/api/index';
 import type { userInfo } from '@/api/index';
 // 元件
 // 商業邏輯
-import { handleApiResponse, handleErrorMsg } from '@/utils/index';
+import { handleApiResponse } from '@/utils/index';
+import { notify } from '@/utils/index';
 // store
 
 // --------------------------
@@ -57,9 +58,9 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem(TOKEN_KEY);
 
     if (reason === 'expired') {
-      handleErrorMsg('登入已過期，請重新登入');
+      notify('warning', '登入已過期，請重新登入');
     } else if (reason === 'manual') {
-      handleErrorMsg('已成功登出');
+      notify('success', '已成功登出');
     }
   };
 

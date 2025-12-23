@@ -23,7 +23,7 @@
         v-else
         href="#"
         class="text-6 text-primary hover:text-primaryHover mr-4"
-        @click="userStore.logout"
+        @click="userStore.logout('manual')"
         ><div class="i-mdi:login-variant"></div
       ></a>
       <!-- <baseButton color="primary" class="mr-2" ghost><div class="i-mdi:logout"></div></baseButton> -->
