@@ -1,49 +1,66 @@
-import instance from '@/api/axios';
-import type { apiResponse } from '@/api/type';
+import instance, { requestApi } from '@/api/axios';
+import type { ApiResult, ApiBody } from '@/api/type';
 import type { NewReportPayload, EditReportPayload, TotalTradesData, TrendChartData } from './index';
 // ----------損益概況資訊----------
 // 取得損益概況資訊
-export const getTotalTradesData = async (year: number, month: number, page: number) => {
+export const getTotalTradesData = (
+  year: number,
+  month: number,
+  page: number
+): Promise<ApiResult<TotalTradesData>> => {
   const params = new URLSearchParams({
     year: String(year),
     month: String(month),
     page: String(page),
   });
-  const res = await instance.get<apiResponse<TotalTradesData>>(
-    `/api/v1/dashboard/reports?${params.toString()}`
+  return requestApi(() =>
+    instance.get<ApiBody<TotalTradesData>>(`/api/v1/dashboard/reports?${params.toString()}`)
   );
-  return res.data;
 };
+
 // -------------------------------
 
 // ----------趨勢圖點位資料----------
 // 取得損益概況趨勢資料
-export const getTrendChartData = async (year: number) => {
+export const getTrendChartData = (year: number): Promise<ApiResult<TrendChartData>> => {
   const params = new URLSearchParams({
     year: String(year),
   });
-  const res = await instance.get<apiResponse<TrendChartData>>(
-    `/api/v1/dashboard/trends?${params.toString()}`
+  return requestApi(() =>
+    instance.get<ApiBody<TrendChartData>>(`/api/v1/dashboard/trends?${params.toString()}`)
   );
-  return res.data;
 };
+
 // ---------------------------------
 
 // ----------歷史資料操作----------
 // 新增歷史資料
-export const addReportData = async (payload: NewReportPayload) => {
-  const res = await instance.post<apiResponse<null>>(`/api/v1/dashboard/new-reports`, payload);
-  return res.data;
-};
+export const addReportData = (payload: NewReportPayload): Promise<ApiResult<null>> =>
+  requestApi<null>(() => instance.post<ApiBody<null>>(`/api/v1/dashboard/new-reports`, payload));
 
 // 編輯歷史資料
-export const editReportData = async (tradesId: string, payload: EditReportPayload) => {
-  const res = await instance.patch<apiResponse<null>>(`/api/v1/dashboard/${tradesId}`, payload);
-  return res.data;
-};
+export const editReportData = (
+  tradesId: string,
+  payload: EditReportPayload
+): Promise<ApiResult<null>> =>
+  requestApi<null>(() => instance.patch<ApiBody<null>>(`/api/v1/dashboard/${tradesId}`, payload));
 
-export const deleteReportData = async (tradesId: string) => {
-  const res = await instance.delete<apiResponse<null>>(`/api/v1/dashboard/${tradesId}`);
-  return res.data;
-};
+// 刪除歷史資料
+export const deleteReportData = (tradesId: string): Promise<ApiResult<null>> =>
+  requestApi<null>(() => instance.delete<ApiBody<null>>(`/api/v1/dashboard/${tradesId}`));
 // -------------------------------
+
+// ----------資金操作----------
+// 投入
+export const investDeposit = (amount: number): Promise<ApiResult<null>> =>
+  requestApi<null>(() =>
+    instance.post<ApiBody<null>>(`/api/v1/users/update/totalInvest/deposit`, { amount })
+  );
+
+// 提領
+export const investWithdrawal = (amount: number): Promise<ApiResult<null>> =>
+  requestApi<null>(() =>
+    instance.post<ApiBody<null>>(`/api/v1/users/update/totalInvest/withdrawal`, { amount })
+  );
+
+// ---------------------------

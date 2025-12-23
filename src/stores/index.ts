@@ -5,3 +5,4 @@ export * from './modules/stockMeta/store';
 export * from './modules/portfolio/store';
 export * from './modules/useProfile/store';
 export * from './modules/profitOverview/store';
+export * from './modules/adminPage/store';

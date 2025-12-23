@@ -8,6 +8,7 @@ export * from './api/handleApiError';
 // ---------------------------
 
 export * from './feedback/confirm';
+export * from './feedback/notify';
 
 export * from './format/formatPriceSmart'; // 價格格式化
 export * from './format/formatStockLabel'; // 股票標籤格式化

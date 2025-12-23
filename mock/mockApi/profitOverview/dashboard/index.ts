@@ -83,3 +83,21 @@ export const dashboardTrendChart = {
     },
   }),
 };
+
+export const investDeposit = {
+  url: '/api/v1/users/update/totalInvest/deposit',
+  method: 'post',
+  response: () => ({
+    status: true,
+    message: '成功更新投資金額',
+  }),
+};
+
+export const investWithdrawal = {
+  url: '/api/v1/users/update/totalInvest/withdrawal',
+  method: 'post',
+  response: () => ({
+    status: true,
+    message: '成功更新投資金額',
+  }),
+};

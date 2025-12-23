@@ -74,18 +74,21 @@ const form = ref({ amount: 0 as number }); // 表單資料
 const rules: FormRules = {
   amount: [
     { required: true, type: 'number', message: '請輸入金額', trigger: ['input', 'blur'] },
+    // 金額需 > 0
     {
-      validator: (_r, v: number) => (v > 0 ? true : new Error('金額需 > 0')),
+      validator: (_r, v: number) => {
+        if (v > 0) return true;
+        return Promise.reject('金額需 > 0');
+      },
       trigger: ['input', 'blur'],
     },
+    // 提領不得超過當前投資金
     {
-      // 提領不得超過當前投資金
-      validator: (_r, v: number) =>
-        isWithdraw.value
-          ? v <= props.currentInvest
-            ? true
-            : new Error('不得超過當前投資金')
-          : true,
+      validator: (_r, v: number) => {
+        if (!isWithdraw.value) return true;
+        if (v <= props.currentInvest) return true;
+        return Promise.reject('不得超過當前投資金');
+      },
       trigger: ['input', 'blur'],
     },
   ],
@@ -99,8 +102,15 @@ const formatAmount = (n: number) => n.toLocaleString('zh-TW');
 
 // 確定送出
 const onOk = async () => {
-  await formRef.value?.validate();
-  emit('submit', { mode: mode.value, amount: Number(form.value.amount) });
+  if (!formRef.value) return;
+
+  try {
+    await formRef.value.validate(); // 失敗會丟錯
+    // ✅ 驗證通過才送出
+    emit('submit', { mode: mode.value, amount: Number(form.value.amount) });
+  } catch {
+    return;
+  }
 };
 
 // 取消關閉

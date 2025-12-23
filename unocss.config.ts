@@ -5,7 +5,7 @@ import {
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss';
-import { themeColors } from './src/utils/index';
+import { themeColors } from './src/utils/config/uno-theme';
 
 export default defineConfig({
   presets: [
