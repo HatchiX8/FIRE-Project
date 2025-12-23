@@ -1,5 +1,5 @@
 import { getErrorMessage } from './apiErrorMessage';
-import { notify } from '@/utils/index';
+import { notify } from '../feedback/notify';
 
 export type ApiResult<T> =
   | { ok: true; status: number; data: T; message?: string }

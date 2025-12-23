@@ -3,18 +3,34 @@ import type { ApiResult, ApiBody } from '@/api/type';
 import type { NewReportPayload, EditReportPayload, TotalTradesData, TrendChartData } from './index';
 // ----------損益概況資訊----------
 // 取得損益概況資訊
-export const getTotalTradesData = (): Promise<ApiResult<TotalTradesData>> =>
-  requestApi(() => instance.get<ApiBody<TotalTradesData>>(`/api/v1/dashboard/reports`));
+export const getTotalTradesData = (
+  year: number,
+  month: number,
+  page: number
+): Promise<ApiResult<TotalTradesData>> => {
+  const params = new URLSearchParams({
+    year: String(year),
+    month: String(month),
+    page: String(page),
+  });
+  return requestApi(() =>
+    instance.get<ApiBody<TotalTradesData>>(`/api/v1/dashboard/reports?${params.toString()}`)
+  );
+};
+
 // -------------------------------
 
 // ----------趨勢圖點位資料----------
 // 取得損益概況趨勢資料
-export const getTrendChartData = (year: number): Promise<ApiResult<TrendChartData>> =>
-  requestApi(() =>
-    instance.get<ApiBody<TrendChartData>>(
-      `/api/v1/dashboard/trends?year=${encodeURIComponent(String(year))}`
-    )
+export const getTrendChartData = (year: number): Promise<ApiResult<TrendChartData>> => {
+  const params = new URLSearchParams({
+    year: String(year),
+  });
+  return requestApi(() =>
+    instance.get<ApiBody<TrendChartData>>(`/api/v1/dashboard/trends?${params.toString()}`)
   );
+};
+
 // ---------------------------------
 
 // ----------歷史資料操作----------
@@ -36,13 +52,15 @@ export const deleteReportData = (tradesId: string): Promise<ApiResult<null>> =>
 
 // ----------資金操作----------
 // 投入
-export const investDeposit = (): Promise<ApiResult<null>> =>
-  requestApi<null>(() => instance.post<ApiBody<null>>(`/api/v1/users/update/totalInvest/deposit`));
+export const investDeposit = (amount: number): Promise<ApiResult<null>> =>
+  requestApi<null>(() =>
+    instance.post<ApiBody<null>>(`/api/v1/users/update/totalInvest/deposit`, { amount })
+  );
 
 // 提領
-export const investWithdrawal = (): Promise<ApiResult<null>> =>
+export const investWithdrawal = (amount: number): Promise<ApiResult<null>> =>
   requestApi<null>(() =>
-    instance.post<ApiBody<null>>(`/api/v1/users/update/totalInvest/withdrawal`)
+    instance.post<ApiBody<null>>(`/api/v1/users/update/totalInvest/withdrawal`, { amount })
   );
 
 // ---------------------------

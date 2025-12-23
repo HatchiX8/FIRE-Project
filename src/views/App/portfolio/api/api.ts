@@ -15,8 +15,10 @@ export const getSummaryData = (): Promise<ApiResult<SummaryData>> =>
 
 // ----------持股配置----------
 // 取得使用者持股配置
-export const getHoldingsData = (): Promise<ApiResult<HoldingsData>> =>
-  requestApi(() => instance.get<ApiBody<HoldingsData>>(`/api/v1/users/portfolio/holdings`));
+export const getHoldingsData = (page: number): Promise<ApiResult<HoldingsData>> =>
+  requestApi(() =>
+    instance.get<ApiBody<HoldingsData>>(`/api/v1/users/portfolio/holdings?page=${page}`)
+  );
 
 // 新增持股
 export const addStockData = (payload: AddStockPayload): Promise<ApiResult<null>> =>
