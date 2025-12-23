@@ -19,14 +19,18 @@ import { baseButton, baseTable } from '@/components/index';
 // 商業邏輯
 // ---------------------------
 
+// ----------type----------
+type ReviewAction = 'DOWNGRADE' | 'BAN';
+// ------------------------
+
 // ----------props&emit----------
 const props = defineProps<{
   tableData: StockRow[];
 }>();
 
-// const emit = defineEmits<{
-//   (e: 'emit', emitValue): void;
-// }>();
+const emit = defineEmits<{
+  (e: 'review', payload: { id: string; action: ReviewAction }): void;
+}>();
 // ------------------------------
 
 // ----------欄位設定----------
@@ -67,12 +71,12 @@ const columns: DataTableColumns<StockRow> = [
       h('div', { class: 'mt-2 ml-auto flex flex-col gap-2' }, [
         h(
           baseButton,
-          { size: 'small', color: 'success', onClick: () => openDialog(row.id) },
+          { size: 'small', color: 'success', onClick: () => requestReview(row.id, 'DOWNGRADE') },
           { default: () => '降階' }
         ),
         h(
           baseButton,
-          { size: 'small', color: 'danger', onClick: () => openDialog(row.id) },
+          { size: 'small', color: 'danger', onClick: () => requestReview(row.id, 'BAN') },
           { default: () => '封鎖' }
         ),
       ]),
@@ -89,8 +93,8 @@ const bridgedData = computed(() => props.tableData as unknown as Record<string, 
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).id;
 // ------------------------
 
-const openDialog = (stockId: string) => {
-  // 打開對話框的邏輯
-  console.log('觸發點擊，ID為:', stockId);
+const requestReview = (id: string, action: ReviewAction) => {
+  emit('review', { id, action });
+  console.log('送出審核', { id, action });
 };
 </script>

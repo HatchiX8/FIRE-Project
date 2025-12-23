@@ -1,9 +1,17 @@
 // ----------import----------
 // 套件
 // API
-import { getUserUpgradeList, getUserMemberList } from '@/views/App/adminPage/api/index';
+import {
+  getUserUpgradeList,
+  getUserMemberList,
+  apiReviewUserUpgrade,
+} from '@/views/App/adminPage/api/index';
 // 共用型別
-import type { UserUpgradeRequest, UserMemberRequest } from '@/views/App/adminPage/api/index';
+import type {
+  UserUpgradeRequest,
+  UserMemberRequest,
+  UserUpgradeReviewPayload,
+} from '@/views/App/adminPage/api/index';
 // 元件
 // 商業邏輯
 import { handleApiResponse } from '@/utils/index';
@@ -40,5 +48,22 @@ export const useAdminPageStore = defineStore('adminPage', () => {
     });
   // ---------------------------------
 
-  return { upgradeList, fetchUserUpgradeList, memberList, fetchUserMemberList };
+  // ----------審核申請----------
+  const reviewUserUpgradeLoading = 'reviewUserUpgradeLoading';
+
+  const reviewUserUpgrade = async (userId: string, payload: UserUpgradeReviewPayload) =>
+    await handleApiResponse(() => apiReviewUserUpgrade(userId, payload), {
+      loadingStore: areaLoading,
+      loadingKey: reviewUserUpgradeLoading,
+    });
+  // ---------------------------
+
+  return {
+    upgradeList,
+    fetchUserUpgradeList,
+    memberList,
+    fetchUserMemberList,
+    reviewUserUpgradeLoading,
+    reviewUserUpgrade,
+  };
 });

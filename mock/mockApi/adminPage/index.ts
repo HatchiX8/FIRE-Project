@@ -43,3 +43,12 @@ export const userMemberList = {
     ],
   }),
 };
+
+export const userUpgradeReview = {
+  url: '/api/v1/admin/upgrade-requests/:userId/review',
+  method: 'patch',
+  response: () => ({
+    status: true,
+    message: '使用者審核通過',
+  }),
+};

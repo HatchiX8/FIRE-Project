@@ -18,3 +18,8 @@ export interface UserMemberRequest {
   memberAge: number;
   adminNote: string;
 }
+
+export interface UserUpgradeReviewPayload {
+  status: 'Cleared' | 'Rejected';
+  adminNote?: string;
+}
