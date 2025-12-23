@@ -1,9 +1,3 @@
-export interface apiResponse<T> {
-  status: boolean;
-  message: string;
-  data: T;
-}
-
 export interface userInfo {
   token: string;
   user: {

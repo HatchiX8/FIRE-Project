@@ -1,5 +1,5 @@
-import instance from '@/api/axios';
-import type { apiResponse } from '@/api/type';
+import instance, { requestApi } from '@/api/axios';
+import type { ApiResult, ApiBody } from '@/api/type';
 import type {
   SummaryData,
   HoldingsData,
@@ -9,41 +9,35 @@ import type {
 } from './index';
 
 // ----------取得使用者資金配置----------
-export const getSummaryData = async () => {
-  const res = await instance.get<apiResponse<SummaryData>>(`/api/v1/users/portfolio/summary`);
-  return res.data;
-};
+export const getSummaryData = (): Promise<ApiResult<SummaryData>> =>
+  requestApi(() => instance.get<ApiBody<SummaryData>>(`/api/v1/users/portfolio/summary`));
 // -------------------------------------
 
 // ----------持股配置----------
 // 取得使用者持股配置
-export const getHoldingsData = async (page: number) => {
-  const res = await instance.get<apiResponse<HoldingsData>>(
-    `/api/v1/users/portfolio/holdings?page=${page}`
-  );
-  return res.data;
-};
+export const getHoldingsData = (): Promise<ApiResult<HoldingsData>> =>
+  requestApi(() => instance.get<ApiBody<HoldingsData>>(`/api/v1/users/portfolio/holdings`));
 
-export const addStockData = async (payload: AddStockPayload) => {
-  const res = await instance.post<apiResponse<null>>(`/api/v1/assets/new-asset`, payload);
-  return res.data;
-};
+// 新增持股
+export const addStockData = (payload: AddStockPayload): Promise<ApiResult<null>> =>
+  requestApi<null>(() => instance.post<ApiBody<null>>(`/api/v1/assets/new-asset`, payload));
 
 // 編輯持股
-export const editStockData = async (assetId: string, payload: EditStockPayload) => {
-  const res = await instance.patch<apiResponse<null>>(`/api/v1/assets/${assetId}`, payload);
-  return res.data;
-};
+export const editStockData = (
+  assetId: string,
+  payload: EditStockPayload
+): Promise<ApiResult<null>> =>
+  requestApi<null>(() => instance.patch<ApiBody<null>>(`/api/v1/assets/${assetId}`, payload));
 
 // 刪除持股
-export const deleteStockData = async (assetId: string) => {
-  const res = await instance.delete<apiResponse<null>>(`/api/v1/assets/${assetId}`);
-  return res.data;
-};
+export const deleteStockData = (assetId: string): Promise<ApiResult<null>> =>
+  requestApi<null>(() => instance.delete<ApiBody<null>>(`/api/v1/assets/${assetId}`));
 
 // 賣出持股
-export const sellStockData = async (assetId: string, payload: SellStockPayload) => {
-  const res = await instance.post<apiResponse<null>>(`/api/v1/assets/${assetId}`, payload);
-  return res.data;
-};
+export const sellStockData = (
+  assetId: string,
+  payload: SellStockPayload
+): Promise<ApiResult<null>> =>
+  requestApi<null>(() => instance.post<ApiBody<null>>(`/api/v1/assets/${assetId}`, payload));
+
 // ---------------------------

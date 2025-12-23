@@ -1,26 +1,27 @@
-import instance from '@/api/axios';
-import type { apiResponse } from '@/api/type';
+import instance, { requestApi } from '@/api/axios';
+import type { ApiResult, ApiBody } from '@/api/type';
 import type { UserUpgradeRequest, UserMemberRequest, UserUpgradeReviewPayload } from './index';
 
 // ----------管理者頁面----------
 // 取得申請升級使用者列表
-export const getUserUpgradeList = async () => {
-  const res = await instance.get<apiResponse<UserUpgradeRequest[]>>(
-    `/api/v1/admin/upgrade-requests`
+export const getUserUpgradeList = (): Promise<ApiResult<UserUpgradeRequest[]>> =>
+  requestApi<UserUpgradeRequest[]>(() =>
+    instance.get<ApiBody<UserUpgradeRequest[]>>(`/api/v1/admin/upgrade-requests`)
   );
-  return res.data;
-};
 
-export const getUserMemberList = async () => {
-  const res = await instance.get<apiResponse<UserMemberRequest[]>>(`/api/v1/admin/member`);
-  return res.data;
-};
-
-export const apiReviewUserUpgrade = async (userId: string, payload: UserUpgradeReviewPayload) => {
-  const res = await instance.patch<apiResponse<null>>(
-    `/api/v1/admin/upgrade-requests/${userId}/review`,
-    payload
+// 取得使用者列表
+export const getUserMemberList = (): Promise<ApiResult<UserMemberRequest[]>> =>
+  requestApi<UserMemberRequest[]>(() =>
+    instance.get<ApiBody<UserMemberRequest[]>>(`/api/v1/admin/member`)
   );
-  return res.data;
-};
+
+// 審核使用者升級申請
+export const apiReviewUserUpgrade = (
+  userId: string,
+  payload: UserUpgradeReviewPayload
+): Promise<ApiResult<null>> =>
+  requestApi<null>(() =>
+    instance.patch<ApiBody<null>>(`/api/v1/admin/upgrade-requests/${userId}/review`, payload)
+  );
+
 // -----------------------------

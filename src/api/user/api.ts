@@ -1,14 +1,11 @@
-import instance from '@/api/axios';
-import type { userInfo, apiResponse } from './types';
+import instance, { requestApi } from '@/api/axios';
+import type { ApiResult, ApiBody } from '@/api/type';
+import type { userInfo } from './types';
 
 // 登入
-export const login = async () => {
-  const res = await instance.get<apiResponse<userInfo>>('/api/v1/users/auth/google');
-  return res.data;
-};
+export const login = (): Promise<ApiResult<userInfo>> =>
+  requestApi<userInfo>(() => instance.get<ApiBody<userInfo>>('/api/v1/users/auth/google'));
 
 // 驗證登入狀態
-export const loginCheck = async () => {
-  const res = await instance.get<apiResponse<userInfo>>('/api/v1/users/check');
-  return res.data;
-};
+export const loginCheck = (): Promise<ApiResult<userInfo>> =>
+  requestApi<userInfo>(() => instance.get<ApiBody<userInfo>>('/api/v1/users/check'));
