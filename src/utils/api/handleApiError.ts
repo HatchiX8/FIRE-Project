@@ -15,3 +15,7 @@ export const handleApiError = (err: unknown) => {
     message.error(error.response?.data?.message || '未知錯誤');
   }
 };
+
+export const handleErrorMsg = (errMsg: string) => {
+  message.error(errMsg || '未知錯誤');
+};
