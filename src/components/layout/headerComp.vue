@@ -23,7 +23,7 @@
         v-else
         href="#"
         class="text-6 text-primary hover:text-primaryHover mr-4"
-        @click="userStore.logout('manual')"
+        @click="userLogout()"
         ><div class="i-mdi:login-variant"></div
       ></a>
       <!-- <baseButton color="primary" class="mr-2" ghost><div class="i-mdi:logout"></div></baseButton> -->
@@ -44,15 +44,30 @@ import { useUserStore, useStockMetaStore } from '@/stores/index';
 // ----------初始化-----------
 const userStore = useUserStore();
 const stockMetaStore = useStockMetaStore();
+const router = useRouter();
+
+// 每次進入頁面檢查登入狀態
+onMounted(async () => {
+  const r = await userStore.ensureMe();
+
+  if (r.success) {
+    await stockMetaStore.fetchStockMeta();
+  }
+});
 
 const userLogin = async () => {
-  const res = await userStore.requestLogin();
+  window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/v1/user/google`;
+};
+
+const userLogout = async () => {
+  const res = await userStore.requestLogout('manual');
   if (!res.success) {
     // 這裡可以根據需求做錯誤提示或重導
     return;
   }
-  console.log('API:登入成功', res);
-  await stockMetaStore.fetchStockMeta();
+  console.log('API:登出成功', res);
+
+  router.push('/Landing/home');
 };
 // ---------------------------
 </script>

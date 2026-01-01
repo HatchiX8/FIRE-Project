@@ -58,7 +58,11 @@ export const handleApiResponse = <T, K extends string = string>(
 
       // 401 已由 interceptor -> logout('expired') 統一處理與提示，這裡排除避免重複
       if (shouldNotify && api.status !== 401) {
-        notify('error', api.message);
+        if (api.status === 404) {
+          notify('error', 'API請求異常，請確認');
+        } else {
+          notify('error', api.message);
+        }
       }
 
       throw new Error(api.message);
