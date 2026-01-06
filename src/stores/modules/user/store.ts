@@ -7,7 +7,7 @@ import { login, loginCheck, refreshCookie, logout } from '@/api/index';
 import type { userInfo } from '@/api/index';
 // 元件
 // 商業邏輯
-import { handleApiResponse } from '@/utils/index';
+import { handleApi } from '@/utils/index';
 import { notify } from '@/utils/index';
 // store
 
@@ -24,7 +24,7 @@ export const useUserStore = defineStore('user', () => {
 
   // 登入請求
   const requestLogin = async () => {
-    const res = await handleApiResponse(() => login(), {
+    const res = await handleApi(() => login(), {
       loadingStore: undefined,
       loadingKey: 'useLoginLoading',
       target: userInfo,
@@ -38,7 +38,7 @@ export const useUserStore = defineStore('user', () => {
 
   // refresh cookie
   const requestRefreshCookie = async () =>
-    await handleApiResponse(() => refreshCookie(), {
+    await handleApi(() => refreshCookie(), {
       loadingStore: undefined,
       loadingKey: 'useRefreshCookieLoading',
       target: token,
@@ -46,7 +46,7 @@ export const useUserStore = defineStore('user', () => {
 
   // 登入驗證請求
   const requestLoginCheck = async () =>
-    await handleApiResponse(() => loginCheck(), {
+    await handleApi(() => loginCheck(), {
       loadingStore: undefined,
       loadingKey: 'useLoginLoading',
       target: userInfo,
@@ -60,7 +60,7 @@ export const useUserStore = defineStore('user', () => {
 
   // 登出
   const requestLogout = async (reason?: 'expired' | 'manual') => {
-    const res = await handleApiResponse(() => logout(), {
+    const res = await handleApi(() => logout(), {
       loadingStore: undefined,
       loadingKey: 'useLogoutLoading',
     });

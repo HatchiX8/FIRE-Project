@@ -21,7 +21,7 @@ import type {
 } from '@/views/App/portfolio/api/index';
 // 元件
 // 商業邏輯
-import { handleApiResponse } from '@/utils/index';
+import { handleApi } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 
@@ -37,7 +37,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const summaryList = ref<SummaryData>({} as SummaryData);
 
   const fetchSummaryData = async () =>
-    await handleApiResponse(() => getSummaryData(), {
+    await handleApi(() => getSummaryData(), {
       loadingStore: areaLoading,
       loadingKey: summaryLoading,
       target: summaryList,
@@ -54,7 +54,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   });
 
   const fetchHoldingsData = async (page: number) => {
-    const res = await handleApiResponse(() => getHoldingsData(page), {
+    const res = await handleApi(() => getHoldingsData(page), {
       loadingStore: areaLoading,
       loadingKey: holdingsLoading,
       target: holdingsResponse,
@@ -73,7 +73,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const addAssetLoading = 'useAddAssetLoading';
 
   const addAsset = async (payload: AddStockPayload) => {
-    const res = await handleApiResponse(() => addStockData(payload), {
+    const res = await handleApi(() => addStockData(payload), {
       loadingStore: areaLoading,
       loadingKey: addAssetLoading,
     });
@@ -86,7 +86,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const editAssetLoading = 'useEditAssetLoading';
 
   const editAsset = async (assetId: string, payload: EditStockPayload) => {
-    const res = await handleApiResponse(() => editStockData(assetId, payload), {
+    const res = await handleApi(() => editStockData(assetId, payload), {
       loadingStore: areaLoading,
       loadingKey: editAssetLoading,
     });
@@ -99,7 +99,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const deleteAssetLoading = 'useDeleteAssetLoading';
 
   const deleteAsset = async (assetId: string) => {
-    const res = await handleApiResponse(() => deleteStockData(assetId), {
+    const res = await handleApi(() => deleteStockData(assetId), {
       loadingStore: areaLoading,
       loadingKey: deleteAssetLoading,
     });
@@ -112,7 +112,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const sellAssetLoading = 'useSellAssetLoading';
 
   const sellAsset = async (assetId: string, payload: SellStockPayload) => {
-    const res = await handleApiResponse(() => sellStockData(assetId, payload), {
+    const res = await handleApi(() => sellStockData(assetId, payload), {
       loadingStore: areaLoading,
       loadingKey: sellAssetLoading,
     });

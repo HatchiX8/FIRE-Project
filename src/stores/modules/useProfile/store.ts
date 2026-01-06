@@ -11,7 +11,7 @@ import {
 import type { userInfoData, updateUserInfoPayload } from '@/views/App/userProfile/api/index';
 // 元件
 // 商業邏輯
-import { handleApiResponse } from '@/utils/index';
+import { handleApi } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 
@@ -27,19 +27,23 @@ export const userInfoProfileStore = defineStore('userInfoProfile', () => {
   const userInfoLoading = 'useUserInfoLoading';
   const userInfo = ref<userInfoData>({} as userInfoData);
 
-  const fetchUserInfoData = async () =>
-    await handleApiResponse(() => getUserInfoData(), {
+  const fetchUserInfoData = async () => {
+    const res = await handleApi(() => getUserInfoData(), {
       loadingStore: areaLoading,
       loadingKey: userInfoLoading,
       target: userInfo,
     });
+
+    return res;
+  };
+
   // -----------------------------------
 
   // ----------編輯個人資料----------
   const updateInfoLoading = 'updateUserInfoLoading';
 
   const editUpdateUserInfoData = async (data: updateUserInfoPayload) =>
-    await handleApiResponse(() => updateUserInfoData(data), {
+    await handleApi(() => updateUserInfoData(data), {
       loadingStore: areaLoading,
       loadingKey: updateInfoLoading,
     });
@@ -48,8 +52,8 @@ export const userInfoProfileStore = defineStore('userInfoProfile', () => {
   // ----------帳號升級升起----------
   const accountUpgradeLoading = 'accountUpgradeLoading';
 
-  const sendAccountUpgradeRequest = async (note: string) =>
-    await handleApiResponse(() => accountUpgradeRequest({ note }), {
+  const sendAccountUpgradeRequest = async (upgradeReason: string) =>
+    await handleApi(() => accountUpgradeRequest({ upgradeReason }), {
       loadingStore: areaLoading,
       loadingKey: accountUpgradeLoading,
     });
@@ -68,6 +72,7 @@ export const userInfoProfileStore = defineStore('userInfoProfile', () => {
 
     // ----------帳號升級----------
     sendAccountUpgradeRequest,
+    accountUpgradeLoading,
     // ---------------------------
   };
 });

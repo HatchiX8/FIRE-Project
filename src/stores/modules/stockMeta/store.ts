@@ -7,7 +7,7 @@ import { getStockMeta } from '@/api/stockMeta/index';
 import type { StockMeta } from '@/api/stockMeta/index';
 // 元件
 // 商業邏輯
-import { handleApiResponse } from '@/utils/index';
+import { handleApi } from '@/utils/index';
 // store
 // --------------------------
 
@@ -16,7 +16,7 @@ export const useStockMetaStore = defineStore('stockMeta', () => {
 
   // ----------取得股票資訊----------
   const fetchStockMeta = async () => {
-    await handleApiResponse(() => getStockMeta(), {
+    await handleApi(() => getStockMeta(), {
       target: stocks,
     });
   };
