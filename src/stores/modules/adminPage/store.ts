@@ -14,7 +14,7 @@ import type {
 } from '@/views/App/adminPage/api/index';
 // 元件
 // 商業邏輯
-import { handleApiResponse } from '@/utils/index';
+import { handleApi } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 // --------------------------
@@ -29,7 +29,7 @@ export const useAdminPageStore = defineStore('adminPage', () => {
   const upgradeListLoading = 'useUpgradeListLoading';
 
   const fetchUserUpgradeList = async () =>
-    await handleApiResponse(() => getUserUpgradeList(), {
+    await handleApi(() => getUserUpgradeList(), {
       loadingStore: areaLoading,
       loadingKey: upgradeListLoading,
       target: upgradeList,
@@ -41,7 +41,7 @@ export const useAdminPageStore = defineStore('adminPage', () => {
   const memberListLoading = 'useMemberListLoading';
 
   const fetchUserMemberList = async () =>
-    await handleApiResponse(() => getUserMemberList(), {
+    await handleApi(() => getUserMemberList(), {
       loadingStore: areaLoading,
       loadingKey: memberListLoading,
       target: memberList,
@@ -52,7 +52,7 @@ export const useAdminPageStore = defineStore('adminPage', () => {
   const reviewUserUpgradeLoading = 'reviewUserUpgradeLoading';
 
   const reviewUserUpgrade = async (userId: string, payload: UserUpgradeReviewPayload) =>
-    await handleApiResponse(() => apiReviewUserUpgrade(userId, payload), {
+    await handleApi(() => apiReviewUserUpgrade(userId, payload), {
       loadingStore: areaLoading,
       loadingKey: reviewUserUpgradeLoading,
     });

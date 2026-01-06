@@ -21,7 +21,7 @@ import type {
 } from '@/views/App/profitOverview/api/index';
 // 元件
 // 商業邏輯
-import { handleApiResponse } from '@/utils/index';
+import { handleApi } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 // --------------------------
@@ -41,7 +41,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   });
 
   const fetchTrendChartData = async (year: number) =>
-    await handleApiResponse(() => getTrendChartData(year), {
+    await handleApi(() => getTrendChartData(year), {
       loadingStore: areaLoading,
       loadingKey: trendChartLoading,
       target: trendChartData,
@@ -54,7 +54,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   const totalTradesList = ref<TradeItem[]>([]);
 
   const fetchTotalTradesData = async (year: number, month: number, page: number) => {
-    const res = await handleApiResponse(() => getTotalTradesData(year, month, page), {
+    const res = await handleApi(() => getTotalTradesData(year, month, page), {
       loadingStore: areaLoading,
       loadingKey: totalTradesLoading,
       target: totalTradesResponse,
@@ -72,7 +72,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   const addReportLoading = 'useAddReportLoading';
 
   const addReport = async (payload: NewReportPayload) => {
-    const res = await handleApiResponse(() => addReportData(payload), {
+    const res = await handleApi(() => addReportData(payload), {
       loadingStore: areaLoading,
       loadingKey: addReportLoading,
     });
@@ -85,7 +85,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   const editReportLoading = 'useEditReportLoading';
 
   const editReport = async (tradesId: string, payload: EditReportPayload) => {
-    const res = await handleApiResponse(() => editReportData(tradesId, payload), {
+    const res = await handleApi(() => editReportData(tradesId, payload), {
       loadingStore: areaLoading,
       loadingKey: editReportLoading,
     });
@@ -98,7 +98,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   const deleteReportLoading = 'useDeleteReportLoading';
 
   const deleteReport = async (tradesId: string) => {
-    const res = await handleApiResponse(() => deleteReportData(tradesId), {
+    const res = await handleApi(() => deleteReportData(tradesId), {
       loadingStore: areaLoading,
       loadingKey: deleteReportLoading,
     });
@@ -112,7 +112,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   const investLoading = 'useInvestLoading';
 
   const deposit = async (amount: number) => {
-    const res = await handleApiResponse(() => investDeposit(amount), {
+    const res = await handleApi(() => investDeposit(amount), {
       loadingStore: areaLoading,
       loadingKey: investLoading,
     });
@@ -122,7 +122,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
 
   // 提領
   const withdrawal = async (amount: number) => {
-    const res = await handleApiResponse(() => investWithdrawal(amount), {
+    const res = await handleApi(() => investWithdrawal(amount), {
       loadingStore: areaLoading,
       loadingKey: investLoading,
     });
