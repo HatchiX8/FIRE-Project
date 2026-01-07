@@ -20,6 +20,8 @@ export interface UserMemberRequest {
 }
 
 export interface UserUpgradeReviewPayload {
-  status: 'Cleared' | 'Rejected';
+  status: ReviewAction;
   adminNote?: string;
 }
+
+export type ReviewAction = 'approved' | 'rejected';
