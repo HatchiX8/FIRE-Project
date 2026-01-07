@@ -1,13 +1,14 @@
 <template>
   <div class="md:(px-4 mx-auto) max-w-6xl">
     <upgradeTable :tableData="adminPageStore.upgradeList" @review="openDialog" />
-    <!-- <memberTable :tableData="adminPageStore.memberList" @review="openDialog" /> -->
+    <memberTable :tableData="adminPageStore.memberList" @review="openDialog" />
   </div>
 
   <baseDialog
     v-model="confirmVisible"
     :title="confirmTitle"
     :ok-loading="confirmLoading"
+    :width="'80%'"
     @ok="handleConfirm"
     @cancel="handleCancel"
   >
@@ -20,6 +21,7 @@
 // ----------import----------
 // 套件
 // 共用型別
+import type { ReviewAction } from './api/index';
 // 元件
 import upgradeTable from './comps/upgradeTable.vue';
 // import memberTable from './comps/memberTable.vue';
@@ -30,7 +32,7 @@ import { useAdminPageStore } from '@/stores/modules/adminPage/store';
 // ---------------------------
 
 // ----------type----------
-type ReviewAction = 'Cleared' | 'Rejected';
+
 // ------------------------
 
 // ----------初始化-----------
@@ -62,16 +64,16 @@ const targetAction = ref<ReviewAction | null>(null);
 
 // Dialog 標題 & 內容
 const confirmTitle = computed(() => {
-  if (targetAction.value === 'Cleared') return '確認通過';
-  if (targetAction.value === 'Rejected') return '確認未通過';
+  if (targetAction.value === 'approved') return '確認通過';
+  if (targetAction.value === 'rejected') return '確認未通過';
   return '確認操作';
 });
 
 const confirmMessage = computed(() => {
-  if (targetAction.value === 'Cleared') {
+  if (targetAction.value === 'approved') {
     return '該申請者是否要通過審核?';
   }
-  if (targetAction.value === 'Rejected') {
+  if (targetAction.value === 'rejected') {
     return '該申請者是否要拒絕通過審核?';
   }
   return '確定要執行此操作嗎？';
@@ -113,6 +115,7 @@ const handleConfirm = async () => {
   }
 
   confirmLoading.value = true;
+  console.log('觸發操作', targetId.value, targetAction.value);
 
   // try {
   // 呼叫 store 的審核 API
@@ -133,7 +136,10 @@ const handleConfirm = async () => {
   //   }
   // } catch (err) {
   //   window.$message?.error('系統錯誤，請稍後再試');
-  confirmLoading.value = false;
+  setTimeout(() => {
+    resetConfirmState();
+  }, 2000);
+
   // }
 };
 // ---------------------------
