@@ -2,7 +2,7 @@ import axios, { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig 
 import { useUserStore } from '@/stores/index';
 // import { handleApiError } from '@/utils/api/handleApiError';
 import '@/pinia';
-import type { ApiBody } from './type';
+import type { ApiBody, TransportResult } from './index';
 
 type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
@@ -65,10 +65,7 @@ instance.interceptors.response.use(
   }
 );
 
-export type TransportResult<T> =
-  | { ok: true; status: number; data: T; message?: string }
-  | { ok: false; status: number; message: string };
-// API 請求包裝函式
+// API 請求包裝函式，統一處理格式
 export const requestApi = async <T>(
   task: () => Promise<AxiosResponse<ApiBody<T>>>
 ): Promise<TransportResult<T>> => {

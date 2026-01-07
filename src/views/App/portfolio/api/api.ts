@@ -1,5 +1,5 @@
 import instance, { requestApi } from '@/api/axios';
-import type { ApiResult, ApiBody } from '@/api/type';
+import type { ApiBody } from '@/api/types';
 import type {
   SummaryData,
   HoldingsData,
@@ -9,37 +9,31 @@ import type {
 } from './index';
 
 // ----------取得使用者資金配置----------
-export const getSummaryData = (): Promise<ApiResult<SummaryData>> =>
+export const getSummaryData = () =>
   requestApi(() => instance.get<ApiBody<SummaryData>>(`/api/v1/users/portfolio/summary`));
 // -------------------------------------
 
 // ----------持股配置----------
 // 取得使用者持股配置
-export const getHoldingsData = (page: number): Promise<ApiResult<HoldingsData>> =>
+export const getHoldingsData = (page: number) =>
   requestApi(() =>
     instance.get<ApiBody<HoldingsData>>(`/api/v1/users/portfolio/holdings?page=${page}`)
   );
 
 // 新增持股
-export const addStockData = (payload: AddStockPayload): Promise<ApiResult<null>> =>
+export const addStockData = (payload: AddStockPayload) =>
   requestApi<null>(() => instance.post<ApiBody<null>>(`/api/v1/assets/new-asset`, payload));
 
 // 編輯持股
-export const editStockData = (
-  assetId: string,
-  payload: EditStockPayload
-): Promise<ApiResult<null>> =>
+export const editStockData = (assetId: string, payload: EditStockPayload) =>
   requestApi<null>(() => instance.patch<ApiBody<null>>(`/api/v1/assets/${assetId}`, payload));
 
 // 刪除持股
-export const deleteStockData = (assetId: string): Promise<ApiResult<null>> =>
+export const deleteStockData = (assetId: string) =>
   requestApi<null>(() => instance.delete<ApiBody<null>>(`/api/v1/assets/${assetId}`));
 
 // 賣出持股
-export const sellStockData = (
-  assetId: string,
-  payload: SellStockPayload
-): Promise<ApiResult<null>> =>
+export const sellStockData = (assetId: string, payload: SellStockPayload) =>
   requestApi<null>(() => instance.post<ApiBody<null>>(`/api/v1/assets/${assetId}`, payload));
 
 // ---------------------------

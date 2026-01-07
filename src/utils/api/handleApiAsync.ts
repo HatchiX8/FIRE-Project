@@ -1,18 +1,11 @@
 import { getErrorMessage } from './apiErrorMessage';
 import { notify } from '../feedback/notify';
+import type { TransportResult, ApiResult } from '@/api/index';
 
 type LoadingLike<K extends string = string> = {
   start: (key: K) => void;
   stop: (key: K) => void;
 };
-
-export type TransportResult<T> =
-  | { ok: true; status: number; data: T; message?: string }
-  | { ok: false; status: number; message: string };
-
-export type ApiResult<T> =
-  | { success: true; data: T; message: string }
-  | { success: false; message: string };
 
 export const handleApi = async <T, K extends string = string>(
   task: () => Promise<TransportResult<T>>,
