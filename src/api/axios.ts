@@ -2,7 +2,11 @@ import axios, { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig 
 import { useUserStore } from '@/stores/index';
 // import { handleApiError } from '@/utils/api/handleApiError';
 import '@/pinia';
+<<<<<<< HEAD
 import type { ApiBody, TransportResult } from './index';
+=======
+import type { ApiBody } from './type';
+>>>>>>> 3b16f853b812745e16fa0f69d2e54e57d5296d4b
 
 type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 

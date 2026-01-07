@@ -7,6 +7,8 @@ import type { userInfoData, updateUserInfoPayload } from './index';
 export const getUserInfoData = () =>
   requestApi(() => instance.get<ApiBody<userInfoData>>(`/api/v1/user/info`));
 
+// export const getUserInfoData = () =>
+//   requestApi<userInfoData>(() => instance.get('/api/v1/user/info'));
 // 編輯使用者資訊
 export const updateUserInfoData = (data: updateUserInfoPayload) =>
   requestApi<null>(() => instance.patch<ApiBody<null>>(`/api/v1/user/update`, data));
