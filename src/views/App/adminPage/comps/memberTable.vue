@@ -13,14 +13,14 @@
 // 套件
 // 共用型別
 import type { DataTableColumns } from 'naive-ui';
-
+import type { ReviewAction } from '../api/index';
 // 元件
 import { baseButton, baseTable } from '@/components/index';
 // 商業邏輯
 // ---------------------------
 
 // ----------type----------
-type ReviewAction = 'DOWNGRADE' | 'BAN';
+// type ReviewAction = 'DOWNGRADE' | 'BAN';
 // ------------------------
 
 // ----------props&emit----------
@@ -71,12 +71,12 @@ const columns: DataTableColumns<StockRow> = [
       h('div', { class: 'mt-2 ml-auto flex flex-col gap-2' }, [
         h(
           baseButton,
-          { size: 'small', color: 'success', onClick: () => requestReview(row.id, 'DOWNGRADE') },
+          { size: 'small', color: 'success', onClick: () => requestReview(row.id, 'approved') },
           { default: () => '降階' }
         ),
         h(
           baseButton,
-          { size: 'small', color: 'danger', onClick: () => requestReview(row.id, 'BAN') },
+          { size: 'small', color: 'danger', onClick: () => requestReview(row.id, 'rejected') },
           { default: () => '封鎖' }
         ),
       ]),
