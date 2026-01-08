@@ -50,10 +50,10 @@ export const userUpgradeReview = {
   }),
 };
 
-export const userUpgradeReview = {
-  url: '/api/v1/admin/users/:userId/activation',
-  method: 'patch',
-  response: () => ({
-    message: '帳號已禁用',
-  }),
-};
+// export const userUpgradeReview = {
+//   url: '/api/v1/admin/users/:userId/activation',
+//   method: 'patch',
+//   response: () => ({
+//     message: '帳號已禁用',
+//   }),
+// };
