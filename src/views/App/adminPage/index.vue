@@ -1,7 +1,7 @@
 <template>
   <div class="md:(px-4 mx-auto) max-w-6xl">
-    <upgradeTable :tableData="adminPageStore.upgradeList" @review="openDialog" />
-    <memberTable :tableData="adminPageStore.memberList" @review="openDialog" />
+    <upgradeTable :tableData="adminPageStore.upgradeList" @review="requestReview" />
+    <memberTable :tableData="adminPageStore.memberList" @review="requestMemberStatus" />
   </div>
 
   <baseDialog
@@ -24,7 +24,7 @@
 import type { ReviewAction } from './api/index';
 // 元件
 import upgradeTable from './comps/upgradeTable.vue';
-// import memberTable from './comps/memberTable.vue';
+import memberTable from './comps/memberTable.vue';
 import { baseDialog } from '@/components/index';
 // 商業邏輯
 // store
@@ -80,7 +80,7 @@ const confirmMessage = computed(() => {
 });
 
 // 子元件 emit 'review' 之後會進到這裡
-const openDialog = async (payload: { id: string; action: ReviewAction }) => {
+const requestReview = async (payload: { id: string; action: ReviewAction }) => {
   targetId.value = payload.id;
   targetAction.value = payload.action;
   confirmVisible.value = true;
@@ -94,6 +94,27 @@ const openDialog = async (payload: { id: string; action: ReviewAction }) => {
   } else {
     // 操作成功後，重抓兩個列表
     await Promise.all([requestUserUpgradeList(), requestUserMemberList()]);
+    resetConfirmState();
+  }
+};
+
+// 子元件 emit 'review' 之後會進到這裡
+const requestMemberStatus = async (payload: { id: string; action: ReviewAction }) => {
+  targetId.value = payload.id;
+  targetAction.value = payload.action;
+  confirmVisible.value = true;
+  // 明天改成呼叫會員審核的 store 方法
+  const res = await adminPageStore.reviewUserUpgrade(payload.id, {
+    status: payload.action,
+    adminNote: '', // 可擴充註記內容
+  });
+
+  if (!res.success) {
+    // 操作失敗錯誤處理
+  } else {
+    // 操作成功後，重抓兩個列表
+    // await Promise.all([requestUserUpgradeList(), requestUserMemberList()]);
+    requestUserMemberList();
     resetConfirmState();
   }
 };

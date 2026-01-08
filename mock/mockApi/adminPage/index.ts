@@ -2,7 +2,6 @@ export const userUpgradeList = {
   url: '/api/v1/admin/upgrade-requests',
   method: 'get',
   response: () => ({
-    status: true,
     message: '成功取得申請者資料',
     data: [
       {
@@ -25,7 +24,6 @@ export const userMemberList = {
   url: '/api/v1/admin/member',
   method: 'get',
   response: () => ({
-    status: true,
     message: '成功取得使用者資料',
     data: [
       {
@@ -48,7 +46,14 @@ export const userUpgradeReview = {
   url: '/api/v1/admin/upgrade-requests/:userId/review',
   method: 'patch',
   response: () => ({
-    status: true,
     message: '使用者審核通過',
+  }),
+};
+
+export const userUpgradeReview = {
+  url: '/api/v1/admin/users/:userId/activation',
+  method: 'patch',
+  response: () => ({
+    message: '帳號已禁用',
   }),
 };
