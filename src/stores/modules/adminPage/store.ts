@@ -5,12 +5,14 @@ import {
   getUserUpgradeList,
   getUserMemberList,
   apiReviewUserUpgrade,
+  apiUserActivation,
 } from '@/views/App/adminPage/api/index';
 // 共用型別
 import type {
   UserUpgradeRequest,
   UserMemberRequest,
   UserUpgradeReviewPayload,
+  UserActivationPayload,
 } from '@/views/App/adminPage/api/index';
 // 元件
 // 商業邏輯
@@ -58,6 +60,16 @@ export const useAdminPageStore = defineStore('adminPage', () => {
     });
   // ---------------------------
 
+  // ----------會員資格----------
+  const accountActivationLoading = 'userAccountActivationLoading';
+  const userAccountActivation = (userId: string, payload: UserActivationPayload) =>
+    handleApi(() => apiUserActivation(userId, payload), {
+      loadingStore: areaLoading,
+      loadingKey: accountActivationLoading,
+    });
+
+  // ---------------------------
+
   return {
     upgradeList,
     fetchUserUpgradeList,
@@ -65,5 +77,6 @@ export const useAdminPageStore = defineStore('adminPage', () => {
     fetchUserMemberList,
     reviewUserUpgradeLoading,
     reviewUserUpgrade,
+    userAccountActivation,
   };
 });

@@ -3,25 +3,36 @@
     <upgradeTable :tableData="adminPageStore.upgradeList" @review="requestReview" />
     <memberTable :tableData="adminPageStore.memberList" @review="requestMemberStatus" />
   </div>
-
+  <!-- Upgrade Dialog -->
   <baseDialog
-    v-model="confirmVisible"
-    :title="confirmTitle"
-    :ok-loading="confirmLoading"
+    v-model="upgradeConfirmVisible"
+    :title="upgradeConfirmTitle"
+    :ok-loading="upgradeConfirmLoading"
     :width="'80%'"
-    @ok="handleConfirm"
-    @cancel="handleCancel"
+    @ok="handleUpgradeConfirm"
+    @cancel="resetUpgradeDialog"
   >
-    <p class="text-center">
-      {{ confirmMessage }}
-    </p>
+    <p class="text-center">{{ upgradeConfirmMessage }}</p>
+  </baseDialog>
+
+  <!-- Member Dialog -->
+  <baseDialog
+    v-model="memberConfirmVisible"
+    :title="memberConfirmTitle"
+    :ok-loading="memberConfirmLoading"
+    :width="'80%'"
+    @ok="handleMemberConfirm"
+    @cancel="resetMemberDialog"
+  >
+    <p class="text-center">{{ memberConfirmMessage }}</p>
   </baseDialog>
 </template>
 <script setup lang="ts">
 // ----------import----------
 // 套件
 // 共用型別
-import type { ReviewAction } from './api/index';
+// MemberAction
+import type { ReviewAction, MemberAction } from './api/index';
 // 元件
 import upgradeTable from './comps/upgradeTable.vue';
 import memberTable from './comps/memberTable.vue';
@@ -31,8 +42,47 @@ import { baseDialog } from '@/components/index';
 import { useAdminPageStore } from '@/stores/modules/adminPage/store';
 // ---------------------------
 
-// ----------type----------
+// ----------確認窗狀態----------
+type UpgradePayload = { id: string; action: ReviewAction };
+type MemberPayload = { id: string; action: MemberAction };
 
+// Upgrade dialog state
+const upgradeConfirmVisible = ref(false);
+const upgradeConfirmLoading = ref(false);
+const upgradeTargetId = ref<string | null>(null);
+const upgradeTargetAction = ref<ReviewAction | null>(null);
+
+// Member dialog state
+const memberConfirmVisible = ref(false);
+const memberConfirmLoading = ref(false);
+const memberTargetId = ref<string | null>(null);
+const memberTargetAction = ref<MemberAction | null>(null);
+
+// 申請者審核確認窗操作
+const upgradeConfirmTitle = computed(() => {
+  if (upgradeTargetAction.value === 'approved') return '確認通過';
+  if (upgradeTargetAction.value === 'rejected') return '確認未通過';
+  return '確認操作';
+});
+
+const upgradeConfirmMessage = computed(() => {
+  if (upgradeTargetAction.value === 'approved') return '該申請者是否要通過審核？';
+  if (upgradeTargetAction.value === 'rejected') return '該申請者是否要拒絕通過審核？';
+  return '確定要執行此操作嗎？';
+});
+
+// 會員資格確認窗操作
+const memberConfirmTitle = computed(() => {
+  if (memberTargetAction.value === 'downgrade') return '確認降級';
+  if (memberTargetAction.value === 'ban') return '確認停權';
+  return '確認操作';
+});
+
+const memberConfirmMessage = computed(() => {
+  if (memberTargetAction.value === 'downgrade') return '是否要將該會員降級為訪客？';
+  if (memberTargetAction.value === 'ban') return '是否要停權該帳號？';
+  return '確定要執行此操作嗎？';
+});
 // ------------------------
 
 // ----------初始化-----------
@@ -49,119 +99,75 @@ const requestUserMemberList = async () => {
 onMounted(async () => {
   await requestUserUpgradeList();
   await requestUserMemberList();
-  console.log('檢視表格資料', adminPageStore.upgradeList);
-  console.log('檢視表格資料', adminPageStore.memberList);
 });
 // -------------------------
 
-// ----------彈跳視窗----------
+// ----------彈窗事件----------
+// Upgrade Table 審核按鈕點擊事件
+const requestReview = async (payload: UpgradePayload) => {
+  upgradeTargetId.value = payload.id;
+  upgradeTargetAction.value = payload.action;
+  upgradeConfirmVisible.value = true;
+};
+// Member Table 狀態操作按鈕點擊事件
+const requestMemberStatus = async (payload: MemberPayload) => {
+  memberTargetId.value = payload.id;
+  memberTargetAction.value = payload.action;
+  memberConfirmVisible.value = true;
+};
+// 重置 Upgrade 確認彈窗狀態
+const resetUpgradeDialog = () => {
+  upgradeConfirmVisible.value = false;
+  upgradeConfirmLoading.value = false;
+  upgradeTargetId.value = null;
+  upgradeTargetAction.value = null;
+};
+// 重置 Member 確認彈窗狀態
+const resetMemberDialog = () => {
+  memberConfirmVisible.value = false;
+  memberConfirmLoading.value = false;
+  memberTargetId.value = null;
+  memberTargetAction.value = null;
+};
 
-const confirmVisible = ref(false);
-const confirmLoading = ref(false);
+// Upgrade 確認彈窗「確認」按鈕事件
+const handleUpgradeConfirm = async () => {
+  if (!upgradeTargetId.value || !upgradeTargetAction.value) return;
 
-const targetId = ref<string | null>(null);
-const targetAction = ref<ReviewAction | null>(null);
+  upgradeConfirmLoading.value = true;
 
-// Dialog 標題 & 內容
-const confirmTitle = computed(() => {
-  if (targetAction.value === 'approved') return '確認通過';
-  if (targetAction.value === 'rejected') return '確認未通過';
-  return '確認操作';
-});
-
-const confirmMessage = computed(() => {
-  if (targetAction.value === 'approved') {
-    return '該申請者是否要通過審核?';
-  }
-  if (targetAction.value === 'rejected') {
-    return '該申請者是否要拒絕通過審核?';
-  }
-  return '確定要執行此操作嗎？';
-});
-
-// 子元件 emit 'review' 之後會進到這裡
-const requestReview = async (payload: { id: string; action: ReviewAction }) => {
-  targetId.value = payload.id;
-  targetAction.value = payload.action;
-  confirmVisible.value = true;
-  const res = await adminPageStore.reviewUserUpgrade(payload.id, {
-    status: payload.action,
-    adminNote: '', // 可擴充註記內容
+  const res = await adminPageStore.reviewUserUpgrade(upgradeTargetId.value, {
+    status: upgradeTargetAction.value, // approved/rejected
+    adminNote: '',
   });
 
   if (!res.success) {
-    // 操作失敗錯誤處理
-  } else {
-    // 操作成功後，重抓兩個列表
-    await Promise.all([requestUserUpgradeList(), requestUserMemberList()]);
-    resetConfirmState();
-  }
-};
-
-// 子元件 emit 'review' 之後會進到這裡
-const requestMemberStatus = async (payload: { id: string; action: ReviewAction }) => {
-  targetId.value = payload.id;
-  targetAction.value = payload.action;
-  confirmVisible.value = true;
-  // 明天改成呼叫會員審核的 store 方法
-  const res = await adminPageStore.reviewUserUpgrade(payload.id, {
-    status: payload.action,
-    adminNote: '', // 可擴充註記內容
-  });
-
-  if (!res.success) {
-    // 操作失敗錯誤處理
-  } else {
-    // 操作成功後，重抓兩個列表
-    // await Promise.all([requestUserUpgradeList(), requestUserMemberList()]);
-    requestUserMemberList();
-    resetConfirmState();
-  }
-};
-
-const resetConfirmState = () => {
-  confirmVisible.value = false;
-  confirmLoading.value = false;
-  targetId.value = null;
-  targetAction.value = null;
-};
-
-const handleCancel = () => {
-  resetConfirmState();
-};
-
-const handleConfirm = async () => {
-  if (!targetId.value || !targetAction.value) {
+    upgradeConfirmLoading.value = false;
     return;
   }
 
-  confirmLoading.value = true;
-  console.log('觸發操作', targetId.value, targetAction.value);
+  await Promise.all([requestUserUpgradeList(), requestUserMemberList()]);
+  resetUpgradeDialog();
+};
 
-  // try {
-  // 呼叫 store 的審核 API
-  //   const res = await adminPageStore.reviewMember({
-  //     id: targetId.value,
-  //     action: targetAction.value,
-  //   });
+// Member 確認彈窗「確認」按鈕事件
+const handleMemberConfirm = async () => {
+  if (!memberTargetId.value || !memberTargetAction.value) return;
 
-  //   if (res.status) {
-  //     window.$message?.success(res.message ?? '操作成功');
-  //     // ✅ 操作成功後，重抓兩個列表
-  //     await Promise.all([requestUserUpgradeList(), requestUserMemberList()]);
-  //     resetConfirmState();
-  //   } else {
-  //     window.$message?.error(res.message ?? '操作失敗');
-  //     // 失敗就不要關 dialog，讓使用者可以再操作 or 取消
-  //     confirmLoading.value = false;
-  //   }
-  // } catch (err) {
-  //   window.$message?.error('系統錯誤，請稍後再試');
-  setTimeout(() => {
-    resetConfirmState();
-  }, 2000);
+  memberConfirmLoading.value = true;
 
-  // }
+  const res = await adminPageStore.userAccountActivation(memberTargetId.value, {
+    status: memberTargetAction.value, // downgrade/ban
+    adminNote: '',
+  });
+
+  if (!res.success) {
+    memberConfirmLoading.value = false;
+    return;
+  }
+
+  await requestUserMemberList();
+  resetMemberDialog();
 };
 // ---------------------------
 </script>

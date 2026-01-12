@@ -13,7 +13,7 @@
 // 套件
 // 共用型別
 import type { DataTableColumns } from 'naive-ui';
-import type { ReviewAction } from '../api/index';
+import type { MemberAction } from '../api/index';
 // 元件
 import { baseButton, baseTable } from '@/components/index';
 // 商業邏輯
@@ -29,7 +29,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'review', payload: { id: string; action: ReviewAction }): void;
+  (e: 'review', payload: { id: string; action: MemberAction }): void;
 }>();
 // ------------------------------
 
@@ -71,12 +71,12 @@ const columns: DataTableColumns<StockRow> = [
       h('div', { class: 'mt-2 ml-auto flex flex-col gap-2' }, [
         h(
           baseButton,
-          { size: 'small', color: 'success', onClick: () => requestReview(row.id, 'approved') },
+          { size: 'small', color: 'success', onClick: () => requestReview(row.id, 'downgrade') },
           { default: () => '降階' }
         ),
         h(
           baseButton,
-          { size: 'small', color: 'danger', onClick: () => requestReview(row.id, 'rejected') },
+          { size: 'small', color: 'danger', onClick: () => requestReview(row.id, 'ban') },
           { default: () => '封鎖' }
         ),
       ]),
@@ -93,7 +93,7 @@ const bridgedData = computed(() => props.tableData as unknown as Record<string, 
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).id;
 // ------------------------
 
-const requestReview = (id: string, action: ReviewAction) => {
+const requestReview = (id: string, action: MemberAction) => {
   emit('review', { id, action });
   console.log('送出審核', { id, action });
 };

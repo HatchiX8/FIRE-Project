@@ -1,6 +1,11 @@
 import instance, { requestApi } from '@/api/axios';
 import type { ApiBody } from '@/api/types';
-import type { UserUpgradeRequest, UserMemberRequest, UserUpgradeReviewPayload } from './index';
+import type {
+  UserUpgradeRequest,
+  UserMemberRequest,
+  UserUpgradeReviewPayload,
+  UserActivationPayload,
+} from './index';
 
 // ----------管理者頁面----------
 // 取得申請升級使用者列表
@@ -21,4 +26,9 @@ export const apiReviewUserUpgrade = (userId: string, payload: UserUpgradeReviewP
     instance.patch<ApiBody<null>>(`/api/v1/admin/upgrade-requests/${userId}/review`, payload)
   );
 
+// 會員資格操作
+export const apiUserActivation = (userId: string, payload: UserActivationPayload) =>
+  requestApi<null>(() =>
+    instance.patch<ApiBody<null>>(`/api/v1/admin/users/${userId}/activation`, payload)
+  );
 // -----------------------------
