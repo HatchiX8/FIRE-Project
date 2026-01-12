@@ -24,4 +24,10 @@ export interface UserUpgradeReviewPayload {
   adminNote?: string;
 }
 
+export interface UserActivationPayload {
+  status: MemberAction;
+  adminNote?: string;
+}
+
 export type ReviewAction = 'approved' | 'rejected';
+export type MemberAction = 'downgrade' | 'ban';

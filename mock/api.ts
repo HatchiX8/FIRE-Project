@@ -22,6 +22,7 @@ import {
   userUpgradeList,
   userMemberList,
   userUpgradeReview,
+  userAccountActivation,
 } from './mockApi/index';
 
 export default [
@@ -52,6 +53,7 @@ export default [
   userInfoData,
   userUpdate,
   userAccountUpgrade,
+  userAccountActivation,
   // ---------------------------
 
   // ----------損益概況----------
