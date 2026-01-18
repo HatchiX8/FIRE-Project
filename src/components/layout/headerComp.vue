@@ -1,7 +1,7 @@
 <template>
   <div class="bg-backgroundSurface border-b-primaryActive border-b border-solid">
     <div class="flex items-center justify-between">
-      <a href="/Landing/page1" class="flex items-center no-underline">
+      <a href="/Landing/home" class="flex items-center no-underline">
         <h1 class="text-primary flex items-center text-xl font-bold">
           <img
             src="/src/assets/images/FIRE-logo.png"

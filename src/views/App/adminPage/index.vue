@@ -38,6 +38,7 @@ import upgradeTable from './comps/upgradeTable.vue';
 import memberTable from './comps/memberTable.vue';
 import { baseDialog } from '@/components/index';
 // 商業邏輯
+import { notify } from '@/utils/index';
 // store
 import { useAdminPageStore } from '@/stores/modules/adminPage/store';
 // ---------------------------
@@ -138,14 +139,15 @@ const handleUpgradeConfirm = async () => {
 
   const res = await adminPageStore.reviewUserUpgrade(upgradeTargetId.value, {
     status: upgradeTargetAction.value, // approved/rejected
-    adminNote: '',
+    userNote: '',
   });
 
   if (!res.success) {
+    notify('error', res.message);
     upgradeConfirmLoading.value = false;
     return;
   }
-
+  notify('success', res.message);
   await Promise.all([requestUserUpgradeList(), requestUserMemberList()]);
   resetUpgradeDialog();
 };
@@ -158,14 +160,15 @@ const handleMemberConfirm = async () => {
 
   const res = await adminPageStore.userAccountActivation(memberTargetId.value, {
     status: memberTargetAction.value, // downgrade/ban
-    adminNote: '',
+    userNote: '',
   });
 
   if (!res.success) {
+    notify('error', res.message);
     memberConfirmLoading.value = false;
     return;
   }
-
+  notify('success', res.message);
   await requestUserMemberList();
   resetMemberDialog();
 };

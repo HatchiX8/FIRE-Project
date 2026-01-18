@@ -5,6 +5,6 @@ import type { StockMeta } from './index';
 // ----------取得股票數據----------
 
 export const getStockMeta = () =>
-  requestApi<StockMeta[]>(() => instance.get<ApiBody<StockMeta[]>>(`/api/v1/stockInfo`));
+  requestApi<StockMeta[]>(() => instance.get<ApiBody<StockMeta[]>>(`/api/v1/stock/stockInfo`));
 
 // -------------------------------
