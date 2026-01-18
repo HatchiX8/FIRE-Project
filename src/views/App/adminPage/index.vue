@@ -139,18 +139,11 @@ const handleUpgradeConfirm = async () => {
 
   const res = await adminPageStore.reviewUserUpgrade(upgradeTargetId.value, {
     status: upgradeTargetAction.value, // approved/rejected
-<<<<<<< HEAD
     userNote: '',
   });
 
   if (!res.success) {
     notify('error', res.message);
-=======
-    adminNote: '',
-  });
-
-  if (!res.success) {
->>>>>>> b8537212db0175d27b2ba540b194a17388a6549b
     upgradeConfirmLoading.value = false;
     return;
   }
@@ -159,7 +152,6 @@ const handleUpgradeConfirm = async () => {
   resetUpgradeDialog();
 };
 
-<<<<<<< HEAD
 // Member 確認彈窗「確認」按鈕事件
 const handleMemberConfirm = async () => {
   if (!memberTargetId.value || !memberTargetAction.value) return;
@@ -177,28 +169,6 @@ const handleMemberConfirm = async () => {
     return;
   }
   notify('success', res.message);
-=======
-  await Promise.all([requestUserUpgradeList(), requestUserMemberList()]);
-  resetUpgradeDialog();
-};
-
-// Member 確認彈窗「確認」按鈕事件
-const handleMemberConfirm = async () => {
-  if (!memberTargetId.value || !memberTargetAction.value) return;
-
-  memberConfirmLoading.value = true;
-
-  const res = await adminPageStore.userAccountActivation(memberTargetId.value, {
-    status: memberTargetAction.value, // downgrade/ban
-    adminNote: '',
-  });
-
-  if (!res.success) {
-    memberConfirmLoading.value = false;
-    return;
-  }
-
->>>>>>> b8537212db0175d27b2ba540b194a17388a6549b
   await requestUserMemberList();
   resetMemberDialog();
 };
