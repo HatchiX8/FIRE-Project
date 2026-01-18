@@ -10,14 +10,14 @@ import type {
 
 // ----------取得使用者資金配置----------
 export const getSummaryData = () =>
-  requestApi(() => instance.get<ApiBody<SummaryData>>(`/api/v1/users/portfolio/summary`));
+  requestApi(() => instance.get<ApiBody<SummaryData>>(`/api/v1/assets/portfolio/summary`));
 // -------------------------------------
 
 // ----------持股配置----------
 // 取得使用者持股配置
 export const getHoldingsData = (page: number) =>
   requestApi(() =>
-    instance.get<ApiBody<HoldingsData>>(`/api/v1/users/portfolio/holdings?page=${page}`)
+    instance.get<ApiBody<HoldingsData>>(`/api/v1/assets/portfolio/holdings?page=${page}`)
   );
 
 // 新增持股

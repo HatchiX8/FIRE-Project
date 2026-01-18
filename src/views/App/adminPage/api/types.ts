@@ -16,12 +16,17 @@ export interface UserMemberRequest {
   id: string;
   name: string;
   memberAge: number;
-  adminNote: string;
+  userNote: string;
 }
 
 export interface UserUpgradeReviewPayload {
   status: ReviewAction;
-  adminNote?: string;
+  userNote?: string;
+}
+
+export interface UserActivationPayload {
+  status: MemberAction;
+  userNote?: string;
 }
 
 export interface UserActivationPayload {

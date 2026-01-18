@@ -38,7 +38,7 @@ interface StockRow {
   id: string;
   name: string;
   memberAge: number;
-  adminNote: string;
+  userNote: string;
 }
 
 const columns: DataTableColumns<StockRow> = [
@@ -57,10 +57,10 @@ const columns: DataTableColumns<StockRow> = [
   },
   {
     title: '註記',
-    key: 'adminNote',
+    key: 'userNote',
     align: 'center',
     minWidth: 20,
-    render: (row) => row.adminNote,
+    render: (row) => row.userNote,
   },
   {
     title: '操作',
