@@ -11,8 +11,12 @@
       <div v-if="isSummaryLoading" class="my-20"></div>
     </loadingAreaOverlay>
 
-    <div v-show="!isHoldingsLoading && !isSummaryLoading" class="flex">
-      <baseButton class="ml-auto" color="primary" @click="openAssetDialog">新增資產</baseButton>
+    <div
+      v-show="!isHoldingsLoading && !isSummaryLoading"
+      class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between"
+    >
+      <baseButton color="primary" @click="openTotalInvestDialog">資金管理</baseButton>
+      <baseButton class="ml-auto" color="primary" @click="openAssetDialog">建倉</baseButton>
     </div>
 
     <loadingAreaOverlay
@@ -28,6 +32,14 @@
         :page-size="10"
     /></loadingAreaOverlay>
   </div>
+  <totalInvestDialog
+    v-model="totalInvestDlgOpen"
+    :current-invest="portfolioStore.totalInvest"
+    :totalInvestLoading="totalInvestIsLoading"
+    :loading="isInvestLoading"
+    initial-mode="add"
+    @submit="investOnSubmit"
+  />
   <newAssetDialog
     :stockOptions="stockMetaStore.stocks"
     v-model="newAssetDlgOpen"
@@ -62,6 +74,7 @@ import type { StockRow, EditStockPayload, SellStockPayload, AddStockPayload } fr
 // 元件
 import {
   trendChart,
+  totalInvestDialog,
   newAssetDialog,
   sellAssetDialog,
   editAssetDialog,
@@ -70,7 +83,7 @@ import {
 import { baseTable, baseButton } from '@/components/index';
 import { loadingAreaOverlay } from '@/modules/loadingModule/index';
 // 商業邏輯
-import { formatPriceSmart } from '@/utils/index';
+import { formatPriceSmart, notify } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 import { usePortfolioStore, useStockMetaStore } from '@/stores/index';
@@ -83,7 +96,6 @@ const stockMetaStore = useStockMetaStore(); // 股票資訊 store
 
 // 獲取資金配置讀取狀態
 const isSummaryLoading = computed(() => loadingStore.isLoading(portfolioStore.summaryLoading));
-
 const isHoldingsLoading = computed(() => loadingStore.isLoading(portfolioStore.holdingsLoading));
 
 const selectedAsset = ref<StockRow>({} as StockRow); // 紀錄當前所選擇的資產ID
@@ -105,12 +117,13 @@ const columns: DataTableColumns<StockRow> = [
     render: (row: StockRow) => row.stockName,
   },
   {
-    title: '市價/買進價格',
+    title: '買進價格',
+    //  title: '市價/買進價格', //市價為後續更新預留
     key: 'currentPrice', // key 可以對應一個欄位，但顯示內容自訂
     align: 'center',
     minWidth: 20,
-    render: (row: StockRow): string =>
-      `${formatPriceSmart(row.currentPrice)} / ${formatPriceSmart(row.buyPrice)}`,
+    render: (row: StockRow): string => `${formatPriceSmart(row.buyPrice)}`,
+    // `${formatPriceSmart(row.currentPrice)} / ${formatPriceSmart(row.buyPrice)}`,  //市價為後續更新預留
   },
   {
     title: '股數',
@@ -118,21 +131,22 @@ const columns: DataTableColumns<StockRow> = [
     align: 'center',
     minWidth: 20,
   },
-  {
-    title: '損益(%)',
-    key: 'profitRate', // key 可以對應一個欄位，但顯示內容自訂
-    align: 'center',
-    minWidth: 20,
-    render: (row) => {
-      const cls =
-        row.profitRate > 0
-          ? 'text-danger'
-          : row.profitRate < 0
-            ? 'text-success'
-            : 'text-neutral_300';
-      return h('span', { class: cls }, `${row.profitRate.toFixed(2)}%`);
-    },
-  },
+  // 損益功能為後續更新預留
+  // {
+  //   title: '損益(%)',
+  //   key: 'profitRate', // key 可以對應一個欄位，但顯示內容自訂
+  //   align: 'center',
+  //   minWidth: 20,
+  //   render: (row) => {
+  //     const cls =
+  //       row.profitRate > 0
+  //         ? 'text-danger'
+  //         : row.profitRate < 0
+  //           ? 'text-success'
+  //           : 'text-neutral_300';
+  //     return h('span', { class: cls }, `${row.profitRate.toFixed(2)}%`);
+  //   },
+  // },
   {
     type: 'expand',
     width: 56,
@@ -140,23 +154,24 @@ const columns: DataTableColumns<StockRow> = [
       h('div', { class: ' flex' }, [
         h('div', { class: 'mt-2 flex flex-col gap-2 p-3 text-left' }, [
           h('div', `總成本：${row.totalCost.toLocaleString()}`),
-          h('div', `總市值：${row.marketValue.toLocaleString()}`),
+          // h('div', `總市值：${row.marketValue.toLocaleString()}`),  //市價為後續更新預留
+          // //未實現為後續更新預留
           // 未實現損益樣式較複雜，改用自執行函式處理
-          (() => {
-            const val = typeof row.stockProfit === 'number' ? row.stockProfit : null;
-            const cls =
-              val === null
-                ? 'text-neutral_300'
-                : val > 0
-                  ? 'text-danger'
-                  : val < 0
-                    ? 'text-success'
-                    : 'text-neutral_300';
-            return h('div', { class: 'flex items-center' }, [
-              h('span', '未實現損益：'),
-              h('span', { class: `${cls} ml-1` }, val !== null ? val.toLocaleString() : '-'),
-            ]);
-          })(),
+          // (() => {
+          //   const val = typeof row.stockProfit === 'number' ? row.stockProfit : null;
+          //   const cls =
+          //     val === null
+          //       ? 'text-neutral_300'
+          //       : val > 0
+          //         ? 'text-danger'
+          //         : val < 0
+          //           ? 'text-success'
+          //           : 'text-neutral_300';
+          //   return h('div', { class: 'flex items-center' }, [
+          //     h('span', '未實現損益：'),
+          //     h('span', { class: `${cls} ml-1` }, val !== null ? val.toLocaleString() : '-'),
+          //   ]);
+          // })(),
 
           h('div', `建倉日期：${row.buyDate}`),
           h('div', `備註：${row.note ?? '-'}`),
@@ -168,7 +183,7 @@ const columns: DataTableColumns<StockRow> = [
               color: 'primary',
               onClick: () => openSellAssetDialog(row),
             },
-            { default: () => '賣出' }
+            { default: () => '平倉' }
           ),
         ]),
 
@@ -204,6 +219,90 @@ const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as Stock
 const clearSelectedAsset = () => {
   selectedAsset.value = {} as StockRow;
   console.log('觸發清除', selectedAsset.value);
+};
+// ---------------------------
+
+// ----------資金管理----------
+const totalInvestDlgOpen = ref<boolean>(false);
+const totalInvestIsLoading = computed(() =>
+  loadingStore.isLoading(portfolioStore.totalInvestLoading)
+);
+const isInvestLoading = computed(() => loadingStore.isLoading(portfolioStore.investLoading));
+
+const openTotalInvestDialog = () => {
+  totalInvestDlgOpen.value = true;
+  requestGetTotalInvest();
+};
+
+const investOnSubmit = async (payload: {
+  mode: 'deposit' | 'add' | 'withdraw';
+  amount: number;
+}) => {
+  submitting.value = true;
+
+  try {
+    if (payload.mode === 'deposit') {
+      requestDepositInvest(payload.amount);
+    } else if (payload.mode === 'add') {
+      requestAddInvest(payload.amount);
+    } else {
+      requestWithdrawInvest(payload.amount);
+    }
+  } finally {
+    submitting.value = false;
+  }
+};
+
+// 取得總資金
+const requestGetTotalInvest = async () => {
+  const res = await portfolioStore.fetchTotalInvest();
+
+  if (!res.success) {
+    notify('error', res.message);
+    totalInvestDlgOpen.value = false; // api失敗將關閉彈跳窗
+    return;
+  }
+};
+// requestDepositInvest
+// 投入資金
+const requestAddInvest = async (amount: number) => {
+  const res = await portfolioStore.addInvest(amount);
+  if (!res.success) {
+    notify('error', res.message);
+    totalInvestDlgOpen.value = false; // api失敗將關閉彈跳窗
+    return;
+  } else {
+    notify('success', res.message);
+    totalInvestDlgOpen.value = false;
+    getSummaryData();
+  }
+};
+
+// 提領資金
+const requestWithdrawInvest = async (amount: number) => {
+  const res = await portfolioStore.withdrawalInvest(amount);
+  if (!res.success) {
+    notify('error', res.message); // api失敗將關閉彈跳窗
+    return;
+  } else {
+    notify('success', res.message);
+    totalInvestDlgOpen.value = false;
+    getSummaryData();
+  }
+};
+
+// 重置資金
+const requestDepositInvest = async (amount: number) => {
+  const res = await portfolioStore.depositInvest(amount);
+  if (!res.success) {
+    notify('error', res.message);
+    totalInvestDlgOpen.value = false; // api失敗將關閉彈跳窗
+    return;
+  } else {
+    notify('success', res.message);
+    totalInvestDlgOpen.value = false;
+    getSummaryData();
+  }
 };
 // ---------------------------
 
@@ -251,10 +350,8 @@ const getSummaryData = async () => {
   const res = await portfolioStore.fetchSummaryData();
 
   if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
     return;
-  } else {
-    console.log('✅ 成功取得資產配置資料:', res.data);
   }
 };
 
@@ -263,10 +360,8 @@ const getHoldingsData = async (page: number) => {
   const res = await portfolioStore.fetchHoldingsData(page);
 
   if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
     return;
-  } else {
-    console.log('✅ 成功取得持股配置資料:', res.data);
   }
 };
 
@@ -344,5 +439,6 @@ const requestSellAsset = async (payload: {
     sellAssetDialogOpen.value = false;
   }
 };
+
 // ---------------------------
 </script>

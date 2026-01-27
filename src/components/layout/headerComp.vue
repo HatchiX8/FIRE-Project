@@ -65,7 +65,6 @@ const userLogout = async () => {
     // 這裡可以根據需求做錯誤提示或重導
     return;
   }
-  console.log('API:登出成功', res);
 
   router.push('/Landing/home');
 };
