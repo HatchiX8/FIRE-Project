@@ -9,6 +9,10 @@ import {
   editStockData,
   deleteStockData,
   sellStockData,
+  investAdd,
+  investWithdrawal,
+  investDeposit,
+  getTotalInvest,
 } from '@/views/App/portfolio/api/index';
 // 共用型別
 import type {
@@ -121,6 +125,59 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   };
   // ---------------------------
 
+  // ----------資金操作----------
+  // 取得總資金
+  const totalInvest = ref<number>(0);
+  const totalInvestResponse = ref<{ totalInvest: number }>({} as { totalInvest: number });
+  const totalInvestLoading = 'useTotalInvestLoading';
+
+  const fetchTotalInvest = async () => {
+    const res = await handleApi(() => getTotalInvest(), {
+      loadingStore: areaLoading,
+      loadingKey: totalInvestLoading,
+      target: totalInvestResponse,
+    });
+
+    if (res.success) {
+      totalInvest.value = totalInvestResponse.value.totalInvest;
+    }
+
+    return res;
+  };
+
+  // 投入
+  const investLoading = 'useInvestLoading';
+
+  const addInvest = async (amount: number) => {
+    const res = await handleApi(() => investAdd(amount), {
+      loadingStore: areaLoading,
+      loadingKey: investLoading,
+    });
+
+    return res;
+  };
+
+  // 提領
+  const withdrawalInvest = async (amount: number) => {
+    const res = await handleApi(() => investWithdrawal(amount), {
+      loadingStore: areaLoading,
+      loadingKey: investLoading,
+    });
+
+    return res;
+  };
+
+  // 重置
+  const depositInvest = async (amount: number) => {
+    const res = await handleApi(() => investDeposit(amount), {
+      loadingStore: areaLoading,
+      loadingKey: investLoading,
+    });
+
+    return res;
+  };
+  // ---------------------------
+
   return {
     // ------------資產配置------------
     summaryList,
@@ -140,6 +197,16 @@ export const usePortfolioStore = defineStore('portfolio', () => {
     editAsset,
     deleteAsset,
     sellAsset,
+    // ---------------------------
+
+    // ----------資金操作----------
+    totalInvest,
+    totalInvestLoading,
+    investLoading,
+    fetchTotalInvest,
+    addInvest,
+    withdrawalInvest,
+    depositInvest,
     // ---------------------------
   };
 });

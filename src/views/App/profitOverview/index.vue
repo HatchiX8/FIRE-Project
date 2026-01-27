@@ -12,7 +12,7 @@
     </loadingAreaOverlay>
 
     <div class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between">
-      <baseButton color="primary" @click="openTotalInvestDialog">資金管理</baseButton>
+      <div></div>
       <div class="flex items-center">
         <baseButton color="primary"><div class="i-mdi:chevron-left text-5"></div></baseButton>
         <div class="text-5 mx-2 text-center">
@@ -42,13 +42,6 @@
       <div v-if="isTotalTradesLoading" class="my-20"></div>
     </loadingAreaOverlay>
   </div>
-  <totalInvestDialog
-    v-model="totalInvestDlgOpen"
-    :current-invest="currentInvest"
-    :loading="submitting"
-    initial-mode="deposit"
-    @submit="onSubmit"
-  />
   <newReportDialog
     :stockOptions="stockMetaStore.stocks"
     v-model="newReportDlgOpen"
@@ -75,13 +68,7 @@
 import type { DataTableColumns } from 'naive-ui';
 import type { TradeItem, StockRow, NewReportPayload, EditReportPayload } from './api/index';
 // 元件
-import {
-  trendChart,
-  totalInvestDialog,
-  newReportDialog,
-  editReportDialog,
-  deleteReportDialog,
-} from './comps/index';
+import { trendChart, newReportDialog, editReportDialog, deleteReportDialog } from './comps/index';
 import { baseButton, baseTable } from '@/components/index';
 import { loadingAreaOverlay } from '@/modules/loadingModule/index';
 // 商業邏輯
@@ -203,34 +190,6 @@ const clearSelectedAsset = () => {
 };
 // ---------------------------
 
-// ----------資金管理----------
-const openTotalInvestDialog = () => {
-  totalInvestDlgOpen.value = true;
-};
-
-const totalInvestDlgOpen = ref(false);
-
-const currentInvest = ref(1250000);
-
-const onSubmit = async (payload: { mode: 'deposit' | 'withdraw'; amount: number }) => {
-  submitting.value = true;
-  try {
-    if (payload.mode === 'deposit') {
-      console.log('觸發投入資金API');
-      requestDepositInvest(payload.amount);
-    } else {
-      console.log('觸發提領資金API');
-      requestWithdrawInvest(payload.amount);
-    }
-    // 成功後：關窗 + refresh
-    // dlgOpen.value = false;
-    console.log('刷新取得最新投資金額');
-  } finally {
-    submitting.value = false;
-  }
-};
-// ---------------------------
-
 // ----------新增資產----------
 const newReportDlgOpen = ref(false);
 
@@ -332,26 +291,5 @@ const requestDeleteReport = async (reportId: string) => {
   }
 };
 
-const requestDepositInvest = async (amount: number) => {
-  const res = await profitOverviewStore.deposit(amount);
-  if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
-    return;
-  } else {
-    console.log('✅ 成功投入資金:', res.success);
-    totalInvestDlgOpen.value = false;
-  }
-};
-
-const requestWithdrawInvest = async (amount: number) => {
-  const res = await profitOverviewStore.withdrawal(amount);
-  if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
-    return;
-  } else {
-    console.log('✅ 成功提領資金:', res.success);
-    totalInvestDlgOpen.value = false;
-  }
-};
 // ---------------------------
 </script>

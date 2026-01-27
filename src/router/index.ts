@@ -29,7 +29,7 @@ const router = createRouter({
       name: 'App',
       component: () => import('@/views/App/index.vue'),
       meta: { requiresAuth: true }, // ← 整個 /App 底下都需要登入
-      redirect: '/App/profitOverview',
+      redirect: '/App/portfolio',
       children: [
         {
           path: 'portfolio',

@@ -37,3 +37,25 @@ export const sellStockData = (assetId: string, payload: SellStockPayload) =>
   requestApi<null>(() => instance.post<ApiBody<null>>(`/api/v1/assets/${assetId}`, payload));
 
 // ---------------------------
+
+// ----------資金操作----------
+// 取得總資金
+export const getTotalInvest = () =>
+  requestApi(() => instance.get<ApiBody<{ totalInvest: number }>>(`/api/v1/user/totalInvest`));
+
+export const investDeposit = (amount: number) =>
+  requestApi<null>(() =>
+    instance.post<ApiBody<null>>(`/api/v1/user/update/totalInvest/deposit`, { amount })
+  );
+// 投入
+export const investAdd = (amount: number) =>
+  requestApi<null>(() =>
+    instance.post<ApiBody<null>>(`/api/v1/user/update/totalInvest/add`, { amount })
+  );
+
+// 提領
+export const investWithdrawal = (amount: number) =>
+  requestApi<null>(() =>
+    instance.post<ApiBody<null>>(`/api/v1/user/update/totalInvest/withdrawal`, { amount })
+  );
+// ---------------------------

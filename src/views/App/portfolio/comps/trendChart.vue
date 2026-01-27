@@ -11,7 +11,7 @@
         <span>持股成本</span>
         <span>{{ props.chartData.stockCost?.toLocaleString?.() ?? '-' }} </span>
       </div>
-      <div class="mb-2 flex justify-between">
+      <!-- <div class="mb-2 flex justify-between">
         <span>股票市值</span>
         <span>{{ props.chartData.stockValue?.toLocaleString?.() ?? '-' }} </span>
       </div>
@@ -22,7 +22,7 @@
             props.chartData.profitRate
           }})
         </span>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

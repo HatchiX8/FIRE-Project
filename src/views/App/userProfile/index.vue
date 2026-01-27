@@ -16,7 +16,7 @@
           <div class="text-textColor ml-6 flex flex-col gap-2">
             <p>姓名 : {{ userProfileStore.userInfo.name }}</p>
             <p>暱稱 : {{ userProfileStore.userInfo.nickname }}</p>
-            <p>{{ memberTypeText }}</p>
+            <p>權限 : {{ memberTypeText }}</p>
           </div>
 
           <div class="mb-auto ml-auto" :class="{ 'flex flex-col gap-2': isEditing }">
@@ -43,11 +43,31 @@
         </div>
 
         <div class="mt-6 flex justify-center gap-4">
-          <baseButton v-if="memberTypeText !== '管理員'" color="primary" @click="accUpgrade"
+          <baseButton
+            v-if="userProfileStore.userInfo.upgrade_status === 'none'"
+            color="primary"
+            @click="accUpgrade"
             >帳號升級</baseButton
           >
-          <baseButton v-else color="primary" @click="goToAdminPage">會員管理</baseButton>
-          <baseButton color="primary">資金投入/提領</baseButton>
+          <baseButton
+            v-else-if="userProfileStore.userInfo.upgrade_status === 'pending'"
+            color="primary"
+            disabled
+            >帳號升級申請中</baseButton
+          >
+          <baseButton
+            v-else-if="userProfileStore.userInfo.upgrade_status === 'rejected'"
+            color="primary"
+            @click="accUpgrade"
+            >審核遭拒絕，重新申請</baseButton
+          >
+          <baseButton
+            v-else-if="userProfileStore.userInfo.role === 'admin'"
+            color="primary"
+            @click="goToAdminPage"
+            >會員管理</baseButton
+          >
+          <!-- <baseButton color="primary">資金投入/提領</baseButton> -->
         </div>
       </div>
     </loadingAreaOverlay>

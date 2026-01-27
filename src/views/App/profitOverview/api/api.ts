@@ -42,18 +42,3 @@ export const editReportData = (tradesId: string, payload: EditReportPayload) =>
 export const deleteReportData = (tradesId: string) =>
   requestApi<null>(() => instance.delete<ApiBody<null>>(`/api/v1/dashboard/${tradesId}`));
 // -------------------------------
-
-// ----------資金操作----------
-// 投入
-export const investDeposit = (amount: number) =>
-  requestApi<null>(() =>
-    instance.post<ApiBody<null>>(`/api/v1/users/update/totalInvest/deposit`, { amount })
-  );
-
-// 提領
-export const investWithdrawal = (amount: number) =>
-  requestApi<null>(() =>
-    instance.post<ApiBody<null>>(`/api/v1/users/update/totalInvest/withdrawal`, { amount })
-  );
-
-// ---------------------------

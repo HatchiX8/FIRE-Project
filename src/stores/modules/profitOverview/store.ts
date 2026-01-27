@@ -8,8 +8,6 @@ import {
   addReportData,
   editReportData,
   deleteReportData,
-  investDeposit,
-  investWithdrawal,
 } from '@/views/App/profitOverview/api/index';
 // 共用型別
 import type {
@@ -107,30 +105,6 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   };
   // ---------------------------
 
-  // ----------資金操作----------
-  // 投入
-  const investLoading = 'useInvestLoading';
-
-  const deposit = async (amount: number) => {
-    const res = await handleApi(() => investDeposit(amount), {
-      loadingStore: areaLoading,
-      loadingKey: investLoading,
-    });
-
-    return res;
-  };
-
-  // 提領
-  const withdrawal = async (amount: number) => {
-    const res = await handleApi(() => investWithdrawal(amount), {
-      loadingStore: areaLoading,
-      loadingKey: investLoading,
-    });
-
-    return res;
-  };
-  // ---------------------------
-
   return {
     // ----------趨勢圖資訊----------
     trendChartData,
@@ -149,10 +123,5 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
     editReport,
     deleteReport,
     // -------------------------------
-
-    // ----------資金操作----------
-    deposit,
-    withdrawal,
-    // ---------------------------
   };
 });
