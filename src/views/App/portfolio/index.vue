@@ -32,6 +32,7 @@
         :page-size="10"
     /></loadingAreaOverlay>
   </div>
+  <!-- 彈跳試窗 -->
   <totalInvestDialog
     v-model="totalInvestDlgOpen"
     :current-invest="portfolioStore.totalInvest"
@@ -43,25 +44,25 @@
   <newAssetDialog
     :stockOptions="stockMetaStore.stocks"
     v-model="newAssetDlgOpen"
-    :loading="submitting"
+    :loading="addAssetLoading"
     @submitNewAsset="requestAddAsset"
   />
   <sellAssetDialog
     :assetValue="selectedAsset"
     v-model="sellAssetDialogOpen"
-    :loading="submitting"
+    :loading="sellAssetLoading"
     @submitSellAsset="requestSellAsset"
   />
   <editAssetDialog
     :assetValue="selectedAsset"
     v-model="editAssetDlgOpen"
-    :loading="submitting"
+    :loading="editAssetLoading"
     @submitEditAsset="requestEditAsset"
   />
   <deleteAssetDialog
     :assetValue="selectedAsset"
     v-model="deleteAssetDlgOpen"
-    :loading="submitting"
+    :loading="deleteAssetLoading"
     @submitDeleteAsset="requestDeleteAsset"
   />
 </template>
@@ -94,16 +95,11 @@ const portfolioStore = usePortfolioStore(); // 投資組合 store
 const loadingStore = useAreaLoadingStore(); // 讀取狀態 store
 const stockMetaStore = useStockMetaStore(); // 股票資訊 store
 
-// 獲取資金配置讀取狀態
-const isSummaryLoading = computed(() => loadingStore.isLoading(portfolioStore.summaryLoading));
-const isHoldingsLoading = computed(() => loadingStore.isLoading(portfolioStore.holdingsLoading));
-
 const selectedAsset = ref<StockRow>({} as StockRow); // 紀錄當前所選擇的資產ID
-const submitting = ref(false); // 表單提交狀態
+const submitting = ref<boolean>(false); // 表單提交狀態
 
 onMounted(async () => {
-  await getSummaryData(); // 請求資產配置資料
-  getHoldingsData(1); // 請求持股配置資料
+  fetchPortfolioData(1);
 });
 // -------------------------
 
@@ -234,6 +230,7 @@ const openTotalInvestDialog = () => {
   requestGetTotalInvest();
 };
 
+// 資金送出設定
 const investOnSubmit = async (payload: {
   mode: 'deposit' | 'add' | 'withdraw';
   amount: number;
@@ -263,7 +260,7 @@ const requestGetTotalInvest = async () => {
     return;
   }
 };
-// requestDepositInvest
+
 // 投入資金
 const requestAddInvest = async (amount: number) => {
   const res = await portfolioStore.addInvest(amount);
@@ -306,45 +303,16 @@ const requestDepositInvest = async (amount: number) => {
 };
 // ---------------------------
 
-// ----------新增資產----------
-const newAssetDlgOpen = ref(false); // 新增資產彈窗開關
+// ----------資產管理----------
+// 獲取資金配置讀取狀態
+const isSummaryLoading = computed(() => loadingStore.isLoading(portfolioStore.summaryLoading));
+const isHoldingsLoading = computed(() => loadingStore.isLoading(portfolioStore.holdingsLoading));
 
-const openAssetDialog = () => {
-  newAssetDlgOpen.value = true;
+// 獲取投資組合資料
+const fetchPortfolioData = async (page: number = 1) => {
+  await Promise.all([getSummaryData(), getHoldingsData(page)]);
 };
-// ---------------------------
 
-// ----------賣出資產----------
-const sellAssetDialogOpen = ref(false); // 賣出資產彈窗開關
-
-const openSellAssetDialog = (assetRow: StockRow) => {
-  clearSelectedAsset();
-  selectedAsset.value = assetRow;
-  sellAssetDialogOpen.value = true;
-};
-// ---------------------------
-
-// ----------編輯資產----------
-const editAssetDlgOpen = ref(false); // 編輯資產彈窗開關
-
-const openEditAssetDialog = (assetRow: StockRow) => {
-  clearSelectedAsset();
-  selectedAsset.value = assetRow;
-  editAssetDlgOpen.value = true;
-};
-// ---------------------------
-
-// ----------刪除資產----------
-const deleteAssetDlgOpen = ref(false); // 刪除資產彈窗開關
-
-const openDeleteAssetDialog = (assetRow: StockRow) => {
-  clearSelectedAsset();
-  selectedAsset.value = assetRow;
-  deleteAssetDlgOpen.value = true;
-};
-// ---------------------------
-
-// ----------API請求----------
 // 請求資產一覽
 const getSummaryData = async () => {
   const res = await portfolioStore.fetchSummaryData();
@@ -365,58 +333,46 @@ const getHoldingsData = async (page: number) => {
   }
 };
 
+// ---------------------------
+
+// ----------新增資產----------
+const newAssetDlgOpen = ref<boolean>(false); // 新增資產彈窗開關
+
+// 彈窗操作
+const openAssetDialog = () => {
+  newAssetDlgOpen.value = true;
+};
+
 // 請求新增資產
+const addAssetLoading = computed(() => loadingStore.isLoading(portfolioStore.addAssetLoading));
 const requestAddAsset = async (payload: AddStockPayload) => {
   const res = await portfolioStore.addAsset(payload);
 
   if (!res.success) {
     // 這裡可以根據需求做錯誤提示或重導
-    return;
-  } else {
-    console.log('✅ 成功新增資產:', res.success);
+    notify('error', res.message);
     newAssetDlgOpen.value = false;
-  }
-};
-
-// 請求編輯資產
-const requestEditAsset = async (payload: {
-  assetId: string | null;
-  formValue: EditStockPayload;
-}) => {
-  const { assetId, formValue } = payload;
-
-  if (!assetId) {
-    console.log('❌ 編輯資產失敗，缺少 assetId');
-    return;
-  }
-
-  const res = await portfolioStore.editAsset(assetId, formValue);
-
-  if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
     return;
   } else {
-    console.log('✅ 成功編輯資產:', res.success);
-    clearSelectedAsset();
-    editAssetDlgOpen.value = false;
+    notify('success', res.message);
+    newAssetDlgOpen.value = false;
+    await fetchPortfolioData(1);
   }
 };
+// ---------------------------
 
-// 請求刪除資產
-const requestDeleteAsset = async (assetId: string) => {
-  const res = await portfolioStore.deleteAsset(assetId);
+// ----------賣出資產----------
+const sellAssetDialogOpen = ref<boolean>(false); // 賣出資產彈窗開關
 
-  if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
-    return;
-  } else {
-    console.log('✅ 成功刪除資產:', res.success);
-    clearSelectedAsset();
-    deleteAssetDlgOpen.value = false;
-  }
+// 彈窗操作
+const openSellAssetDialog = (assetRow: StockRow) => {
+  clearSelectedAsset();
+  selectedAsset.value = assetRow;
+  sellAssetDialogOpen.value = true;
 };
 
 // 請求賣出資產
+const sellAssetLoading = computed(() => loadingStore.isLoading(portfolioStore.sellAssetLoading));
 const requestSellAsset = async (payload: {
   assetId: string | null;
   formValue: SellStockPayload;
@@ -424,21 +380,89 @@ const requestSellAsset = async (payload: {
   const { assetId, formValue } = payload;
 
   if (!assetId) {
-    console.log('❌ 編輯資產失敗，缺少 assetId');
+    notify('error', '賣出失敗，請重試');
     return;
   }
 
   const res = await portfolioStore.sellAsset(assetId, formValue);
 
   if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
     return;
   } else {
-    console.log('✅ 成功賣出資產:', res.success);
+    notify('success', res.message);
     clearSelectedAsset();
     sellAssetDialogOpen.value = false;
+    await fetchPortfolioData(1);
   }
 };
 
+// ---------------------------
+
+// ----------編輯資產----------
+const editAssetDlgOpen = ref<boolean>(false); // 編輯資產彈窗開關
+
+// 彈窗操作
+const openEditAssetDialog = (assetRow: StockRow) => {
+  clearSelectedAsset();
+  selectedAsset.value = assetRow;
+  editAssetDlgOpen.value = true;
+};
+
+// 請求編輯資產
+const editAssetLoading = computed(() => loadingStore.isLoading(portfolioStore.editAssetLoading));
+const requestEditAsset = async (payload: {
+  assetId: string | null;
+  formValue: EditStockPayload;
+}) => {
+  const { assetId, formValue } = payload;
+
+  if (!assetId) {
+    notify('error', '編輯資產失敗，請重試');
+    return;
+  }
+
+  const res = await portfolioStore.editAsset(assetId, formValue);
+
+  if (!res.success) {
+    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
+    return;
+  } else {
+    notify('success', res.message);
+    clearSelectedAsset();
+    editAssetDlgOpen.value = false;
+    await fetchPortfolioData(1);
+  }
+};
+// ---------------------------
+
+// ----------刪除資產----------
+const deleteAssetDlgOpen = ref<boolean>(false); // 刪除資產彈窗開關
+
+// 彈窗操作
+const openDeleteAssetDialog = (assetRow: StockRow) => {
+  clearSelectedAsset();
+  selectedAsset.value = assetRow;
+  deleteAssetDlgOpen.value = true;
+};
+
+// 請求刪除資產
+const deleteAssetLoading = computed(() =>
+  loadingStore.isLoading(portfolioStore.deleteAssetLoading)
+);
+const requestDeleteAsset = async (assetId: string) => {
+  const res = await portfolioStore.deleteAsset(assetId);
+
+  if (!res.success) {
+    notify('error', res.message);
+    return;
+  } else {
+    notify('success', res.message);
+    clearSelectedAsset();
+    deleteAssetDlgOpen.value = false;
+    await fetchPortfolioData(1);
+  }
+};
 // ---------------------------
 </script>

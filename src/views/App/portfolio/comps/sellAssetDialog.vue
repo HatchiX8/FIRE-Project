@@ -1,5 +1,11 @@
 <template>
-  <baseDialog v-model="visible" title="賣出資產" :ok-loading="submitting" @ok="handleSubmit">
+  <baseDialog
+    v-model="visible"
+    title="賣出資產"
+    :ok-loading="loading"
+    @ok="handleSubmit"
+    :disabled="disableSubmit"
+  >
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
       <baseForm
         label="股票代碼"
@@ -35,10 +41,18 @@
         :component-props="{ min: 0, step: 1, precision: 0, placeholder: '實際股數，勿輸入張數' }"
       />
       <baseForm
-        label="賣出總價"
-        path="actualRealizedPnl"
+        label="賣出應收付"
+        path="realizedPnl"
         :component="NInputNumber"
-        v-model="form.actualRealizedPnl"
+        v-model="form.sellCost"
+        class="w-90%"
+        :component-props="{ placeholder: '請輸入賣出後總金額(含稅)' }"
+      />
+      <baseForm
+        label="實際損益"
+        path="realizedPnl"
+        :component="NInputNumber"
+        v-model="form.realizedPnl"
         class="w-90%"
         :component-props="{ placeholder: '請輸入賣出後總金額(含稅)' }"
       />
@@ -81,6 +95,7 @@ import { nonNegative, integerOnly, ymdValidator, today } from '@/utils/index';
 // ----------props&emit----------
 const props = defineProps<{
   assetValue: StockRow;
+  loading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -90,7 +105,6 @@ const emit = defineEmits<{
 
 // ----------彈窗運作----------
 const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
-const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref({
@@ -98,12 +112,22 @@ const form = ref({
   stockId: '',
   stockName: '',
   quantity: 0,
-  sellPrice: null,
-  sellQty: null,
-  actualRealizedPnl: null,
+  sellPrice: 0,
+  sellQty: 0,
+  sellCost: 0,
+  realizedPnl: 0,
   sellDate: '',
   note: '',
 });
+
+const disableSubmit = computed(
+  () =>
+    form.value.sellCost <= 0 || // ← 改檢查值是否有效
+    form.value.sellQty <= 0 ||
+    form.value.sellPrice <= 0 ||
+    !form.value.realizedPnl ||
+    !form.value.sellDate
+);
 // ---------------------------
 
 // ----------表單驗證----------
@@ -117,17 +141,24 @@ const rules: FormRules = {
   sellQty: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
     { validator: nonNegative('賣出股數'), trigger: ['input', 'blur'] },
-  ],
-
-  actualRealizedPnl: [
-    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
-    { validator: nonNegative('賣出總價'), trigger: ['input', 'blur'] },
     { validator: integerOnly, trigger: ['blur'] },
   ],
+
+  sellCost: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: nonNegative('賣出應收付'), trigger: ['input', 'blur'] },
+  ],
+
+  realizedPnl: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: integerOnly, trigger: ['input', 'blur'] },
+  ],
+
   sellDate: [
     { required: true, message: '必填', trigger: ['input', 'blur'] },
     { validator: ymdValidator, trigger: ['input', 'blur'] },
   ],
+
   note: [{ required: false, trigger: ['input', 'blur'] }],
 };
 
@@ -145,9 +176,10 @@ watch(
         stockId: v.stockId ?? '',
         stockName: v.stockName ?? '',
         quantity: v.quantity ?? 0,
-        sellPrice: null,
-        sellQty: null,
-        actualRealizedPnl: null,
+        sellPrice: v.buyPrice,
+        sellQty: v.quantity,
+        sellCost: v.totalCost,
+        realizedPnl: 0,
         sellDate: today,
         note: '',
       };
@@ -157,9 +189,10 @@ watch(
         stockId: '',
         stockName: '',
         quantity: 0,
-        sellPrice: null,
-        sellQty: null,
-        actualRealizedPnl: null,
+        sellPrice: 0,
+        sellQty: 0,
+        sellCost: 0,
+        realizedPnl: 0,
         sellDate: '',
         note: '',
       };
@@ -177,12 +210,7 @@ const handleSubmit = async () => {
   if (!ok) return;
   // 型別窄化，避免 null 傳到後端
   const fv = form.value;
-  if (
-    fv.sellPrice === null ||
-    fv.sellQty === null ||
-    fv.actualRealizedPnl === null ||
-    !fv.sellDate
-  ) {
+  if (fv.sellPrice === null || fv.sellQty === null || fv.realizedPnl === null || !fv.sellDate) {
     return;
   }
 
@@ -190,7 +218,8 @@ const handleSubmit = async () => {
     // 不包含 stockId / stockName 等多餘欄位
     sellPrice: Number(fv.sellPrice),
     sellQty: Number(fv.sellQty),
-    actualRealizedPnl: Number(fv.actualRealizedPnl),
+    realizedPnl: Number(fv.realizedPnl),
+    sellCost: Number(fv.sellCost),
     sellDate: fv.sellDate,
     note: fv.note ?? '',
   };
