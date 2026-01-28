@@ -1,5 +1,11 @@
 <template>
-  <baseDialog v-model="visible" title="新增資產" :ok-loading="submitting" @ok="handleSubmit">
+  <baseDialog
+    v-model="visible"
+    title="新增資產"
+    :ok-loading="submitting"
+    @ok="handleSubmit"
+    :disabled="disableSubmit"
+  >
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
       <stockInputModule
         label="股票代碼"
@@ -108,17 +114,21 @@ const form = ref({
   buyDate: '',
   note: null,
 });
+
+const disableSubmit = computed(
+  () =>
+    !form.value.stockId?.stockId ||
+    form.value.buyPrice === null ||
+    form.value.quantity === null ||
+    form.value.buyCost === null ||
+    !form.value.buyDate
+);
 // ---------------------------
 
 // ----------表單驗證----------
 // 表單驗證規則
 const rules: FormRules = {
-  name: [{ required: true, message: '必填', trigger: ['input', 'blur'] }],
-
-  avgPrice: [
-    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
-    { validator: nonNegative('損益平衡點'), trigger: ['input', 'blur'] },
-  ],
+  stockId: [{ required: true, message: '必填', trigger: ['input', 'blur'] }],
 
   buyPrice: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
