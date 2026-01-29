@@ -46,7 +46,7 @@
         :component="NInputNumber"
         v-model="form.sellCost"
         class="w-90%"
-        :component-props="{ placeholder: '請輸入賣出後總金額(含稅)' }"
+        :component-props="{ placeholder: '請輸入賣出後總應收付(含稅)' }"
       />
       <baseForm
         label="實際損益"
@@ -54,7 +54,7 @@
         :component="NInputNumber"
         v-model="form.realizedPnl"
         class="w-90%"
-        :component-props="{ placeholder: '請輸入賣出後總金額(含稅)' }"
+        :component-props="{ placeholder: '請輸入實際損益' }"
       />
       <baseForm
         label="賣出日期"

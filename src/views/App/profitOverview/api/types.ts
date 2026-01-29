@@ -6,19 +6,37 @@ export interface TotalTradesData {
 }
 
 // 單筆交易型別
+// export interface TradeItem {
+//   tradesId: string;
+//   stockId: string;
+//   stockName: string;
+//   tradesDate: string;
+//   buyPrice: number;
+//   sellPrice: number;
+//   quantity: number;
+//   buyCost: number;
+//   actualRealizedPnl: number;
+//   stockProfit: number;
+//   profitLossRate: number;
+//   note: string;
+// }
+
 export interface TradeItem {
   tradesId: string;
   stockId: string;
   stockName: string;
-  tradesDate: string;
   buyPrice: number;
-  sellPrice: number;
   quantity: number;
   buyCost: number;
-  actualRealizedPnl: number;
-  stockProfit: number;
+  buyDate: string;
+  buyNote?: string;
+  sellPrice: number;
+  sellQty: number;
+  sellCost: number;
+  realizedPnl: number;
   profitLossRate: number;
-  note: string;
+  sellDate: string;
+  sellNote?: string;
 }
 
 // 分頁型別
@@ -39,19 +57,35 @@ export interface TrendChartData {
 // ---------------------------------
 
 // ----------表格欄位型別----------
+// export interface StockRow {
+//   tradesId: string;
+//   stockId: string;
+//   stockName: string;
+//   tradesDate: string;
+//   buyPrice: number;
+//   sellPrice: number;
+//   quantity: number;
+//   buyCost: number;
+//   actualRealizedPnl: number;
+//   stockProfit: number;
+//   profitLossRate: number;
+//   note: string;
+// }
 export interface StockRow {
   tradesId: string;
   stockId: string;
   stockName: string;
-  tradesDate: string;
   buyPrice: number;
-  sellPrice: number;
   quantity: number;
   buyCost: number;
-  actualRealizedPnl: number;
-  stockProfit: number;
-  profitLossRate: number;
-  note: string;
+  buyDate: string;
+  buyNote?: string;
+  sellPrice: number;
+  sellQty: number;
+  sellCost: number;
+  realizedPnl: number;
+  sellDate: string;
+  sellNote?: string;
 }
 
 export interface StockOption {
@@ -65,18 +99,27 @@ export interface StockOption {
 export interface NewReportPayload {
   stockId: string;
   buyPrice: number;
-  sellPrice: number;
   quantity: number;
   buyCost: number;
-  actualRealizedPnl: number;
-  tradesDate: string;
-  note?: string;
-  isCalculateTotal: boolean;
+  buyDate: string;
+  buyNote?: string;
+  sellPrice: number;
+  sellQty: number;
+  sellCost: number;
+  realizedPnl: number;
+  sellDate: string;
+  sellNote?: string;
 }
 
 // 編輯歷史交易資料型別
 export interface EditReportPayload {
-  note: string;
+  stockId: string;
+  sellPrice: number;
+  sellQty: number;
+  sellCost: number;
+  realizedPnl: number;
+  sellDate: string;
+  sellNote?: string;
 }
 
 // 刪除歷史交易資料型別

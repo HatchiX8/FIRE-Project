@@ -66,7 +66,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   };
   // -------------------------------
 
-  // ----------新增資產----------
+  // ----------新增歷史資產----------
   const addReportLoading = 'useAddReportLoading';
 
   const addReport = async (payload: NewReportPayload) => {
@@ -120,8 +120,11 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
 
     // ----------歷史資料操作----------
     addReport,
+    addReportLoading,
     editReport,
+    editReportLoading,
     deleteReport,
+    deleteReportLoading,
     // -------------------------------
   };
 });

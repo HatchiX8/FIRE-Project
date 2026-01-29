@@ -380,7 +380,8 @@ const requestSellAsset = async (payload: {
   const { assetId, formValue } = payload;
 
   if (!assetId) {
-    notify('error', '賣出失敗，請重試');
+    notify('error', '無法操作賣出資產，請稍後再試');
+    sellAssetDialogOpen.value = false;
     return;
   }
 
@@ -388,6 +389,7 @@ const requestSellAsset = async (payload: {
 
   if (!res.success) {
     notify('error', res.message);
+    sellAssetDialogOpen.value = false;
     return;
   } else {
     notify('success', res.message);
