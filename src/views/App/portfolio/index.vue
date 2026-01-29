@@ -1,36 +1,38 @@
 <template>
-  <div>
-    <loadingAreaOverlay :loadingId="portfolioStore.summaryLoading">
-      <div>
-        <trendChart
-          v-show="!isSummaryLoading"
-          class="h-45"
-          :chartData="portfolioStore.summaryList"
-        />
+  <div class="text-textColor">
+    <div class="mx-auto max-w-6xl md:px-4">
+      <loadingAreaOverlay :loadingId="portfolioStore.summaryLoading">
+        <div>
+          <trendChart
+            v-show="!isSummaryLoading"
+            class="h-45"
+            :chartData="portfolioStore.summaryList"
+          />
+        </div>
+        <div v-if="isSummaryLoading" class="my-20"></div>
+      </loadingAreaOverlay>
+
+      <div
+        v-show="!isHoldingsLoading && !isSummaryLoading"
+        class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between"
+      >
+        <baseButton color="primary" @click="openTotalInvestDialog">資金管理</baseButton>
+        <baseButton class="ml-auto" color="primary" @click="openAssetDialog">建倉</baseButton>
       </div>
-      <div v-if="isSummaryLoading" class="my-20"></div>
-    </loadingAreaOverlay>
 
-    <div
-      v-show="!isHoldingsLoading && !isSummaryLoading"
-      class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between"
-    >
-      <baseButton color="primary" @click="openTotalInvestDialog">資金管理</baseButton>
-      <baseButton class="ml-auto" color="primary" @click="openAssetDialog">建倉</baseButton>
+      <loadingAreaOverlay
+        :loadingId="portfolioStore.holdingsLoading"
+        class="mx-auto max-w-6xl px-0 px-4"
+      >
+        <baseTable
+          v-if="!isHoldingsLoading && !isSummaryLoading"
+          :columns="bridgedColumns"
+          :data="bridgedData"
+          :row-key="bridgedRowKey"
+          v-model:expanded-row-keys="expanded"
+          :page-size="10"
+      /></loadingAreaOverlay>
     </div>
-
-    <loadingAreaOverlay
-      :loadingId="portfolioStore.holdingsLoading"
-      class="mx-auto max-w-6xl px-0 px-4"
-    >
-      <baseTable
-        v-if="!isHoldingsLoading && !isSummaryLoading"
-        :columns="bridgedColumns"
-        :data="bridgedData"
-        :row-key="bridgedRowKey"
-        v-model:expanded-row-keys="expanded"
-        :page-size="10"
-    /></loadingAreaOverlay>
   </div>
   <!-- 彈跳試窗 -->
   <totalInvestDialog

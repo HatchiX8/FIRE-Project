@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-auto rounded-2xl">
+  <div class="overflow-hidden rounded-2xl">
     <div class="h-full w-full bg-white" ref="chartDom"></div>
   </div>
 </template>

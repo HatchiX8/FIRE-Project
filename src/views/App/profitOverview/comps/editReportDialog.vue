@@ -179,7 +179,7 @@ watch(
 
 // 提交表單
 const handleSubmit = async () => {
-  emit('submitEditReport', { reportId: props.reportValue.stockId, formValue: form.value });
+  emit('submitEditReport', { reportId: props.reportValue.tradesId, formValue: form.value });
 };
 
 // ---------------------------

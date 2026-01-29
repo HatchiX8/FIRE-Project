@@ -1,6 +1,6 @@
 <template>
   <baseDialog v-model="visible" title="刪除資產" :ok-loading="loading" @ok="handleSubmit">
-    <n-form ref="formRef" :model="form" label-width="80">
+    <n-form ref="formRef" :model="form" label-width="80" class="max-h-80vh overflow-y-auto pr-2">
       <n-form-item label="股票代碼" class="w-90%">
         <n-input :value="reportValue.stockName" disabled />
       </n-form-item>
