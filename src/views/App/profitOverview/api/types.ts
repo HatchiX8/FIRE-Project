@@ -50,8 +50,8 @@ export interface Pagination {
 export interface TrendChartData {
   period: string[];
   pnl: (number | null)[];
-  netContribution: (number | null)[];
-  totalEquity: (number | null)[];
+  // netContribution: (number | null)[];
+  // totalEquity: (number | null)[];
 }
 
 // ---------------------------------

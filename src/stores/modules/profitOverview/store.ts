@@ -34,8 +34,8 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   const trendChartData = ref<TrendChartData>({
     period: [],
     pnl: [],
-    netContribution: [],
-    totalEquity: [],
+    // netContribution: [],
+    // totalEquity: [],
   });
 
   const fetchTrendChartData = async (year: number) =>

@@ -16,7 +16,7 @@
       <stockInputModule
         label="股票代碼"
         path="stock"
-        v-model="form.stock"
+        v-model="form.stockId"
         :options="props.stockOptions"
         class="w-90%"
         :component-props="{ placeholder: '請輸入股票代碼或名稱' }"
@@ -54,6 +54,18 @@
         :component-props="{ placeholder: '請輸入交易日期(YYYY-MM-DD)' }"
       />
       <baseForm
+        label="備註"
+        path="buyNote"
+        :component="NInput"
+        v-model="form.buyNote"
+        class="w-90%"
+        :component-props="{
+          type: 'textarea',
+          autosize: { minRows: 2, maxRows: 3 }, // 內容區更高
+          placeholder: '請輸入買進策略',
+        }"
+      />
+      <baseForm
         label="賣出價格"
         path="sellPrice"
         :component="NInputNumber"
@@ -78,21 +90,20 @@
         :component-props="{ min: 0, step: 1, precision: 0, placeholder: '請輸入實際賣出應收付' }"
       />
       <baseForm
-        label="賣出日期"
-        path="sellDate"
-        :component="NInput"
-        v-model="form.sellDate"
-        class="w-90%"
-        :component-props="{ placeholder: '請輸入交易日期(YYYY-MM-DD)' }"
-      />
-
-      <baseForm
         label="實際損益"
         path="realizedPnl"
         :component="NInputNumber"
         v-model="form.realizedPnl"
         class="w-90%"
         :component-props="{ placeholder: '請輸入賣出後總應收付(含稅)' }"
+      />
+      <baseForm
+        label="賣出日期"
+        path="sellDate"
+        :component="NInput"
+        v-model="form.sellDate"
+        class="w-90%"
+        :component-props="{ placeholder: '請輸入交易日期(YYYY-MM-DD)' }"
       />
       <baseForm
         label="備註"
@@ -103,6 +114,7 @@
         :component-props="{
           type: 'textarea',
           autosize: { minRows: 2, maxRows: 3 }, // 內容區更高
+          placeholder: '請輸入賣出備註',
         }"
       />
     </n-form>
@@ -146,7 +158,7 @@ const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref({
-  stock: { stockId: '', stockName: '' } as StockOption,
+  stockId: { stockId: '', stockName: '' } as StockOption,
   buyPrice: 0,
   quantity: 0,
   buyCost: 0,
@@ -162,7 +174,7 @@ const form = ref({
 
 const disableSubmit = computed(
   () =>
-    !form.value.stock?.stockId ||
+    !form.value.stockId?.stockId ||
     form.value.buyPrice === null ||
     form.value.quantity === null ||
     form.value.buyCost === null ||
@@ -178,7 +190,7 @@ const disableSubmit = computed(
 // ----------表單驗證----------
 // 表單驗證規則
 const rules: FormRules = {
-  stock: [{ required: true, message: '必填', trigger: ['input', 'blur'] }],
+  stockId: [{ required: true, message: '必填', trigger: ['input', 'blur'] }],
 
   buyPrice: [
     { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
@@ -221,13 +233,11 @@ const rules: FormRules = {
   sellNote: [{ required: false, trigger: ['input', 'blur'] }],
 };
 
-// ---------------------------
-
 // ----------表單事件----------
 // 提交表單
 const handleSubmit = async () => {
   emit('submitNewReport', {
-    stockId: form.value.stock.stockId,
+    stockId: form.value.stockId.stockId,
     buyPrice: form.value.buyPrice!,
     quantity: form.value.quantity!,
     buyCost: form.value.buyCost!,
@@ -248,7 +258,7 @@ const handleSubmit = async () => {
 // 新增：重置表單
 const resetForm = () => {
   form.value = {
-    stock: { stockId: '', stockName: '' } as StockOption,
+    stockId: { stockId: '', stockName: '' } as StockOption,
     buyPrice: 0,
     quantity: 0,
     buyCost: 0,

@@ -1,46 +1,60 @@
 <template>
   <div class="text-textColor">
-    <loadingAreaOverlay :loadingId="profitOverviewStore.trendChartLoading" class="px-0">
-      <div class="mb-4">
-        <trendChart
-          v-show="!isTrendChartLoading"
-          class="h-70"
-          :chartData="profitOverviewStore.trendChartData"
-        />
-      </div>
-      <div v-if="isTrendChartLoading" class="my-20"></div>
-    </loadingAreaOverlay>
+    <div class="mx-auto max-w-6xl md:px-4">
+      <loadingAreaOverlay :loadingId="profitOverviewStore.trendChartLoading" class="px-0">
+        <div class="mb-4">
+          <trendChart
+            v-show="!isTrendChartLoading"
+            class="h-70"
+            :chartData="profitOverviewStore.trendChartData"
+          />
+        </div>
+        <div v-if="isTrendChartLoading" class="my-20"></div>
+      </loadingAreaOverlay>
 
-    <div class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between">
-      <div></div>
-      <div class="flex items-center">
-        <baseButton color="primary"><div class="i-mdi:chevron-left text-5"></div></baseButton>
-        <div class="text-5 mx-2 text-center">
-          <p><span class="text-danger">9月</span>歷史</p>
-          <p>交易紀錄</p>
+      <div
+        v-show="!isTrendChartLoading && !isTotalTradesLoading"
+        class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between"
+      >
+        <div></div>
+        <div class="flex items-center">
+          <baseButton color="primary"
+            ><div class="i-mdi:chevron-left text-5" @click="prevMonth"></div
+          ></baseButton>
+          <div class="text-5 mx-2 text-center">
+            <p>
+              <span class="text-danger">{{ currentMonth }}月</span>歷史
+            </p>
+            <p>交易紀錄</p>
+          </div>
+
+          <baseButton color="primary"
+            ><div class="i-mdi:chevron-right text-5" @click="nextMonth"></div
+          ></baseButton>
         </div>
 
-        <baseButton color="primary"><div class="i-mdi:chevron-right text-5"></div></baseButton>
+        <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
+      </div>
+      <div v-show="isTrendChartLoading && isTotalTradesLoading" class="flex justify-center">
+        <p class="text-5">資料請求中...請稍後</p>
       </div>
 
-      <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
+      <loadingAreaOverlay
+        :loadingId="profitOverviewStore.totalTradesLoading"
+        class="mx-auto max-w-6xl px-0 px-4"
+      >
+        <baseTable
+          v-if="!isTrendChartLoading && !isTotalTradesLoading"
+          :columns="bridgedColumns"
+          :data="bridgedData"
+          :row-key="bridgedRowKey"
+          v-model:expanded-row-keys="expanded"
+          :page-size="10"
+          class="mt-4"
+        />
+        <div v-if="isTotalTradesLoading" class="my-20"></div>
+      </loadingAreaOverlay>
     </div>
-
-    <loadingAreaOverlay
-      :loadingId="profitOverviewStore.totalTradesLoading"
-      class="mx-auto max-w-6xl px-0 px-4"
-    >
-      <baseTable
-        v-if="!isTrendChartLoading && !isTotalTradesLoading"
-        :columns="bridgedColumns"
-        :data="bridgedData"
-        :row-key="bridgedRowKey"
-        v-model:expanded-row-keys="expanded"
-        :page-size="10"
-        class="mt-4"
-      />
-      <div v-if="isTotalTradesLoading" class="my-20"></div>
-    </loadingAreaOverlay>
   </div>
   <newReportDialog
     :stockOptions="stockMetaStore.stocks"
@@ -85,9 +99,41 @@ const stockMetaStore = useStockMetaStore(); // 股票資訊 store
 
 const selectedReport = ref<StockRow>({} as StockRow); // 紀錄當前所選擇的資產ID
 
+// 當前年月變數
+const currentYear = ref<number>(0);
+const currentMonth = ref<number>(0);
+
 onMounted(async () => {
-  fetchPortfolioOverviewData(2026, 10, 1);
+  const today = new Date();
+  currentYear.value = today.getFullYear();
+  currentMonth.value = today.getMonth() + 1; // getMonth() 是 0-11，需要 +1
+
+  fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
 });
+// -------------------------
+
+// ----------月份切換----------
+// 上一個月
+const prevMonth = () => {
+  if (currentMonth.value === 1) {
+    currentMonth.value = 12;
+    currentYear.value -= 1;
+  } else {
+    currentMonth.value -= 1;
+  }
+  fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
+};
+
+// 下一個月
+const nextMonth = () => {
+  if (currentMonth.value === 12) {
+    currentMonth.value = 1;
+    currentYear.value += 1;
+  } else {
+    currentMonth.value += 1;
+  }
+  fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
+};
 // -------------------------
 
 // ----------欄位設定----------
@@ -118,7 +164,7 @@ const columns: DataTableColumns<TradeItem> = [
           : row.profitLossRate < 0
             ? 'text-success'
             : 'text-neutral_300';
-      return h('span', { class: cls }, `${row.profitLossRate.toFixed(2)}%`);
+      return h('span', { class: cls }, `${row.realizedPnl} ( ${row.profitLossRate.toFixed(2)}% ) `);
     },
   },
   {
@@ -159,12 +205,12 @@ const columns: DataTableColumns<TradeItem> = [
           h(
             baseButton,
             { size: 'small', color: 'success', onClick: () => openEditReportDialog(row) },
-            { default: () => '編輯' }
+            { default: () => '編輯紀錄' }
           ),
           h(
             baseButton,
             { size: 'small', color: 'danger', onClick: () => openDeleteReportDialog(row) },
-            { default: () => '刪除資產' }
+            { default: () => '撤銷紀錄' }
           ),
         ]),
       ]),
@@ -186,7 +232,6 @@ const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as Stock
 // 清除所選資產
 const clearSelectedAsset = () => {
   selectedReport.value = {} as StockRow;
-  console.log('觸發清除', selectedReport.value);
 };
 // ---------------------------
 
@@ -245,7 +290,7 @@ const requestAddReport = async (payload: NewReportPayload) => {
   } else {
     notify('success', res.message);
     newReportDlgOpen.value = false;
-    fetchPortfolioOverviewData(2026, 10, 1);
+    fetchPortfolioOverviewData(2026, 1, 1);
   }
 };
 
@@ -257,7 +302,6 @@ const editReportDlgOpen = ref<boolean>(false);
 const openEditReportDialog = (reportRow: StockRow) => {
   clearSelectedAsset();
   selectedReport.value = reportRow;
-  console.log('觸發點擊，ID為:', reportRow);
   editReportDlgOpen.value = true;
 };
 
@@ -284,7 +328,7 @@ const requestEditReport = async (payload: {
   } else {
     notify('success', res.message);
     editReportDlgOpen.value = false;
-    fetchPortfolioOverviewData(2026, 10, 1);
+    fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
   }
 };
 
@@ -296,7 +340,6 @@ const deleteReportDlgOpen = ref<boolean>(false);
 const openDeleteReportDialog = (reportRow: StockRow) => {
   clearSelectedAsset();
   selectedReport.value = reportRow;
-  console.log('觸發點擊，ID為:', reportRow);
   deleteReportDlgOpen.value = true;
 };
 
@@ -313,7 +356,7 @@ const requestDeleteReport = async (reportId: string) => {
   } else {
     notify('success', res.message);
     deleteReportDlgOpen.value = false;
-    fetchPortfolioOverviewData(2026, 10, 1);
+    fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
   }
 };
 // ---------------------------
