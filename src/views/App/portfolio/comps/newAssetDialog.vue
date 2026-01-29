@@ -2,7 +2,7 @@
   <baseDialog
     v-model="visible"
     title="新增資產"
-    :ok-loading="submitting"
+    :ok-loading="loading"
     @ok="handleSubmit"
     :disabled="disableSubmit"
   >
@@ -94,6 +94,7 @@ interface StockOption {
 // ----------props&emit----------
 const props = defineProps<{
   stockOptions: StockOption[];
+  loading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -103,7 +104,6 @@ const emit = defineEmits<{
 
 // ----------彈窗運作----------
 const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
-const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref({

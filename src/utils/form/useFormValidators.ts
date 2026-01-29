@@ -3,7 +3,7 @@ import type { FormItemRule } from 'naive-ui';
 export const nonNegative =
   (label = '數值'): FormItemRule['validator'] =>
   (_rule, v: number) =>
-    v >= 0 ? true : new Error(`${label}不可小於 0`);
+    v > 0 ? true : new Error(`${label}不可小於等於 0`);
 
 // 需為整數驗證（股數用）
 export const integerOnly: FormItemRule['validator'] = (_r, v: number) =>

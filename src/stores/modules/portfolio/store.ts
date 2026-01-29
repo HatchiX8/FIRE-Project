@@ -194,9 +194,13 @@ export const usePortfolioStore = defineStore('portfolio', () => {
 
     // ----------持股操作----------
     addAsset,
+    addAssetLoading,
     editAsset,
+    editAssetLoading,
     deleteAsset,
+    deleteAssetLoading,
     sellAsset,
+    sellAssetLoading,
     // ---------------------------
 
     // ----------資金操作----------

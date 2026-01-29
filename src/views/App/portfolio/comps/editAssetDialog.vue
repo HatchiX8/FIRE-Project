@@ -1,13 +1,19 @@
 <template>
-  <baseDialog v-model="visible" title="編輯資產" :ok-loading="submitting" @ok="handleSubmit">
+  <baseDialog
+    v-model="visible"
+    title="編輯資產"
+    :ok-loading="loading"
+    @ok="handleSubmit"
+    :disabled="disableSubmit"
+  >
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
       <n-form-item label="股票代碼" class="w-90%">
-        <n-input :value="stockLabel" disabled />
+        <n-input :value="assetValue.stockName" disabled />
       </n-form-item>
 
       <baseForm
         label="買進價格"
-        path="avgPrice"
+        path="buyPrice"
         :component="NInputNumber"
         v-model="form.buyPrice"
         class="w-90%"
@@ -21,9 +27,9 @@
       />
       <baseForm
         label="總成本"
-        path="totalCost"
+        path="buyCost"
         :component="NInputNumber"
-        v-model="form.totalCost"
+        v-model="form.buyCost"
         class="w-90%"
       />
       <baseForm
@@ -57,16 +63,17 @@
 import { NInput, NInputNumber } from 'naive-ui';
 // 共用型別
 import type { FormInst, FormRules } from 'naive-ui';
-import type { EditStockPayload, StockRow, StockOption } from '../api/index';
+import type { EditStockPayload, StockRow } from '../api/index';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
 // 商業邏輯
-import { useStockLabel } from '@/utils/index';
+import { nonNegative, integerOnly, ymdValidator } from '@/utils/index';
 // ---------------------------
 
 // ----------props&emit----------
 const props = defineProps<{
   assetValue: StockRow;
+  loading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -76,21 +83,50 @@ const emit = defineEmits<{
 
 // ----------彈窗運作----------
 const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
-const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref<EditStockPayload>({
-  stock: { stockId: '', stockName: '' } as StockOption,
+  stockId: '',
   buyPrice: 0,
   quantity: 0,
-  totalCost: 0,
+  buyCost: 0,
   buyDate: '',
   note: '',
 });
+
+const disableSubmit = computed(
+  () =>
+    form.value.buyPrice <= 0 || // ← 改檢查值是否有效
+    form.value.quantity <= 0 ||
+    form.value.buyCost <= 0 ||
+    !form.value.buyDate
+);
 // ---------------------------
 
 // ----------表單驗證----------
 const rules: FormRules = {
+  stockId: [{ required: true, message: '必填', trigger: ['input', 'blur'] }],
+
+  buyPrice: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: nonNegative('買進價格'), trigger: ['input', 'blur'] },
+  ],
+
+  quantity: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: nonNegative('買進股數'), trigger: ['input', 'blur'] },
+    { validator: integerOnly, trigger: ['blur'] },
+  ],
+
+  buyCost: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: nonNegative('買進成本'), trigger: ['input', 'blur'] },
+  ],
+
+  buyDate: [
+    { required: true, message: '必填', trigger: ['input', 'blur'] },
+    { validator: ymdValidator, trigger: ['input', 'blur'] },
+  ],
   note: [{ required: false, trigger: ['input', 'blur'] }],
 };
 // ---------------------------
@@ -102,19 +138,19 @@ watch(
   (v) => {
     if (v) {
       form.value = {
-        stock: { stockId: v.stockId ?? '', stockName: v.stockName ?? '' } as StockOption,
+        stockId: v.stockId ?? '',
         buyPrice: v.buyPrice ?? 0,
         quantity: v.quantity ?? 0,
-        totalCost: v.totalCost ?? 0,
+        buyCost: v.totalCost ?? 0,
         buyDate: v.buyDate ?? '',
         note: v.note ?? '',
       };
     } else {
       form.value = {
-        stock: { stockId: '', stockName: '' },
+        stockId: '',
         buyPrice: 0,
         quantity: 0,
-        totalCost: 0,
+        buyCost: 0,
         buyDate: '',
         note: '',
       };
@@ -122,8 +158,6 @@ watch(
   },
   { immediate: true }
 );
-
-const { stockLabel } = useStockLabel(computed(() => form.value.stock));
 
 // 提交表單
 const handleSubmit = async () => {

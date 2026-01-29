@@ -1,5 +1,5 @@
 <template>
-  <baseDialog v-model="visible" title="刪除資產" :ok-loading="submitting" @ok="handleSubmit">
+  <baseDialog v-model="visible" title="刪除資產" :ok-loading="loading" @ok="handleSubmit">
     <n-form ref="formRef" :model="form" label-width="80">
       <n-form-item label="股票代碼" class="w-90%">
         <n-input :value="stockLabel" disabled />
@@ -29,14 +29,15 @@
         class="w-90%"
         :component-props="{ disabled: true }"
       />
-      <baseForm
+      <!-- 總市值後續擴充 -->
+      <!-- <baseForm
         label="總市值"
         path="marketValue"
         :component="NInputNumber"
         v-model="form.marketValue"
         class="w-90%"
         :component-props="{ disabled: true }"
-      />
+      /> -->
       <baseForm
         label="日期"
         path="buyDate"
@@ -80,6 +81,7 @@ import { useStockLabel } from '@/utils/index';
 // ----------props&emit----------
 const props = defineProps<{
   assetValue: StockRow;
+  loading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -89,7 +91,6 @@ const emit = defineEmits<{
 
 // ----------彈窗運作----------
 const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
-const submitting = ref(false); // 送出時的讀取狀態
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref({

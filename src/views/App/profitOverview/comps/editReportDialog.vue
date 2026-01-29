@@ -1,52 +1,60 @@
 <template>
   <baseDialog
     v-model="visible"
-    title="編輯資產"
-    :ok-loading="submitting"
+    title="編輯歷史紀錄"
+    :ok-loading="loading"
     @ok="handleSubmit"
-    @cancel="reset"
+    :disabled="disableSubmit"
   >
     <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
       <n-form-item label="股票代碼" class="w-90%">
-        <n-input :value="stockLabel" disabled />
+        <n-input :value="reportValue.stockName" disabled />
       </n-form-item>
       <baseForm
-        label="買進價格"
-        path="avgPrice"
+        label="賣出價格"
+        path="sellPrice"
         :component="NInputNumber"
-        v-model="form.buyPrice"
+        v-model="form.sellPrice"
         class="w-90%"
-        :component-props="{ disabled: true }"
+        :component-props="{ min: 0, step: 0.05, precision: 2, placeholder: '請輸入賣出價格' }"
       />
       <baseForm
-        label="持有股數"
-        path="quantity"
+        label="賣出股數"
+        path="sellQty"
         :component="NInputNumber"
-        v-model="form.quantity"
+        v-model="form.sellQty"
         class="w-90%"
-        :component-props="{ disabled: true }"
+        :component-props="{ min: 0, step: 1, precision: 0, placeholder: '實際股數，勿輸入張數' }"
       />
       <baseForm
-        label="買進成本"
-        path="buyCost"
+        label="賣出應收付"
+        path="sellCost"
         :component="NInputNumber"
-        v-model="form.buyCost"
+        v-model="form.sellCost"
         class="w-90%"
-        :component-props="{ disabled: true }"
+        :component-props="{ placeholder: '請輸入賣出後總應收付(含稅)' }"
       />
       <baseForm
-        label="買進日期"
-        path="buyDate"
+        label="賣出日期"
+        path="sellDate"
         :component="NInput"
-        v-model="form.tradesDate"
+        v-model="form.sellDate"
         class="w-90%"
-        :component-props="{ disabled: true }"
+        :component-props="{ placeholder: '請輸入買進日期(YYYY-MM-DD)' }"
+      />
+      <baseForm
+        label="實際損益"
+        path="realizedPnl"
+        :component="NInputNumber"
+        v-model="form.realizedPnl"
+        class="w-90%"
+        :component-props="{ placeholder: '請輸入實際損益' }"
       />
       <baseForm
         label="備註"
         path="note"
         :component="NInput"
-        v-model="form.note"
+        v-model="form.sellNote"
         class="w-90%"
         :component-props="{
           type: 'textarea',
@@ -66,16 +74,17 @@
 import { NInput, NInputNumber } from 'naive-ui';
 // 共用型別
 import type { FormInst, FormRules } from 'naive-ui';
-import type { StockRow, StockOption, EditReportPayload } from '../api/index';
+import type { StockRow, EditReportPayload } from '../api/index';
 // 元件
 import { baseDialog, baseForm } from '@/components/index';
 // 商業邏輯
-import { useStockLabel } from '@/utils/index';
+import { nonNegative, integerOnly, ymdValidator } from '@/utils/index';
 // ---------------------------
 
 // ----------props&emit----------
 const props = defineProps<{
   reportValue: StockRow;
+  loading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -85,22 +94,54 @@ const emit = defineEmits<{
 
 // ----------彈窗運作----------
 const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
-const submitting = ref(false); // 送出時的讀取狀態
+
 const formRef = ref<FormInst | null>(null); // 表單實例
 // 表單資料
 const form = ref({
-  stock: { stockId: '', stockName: '' } as StockOption,
-  buyPrice: 0,
-  quantity: 0,
-  buyCost: 0,
-  tradesDate: '',
-  note: '',
+  stockId: '',
+  sellPrice: 0,
+  sellQty: 0,
+  sellCost: 0,
+  realizedPnl: 0,
+  sellDate: '',
+  sellNote: '',
 });
+
+const disableSubmit = computed(
+  () =>
+    form.value.sellCost <= 0 || // ← 改檢查值是否有效
+    form.value.sellQty <= 0 ||
+    form.value.sellPrice <= 0 ||
+    !form.value.realizedPnl ||
+    !form.value.sellDate
+);
 // ---------------------------
 
 // ----------表單驗證----------
 
 const rules: FormRules = {
+  sellPrice: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: nonNegative('賣出價格'), trigger: ['input', 'blur'] },
+  ],
+  sellQty: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: nonNegative('賣出股數'), trigger: ['input', 'blur'] },
+    { validator: integerOnly, trigger: ['blur'] },
+  ],
+  sellCost: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: nonNegative('賣出應收付'), trigger: ['input', 'blur'] },
+  ],
+  realizedPnl: [
+    { required: true, type: 'number', message: '必填', trigger: ['input', 'blur'] },
+    { validator: integerOnly, trigger: ['input', 'blur'] },
+  ],
+  sellDate: [
+    { required: true, message: '必填', trigger: ['input', 'blur'] },
+    { validator: ymdValidator, trigger: ['input', 'blur'] },
+  ],
+
   note: [{ required: false, trigger: ['input', 'blur'] }],
 };
 
@@ -113,42 +154,33 @@ watch(
   (v) => {
     if (v) {
       form.value = {
-        stock: { stockId: v.stockId ?? '', stockName: v.stockName ?? '' } as StockOption,
-        buyPrice: v.buyPrice ?? 0,
-        quantity: v.quantity ?? 0,
-        buyCost: v.buyCost ?? 0,
-        tradesDate: v.tradesDate ?? '',
-        note: v.note ?? '',
+        stockId: v.stockId,
+        sellPrice: v.sellPrice ?? 0,
+        sellQty: v.sellQty ?? 0,
+        sellCost: v.sellCost ?? 0,
+        realizedPnl: v.realizedPnl ?? 0,
+        sellDate: v.sellDate ?? '',
+        sellNote: v.sellNote ?? '',
       };
     } else {
       form.value = {
-        stock: { stockId: '', stockName: '' },
-        buyPrice: 0,
-        quantity: 0,
-        buyCost: 0,
-        tradesDate: '',
-        note: '',
+        stockId: '',
+        sellPrice: 0,
+        sellQty: 0,
+        sellCost: 0,
+        realizedPnl: 0,
+        sellDate: '',
+        sellNote: '',
       };
     }
   },
   { immediate: true }
 );
 
-const { stockLabel } = useStockLabel(computed(() => form.value.stock));
-
 // 提交表單
 const handleSubmit = async () => {
-  const payload: EditReportPayload = {
-    // 不包含 stockId / stockName 等多餘欄位
-    note: form.value.note ?? '',
-  };
-
-  emit('submitEditReport', { reportId: props.reportValue.stockId, formValue: payload });
+  emit('submitEditReport', { reportId: props.reportValue.stockId, formValue: form.value });
 };
 
-// 表單重置
-function reset() {
-  // 可清空或還原
-}
 // ---------------------------
 </script>
