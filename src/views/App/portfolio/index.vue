@@ -218,7 +218,6 @@ const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as Stock
 // 清除所選資產
 const clearSelectedAsset = () => {
   selectedAsset.value = {} as StockRow;
-  console.log('觸發清除', selectedAsset.value);
 };
 // ---------------------------
 
