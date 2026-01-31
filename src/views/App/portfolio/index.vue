@@ -20,18 +20,20 @@
         <baseButton class="ml-auto" color="primary" @click="openAssetDialog">建倉</baseButton>
       </div>
 
-      <loadingAreaOverlay
-        :loadingId="portfolioStore.holdingsLoading"
-        class="mx-auto max-w-6xl px-0 px-4"
-      >
+      <div v-show="isHoldingsLoading && isSummaryLoading" class="mb-4 flex justify-center">
+        <p class="text-5">資料請求中...請稍後</p>
+      </div>
+
+      <loadingAreaOverlay :loadingId="portfolioStore.holdingsLoading">
         <baseTable
           v-if="!isHoldingsLoading && !isSummaryLoading"
           :columns="bridgedColumns"
           :data="bridgedData"
           :row-key="bridgedRowKey"
           v-model:expanded-row-keys="expanded"
-          :page-size="10"
-      /></loadingAreaOverlay>
+          :page-size="10" />
+        <div v-if="isHoldingsLoading" class="my-20"></div
+      ></loadingAreaOverlay>
     </div>
   </div>
   <!-- 彈跳試窗 -->

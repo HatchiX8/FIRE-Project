@@ -21,7 +21,7 @@ export const handleApi = async <T, K extends string = string>(
 
   try {
     const api = await task();
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // ← 正確
+
     if (!api.ok) {
       if (options?.notify && api.status === 500) {
         notify('error', '伺服器錯誤，請通知管理員');
