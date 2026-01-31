@@ -50,6 +50,10 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   const totalTradesLoading = 'useTotalTradesLoading';
   const totalTradesResponse = ref<TotalTradesData | null>(null);
   const totalTradesList = ref<TradeItem[]>([]);
+  const totalTradesPageInfo = ref({
+    totalPage: 1,
+    currentPage: 1,
+  });
 
   const fetchTotalTradesData = async (year: number, month: number, page: number) => {
     const res = await handleApi(() => getTotalTradesData(year, month, page), {
@@ -60,6 +64,10 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
 
     if (res.success) {
       totalTradesList.value = res.data?.totalTrades ?? [];
+      totalTradesPageInfo.value = {
+        totalPage: res.data?.pagination.total_page ?? 1,
+        currentPage: res.data?.pagination.current_page ?? 1,
+      };
     }
 
     return res;
@@ -116,6 +124,7 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
     totalTradesList,
     fetchTotalTradesData,
     totalTradesLoading,
+    totalTradesPageInfo,
     // -------------------------------
 
     // ----------歷史資料操作----------

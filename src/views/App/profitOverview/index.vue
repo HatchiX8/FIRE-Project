@@ -1,7 +1,7 @@
 <template>
   <div class="text-textColor">
     <div class="mx-auto max-w-6xl md:px-4">
-      <loadingAreaOverlay :loadingId="profitOverviewStore.trendChartLoading" class="px-0">
+      <loadingAreaOverlay :loadingId="profitOverviewStore.trendChartLoading">
         <div class="mb-4">
           <trendChart
             v-show="!isTrendChartLoading"
@@ -39,10 +39,7 @@
         <p class="text-5">資料請求中...請稍後</p>
       </div>
 
-      <loadingAreaOverlay
-        :loadingId="profitOverviewStore.totalTradesLoading"
-        class="mx-auto max-w-6xl px-0 px-4"
-      >
+      <loadingAreaOverlay :loadingId="profitOverviewStore.totalTradesLoading">
         <baseTable
           v-if="!isTrendChartLoading && !isTotalTradesLoading"
           :columns="bridgedColumns"
@@ -50,6 +47,9 @@
           :row-key="bridgedRowKey"
           v-model:expanded-row-keys="expanded"
           :page-size="10"
+          :total-page="profitOverviewStore.totalTradesPageInfo.totalPage"
+          :current-page="profitOverviewStore.totalTradesPageInfo.currentPage"
+          @page-change="handlePageChange"
           class="mt-4"
         />
         <div v-if="isTotalTradesLoading" class="my-20"></div>
@@ -133,6 +133,11 @@ const nextMonth = () => {
     currentMonth.value += 1;
   }
   fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
+};
+
+// 分頁變動處理
+const handlePageChange = (page: number) => {
+  getTotalTradesData(currentYear.value, currentMonth.value, page);
 };
 // -------------------------
 
