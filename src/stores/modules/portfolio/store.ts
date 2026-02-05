@@ -53,8 +53,8 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const holdingsResponse = ref<HoldingsData>({} as HoldingsData);
   const holdingsList = ref<StockRow[]>([]);
   const holdingsPagination = ref({
-    total_page: 0,
-    current_page: 0,
+    totalPage: 1,
+    currentPage: 1,
   });
 
   const fetchHoldingsData = async (page: number) => {
@@ -66,7 +66,10 @@ export const usePortfolioStore = defineStore('portfolio', () => {
 
     if (res.success) {
       holdingsList.value = res.data?.shareholding ?? [];
-      holdingsPagination.value = res.data?.pagination ?? { total_page: 0, current_page: 0 };
+      holdingsPagination.value = {
+        totalPage: res.data?.pagination.total_page ?? 1,
+        currentPage: res.data?.pagination.current_page ?? 1,
+      };
     }
 
     return res;

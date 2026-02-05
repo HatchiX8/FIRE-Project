@@ -132,31 +132,41 @@ const rules: FormRules = {
 // ---------------------------
 
 // ----------表單事件----------
-// 當父層傳入 assetValue 時把資料複製到 local form
+// 重置表單到原始狀態
+const resetForm = () => {
+  if (props.assetValue) {
+    form.value = {
+      stockId: props.assetValue.stockId ?? '',
+      buyPrice: props.assetValue.buyPrice ?? 0,
+      quantity: props.assetValue.quantity ?? 0,
+      buyCost: props.assetValue.totalCost ?? 0,
+      buyDate: props.assetValue.buyDate ?? '',
+      note: props.assetValue.note ?? '',
+    };
+  } else {
+    form.value = {
+      stockId: '',
+      buyPrice: 0,
+      quantity: 0,
+      buyCost: 0,
+      buyDate: '',
+      note: '',
+    };
+  }
+};
+
+// Watch 1️⃣：父層傳入新資產時
+watch(() => props.assetValue, resetForm, { immediate: true });
+
+// Watch 2️⃣：彈窗關閉時重置
 watch(
-  () => props.assetValue,
-  (v) => {
-    if (v) {
-      form.value = {
-        stockId: v.stockId ?? '',
-        buyPrice: v.buyPrice ?? 0,
-        quantity: v.quantity ?? 0,
-        buyCost: v.totalCost ?? 0,
-        buyDate: v.buyDate ?? '',
-        note: v.note ?? '',
-      };
-    } else {
-      form.value = {
-        stockId: '',
-        buyPrice: 0,
-        quantity: 0,
-        buyCost: 0,
-        buyDate: '',
-        note: '',
-      };
+  () => visible.value,
+  (isOpen) => {
+    if (!isOpen) {
+      resetForm();
+      formRef.value?.validate().catch(() => {});
     }
-  },
-  { immediate: true }
+  }
 );
 
 // 提交表單
