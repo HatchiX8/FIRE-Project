@@ -31,7 +31,10 @@
           :data="bridgedData"
           :row-key="bridgedRowKey"
           v-model:expanded-row-keys="expanded"
-          :page-size="10" />
+          :page-size="10"
+          :total-page="portfolioStore.holdingsPagination.totalPage"
+          :current-page="portfolioStore.holdingsPagination.currentPage"
+          @page-change="handlePageChange" />
         <div v-if="isHoldingsLoading" class="my-20"></div
       ></loadingAreaOverlay>
     </div>
@@ -212,6 +215,10 @@ const bridgedData = computed(
 );
 
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).assetId;
+
+const handlePageChange = (page: number) => {
+  getHoldingsData(page);
+};
 // ------------------------
 
 // ----------工具函式----------

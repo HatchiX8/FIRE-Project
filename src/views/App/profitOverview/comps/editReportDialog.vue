@@ -26,6 +26,14 @@
         class="w-90%"
         :component-props="{ min: 0, step: 1, precision: 0, placeholder: '實際股數，勿輸入張數' }"
       />
+      <div v-if="isReducingQuantity" class="mb-5 rounded-lg text-sm">
+        <div class="flex items-start gap-2">
+          <div>
+            <p class="font-semibold">⚠️ 提醒</p>
+            <p class="mt-1">減少賣出股數將回補持倉，再度賣出會產生 2 筆交易紀錄</p>
+          </div>
+        </div>
+      </div>
       <baseForm
         label="賣出應收付"
         path="sellCost"
@@ -148,33 +156,33 @@ const rules: FormRules = {
 // ---------------------------
 
 // ----------表單事件----------
-// 當父層傳入 reportValue 時把資料複製到 local form
+// ✅ 新增：判斷是否減少股數
+const isReducingQuantity = computed(() => form.value.sellQty < (props.reportValue.sellQty ?? 0));
+// 重置表單到原始狀態
+const resetFormToOriginal = () => {
+  if (props.reportValue) {
+    form.value = {
+      stockId: props.reportValue.stockId,
+      sellPrice: props.reportValue.sellPrice ?? 0,
+      sellQty: props.reportValue.sellQty ?? 0,
+      sellCost: props.reportValue.sellCost ?? 0,
+      realizedPnl: props.reportValue.realizedPnl ?? 0,
+      sellDate: props.reportValue.sellDate ?? '',
+      sellNote: props.reportValue.sellNote ?? '',
+    };
+  }
+};
+
+watch(() => props.reportValue, resetFormToOriginal, { immediate: true });
+
 watch(
-  () => props.reportValue,
-  (v) => {
-    if (v) {
-      form.value = {
-        stockId: v.stockId,
-        sellPrice: v.sellPrice ?? 0,
-        sellQty: v.sellQty ?? 0,
-        sellCost: v.sellCost ?? 0,
-        realizedPnl: v.realizedPnl ?? 0,
-        sellDate: v.sellDate ?? '',
-        sellNote: v.sellNote ?? '',
-      };
-    } else {
-      form.value = {
-        stockId: '',
-        sellPrice: 0,
-        sellQty: 0,
-        sellCost: 0,
-        realizedPnl: 0,
-        sellDate: '',
-        sellNote: '',
-      };
+  () => visible.value,
+  (isOpen) => {
+    if (!isOpen) {
+      resetFormToOriginal();
+      formRef.value?.validate().catch(() => {});
     }
-  },
-  { immediate: true }
+  }
 );
 
 // 提交表單

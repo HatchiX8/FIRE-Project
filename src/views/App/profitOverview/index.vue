@@ -295,7 +295,7 @@ const requestAddReport = async (payload: NewReportPayload) => {
   } else {
     notify('success', res.message);
     newReportDlgOpen.value = false;
-    fetchPortfolioOverviewData(2026, 1, 1);
+    fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
   }
 };
 
