@@ -12,15 +12,6 @@
         <div v-if="isTrendChartLoading" class="my-20"></div>
       </loadingAreaOverlay>
 
-<<<<<<< HEAD
-    <div class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between">
-      <baseButton color="primary" @click="openTotalInvestDialog">資金管理</baseButton>
-      <div class="flex items-center">
-        <baseButton color="primary"><div class="i-mdi:chevron-left text-5"></div></baseButton>
-        <div class="text-5 mx-2 text-center">
-          <p><span class="text-danger">9月</span>歷史</p>
-          <p>交易紀錄</p>
-=======
       <div
         v-show="!isTrendChartLoading && !isTotalTradesLoading"
         class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between"
@@ -40,7 +31,6 @@
           <baseButton color="primary"
             ><div class="i-mdi:chevron-right text-5" @click="nextMonth"></div
           ></baseButton>
->>>>>>> 4ce345378473e3c7803ef3153fca58a379150e98
         </div>
 
         <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
@@ -65,24 +55,6 @@
         <div v-if="isTotalTradesLoading" class="my-20"></div>
       </loadingAreaOverlay>
     </div>
-<<<<<<< HEAD
-    <loadingAreaOverlay
-      :loadingId="profitOverviewStore.totalTradesLoading"
-      class="mx-auto max-w-6xl px-0 px-4"
-    >
-      <baseTable
-        v-if="!isTrendChartLoading && !isTotalTradesLoading"
-        :columns="bridgedColumns"
-        :data="bridgedData"
-        :row-key="bridgedRowKey"
-        v-model:expanded-row-keys="expanded"
-        :page-size="10"
-        class="mt-4"
-      />
-      <div v-if="isTotalTradesLoading" class="my-20"></div>
-    </loadingAreaOverlay>
-=======
->>>>>>> 4ce345378473e3c7803ef3153fca58a379150e98
   </div>
   <newReportDialog
     :stockOptions="stockMetaStore.stocks"

@@ -38,22 +38,6 @@
         <div v-if="isHoldingsLoading" class="my-20"></div
       ></loadingAreaOverlay>
     </div>
-<<<<<<< HEAD
-
-    <loadingAreaOverlay
-      :loadingId="portfolioStore.holdingsLoading"
-      class="mx-auto max-w-6xl px-0 px-4"
-    >
-      <baseTable
-        v-if="!isHoldingsLoading && !isSummaryLoading"
-        :columns="bridgedColumns"
-        :data="bridgedData"
-        :row-key="bridgedRowKey"
-        v-model:expanded-row-keys="expanded"
-        :page-size="10"
-    /></loadingAreaOverlay>
-=======
->>>>>>> 4ce345378473e3c7803ef3153fca58a379150e98
   </div>
   <!-- 彈跳試窗 -->
   <totalInvestDialog
