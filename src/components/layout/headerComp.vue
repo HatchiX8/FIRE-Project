@@ -11,7 +11,7 @@
           FIRE
         </h1>
       </a>
-      <p class="ml-auto px-5 text-white">0.1.0:beta</p>
+
       <baseButton
         v-if="!userStore.isLoggedIn"
         color="primary"

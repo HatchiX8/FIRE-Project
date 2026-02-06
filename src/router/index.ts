@@ -56,6 +56,7 @@ const router = createRouter({
     {
       path: '/Landing',
       component: () => import('@/views/Landing/index.vue'),
+      redirect: '/Landing/home',
       children: [
         {
           path: 'home',
