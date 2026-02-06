@@ -6,7 +6,7 @@
       <n-carousel draggable autoplay :show-dots="false" class="h-66 rounded-2xl">
         <n-carousel-item v-for="(c, i) in cards" :key="i">
           <carouselCard :title="c.title" :subtitle="c.subtitle" :items="c.items" :footer="c.footer">
-            <template #actions>
+            <template #actions v-if="showCtaButtons">
               <button
                 class="bg-primary font-700 h-11 w-full rounded-xl text-base text-black transition hover:opacity-90"
               >
@@ -27,7 +27,7 @@
         :items="c.items"
         :footer="c.footer"
       >
-        <template #actions>
+        <template #actions v-if="showCtaButtons">
           <button
             class="bg-primary font-700 h-10 w-full rounded-xl text-base text-black transition hover:opacity-90"
           >
@@ -37,7 +37,7 @@
       </carouselCard>
     </div>
 
-    <featureGrid :features="features" />
+    <featureGrid :features="features" class="flex justify-center" />
 
     <div class="flex flex-col gap-5">
       <heroCTA />
@@ -51,6 +51,8 @@
 
 <script setup lang="ts">
 import { carouselCard, featureGrid, heroCTA } from './comps/index';
+
+const showCtaButtons = false; // 改為 true 時按鈕會出現
 
 const cards = [
   {
@@ -67,11 +69,7 @@ const cards = [
   {
     title: '水位配置與損益趨勢',
     subtitle: '看得懂自己做了什麼，決策更踏實',
-    items: [
-      '買/自動計算現金比例與股票配置',
-      '即時未實現損益（依當日市價）',
-      '近一年趨勢圖，追蹤表現變化',
-    ],
+    items: ['買/自動計算現金比例與股票配置', '近一年趨勢圖，追蹤表現變化', '總資產趨勢圖(規劃中)'],
     footer: '成績不只是數字，更是策略修正的依據。',
     ctaText: '查看我的趨勢 →',
   },
@@ -79,8 +77,8 @@ const cards = [
     title: '進階功能，系統化投資',
     subtitle: '不只記錄，還能驅動流程',
     items: [
-      '買/追蹤清單＋自訂進場策略與條件',
-      '收藏關鍵賣出操作，累積經典範例',
+      '買/追蹤清單＋自訂進場策略與條件(規劃中)',
+      '收藏關鍵賣出操作，累積經典範例（規劃中）',
       '每週彙整操作摘要與回顧（規劃中）',
     ],
     footer: '長期修行，有系統才走得遠，我們是你的數據夥伴。',
@@ -89,16 +87,16 @@ const cards = [
 ];
 
 const features = [
-  {
-    iconClass: 'i-mdi:shield-check-outline text-6 text-primary',
-    title: '資料安全',
-    subtitle: '支援匯出與刪除',
-  },
-  {
-    iconClass: 'i-mdi:file-export-outline text-6 text-primary',
-    title: 'CSV 匯出',
-    subtitle: '一鍵備份你的紀錄',
-  },
+  // {
+  //   iconClass: 'i-mdi:shield-check-outline text-6 text-primary',
+  //   title: '資料安全',
+  //   subtitle: '支援匯出與刪除',
+  // },
+  // {
+  //   iconClass: 'i-mdi:file-export-outline text-6 text-primary',
+  //   title: 'CSV 匯出',
+  //   subtitle: '一鍵備份你的紀錄',
+  // },
   {
     iconClass: 'i-mdi:theme-light-dark text-6 text-primary',
     title: '深色優化',
@@ -107,7 +105,7 @@ const features = [
   {
     iconClass: 'i-clarity:bolt-line text-6 text-primary',
     title: '體驗快速',
-    subtitle: '30 秒完成設定',
+    subtitle: '登入即可開始使用',
   },
 ];
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <n-card :title="props.title" size="small" class="h-full">
+  <n-card :title="props.subtitle" size="small" class="h-full">
     <p class="text-textSecondary text-sm leading-tight" v-if="props.subtitle">
       {{ props.subtitle }}
     </p>
@@ -14,22 +14,19 @@
     <p class="text-textSecondary mb-3 text-xs" v-if="props.footer">{{ props.footer }}</p>
 
     <div class="mt-2">
-      <slot name="actions">
+      <!-- <slot name="actions">
         <button
           class="bg-primary/20 text-primary font-600 hover:bg-primary/30 h-11 w-full rounded-xl transition"
         >
           了解更多
         </button>
-      </slot>
+      </slot> -->
     </div>
   </n-card>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
-
 const props = defineProps<{
-  title: string;
   subtitle?: string;
   items?: string[];
   footer?: string;
