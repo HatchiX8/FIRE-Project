@@ -1,5 +1,5 @@
 export const userInfoData = {
-  url: '/api/v1/users/info',
+  url: '/api/v1/user/info',
   method: 'get',
   response: () => ({
     status: true,
@@ -27,6 +27,15 @@ export const userUpdate = {
 
 export const userAccountUpgrade = {
   url: '/api/v1/users/account-upgrade',
+  method: 'patch',
+  response: () => ({
+    status: true,
+    message: '成功送出帳號升級申請',
+  }),
+};
+
+export const userAccountActivation = {
+  url: '/api/v1/admin/users/:userId/activation',
   method: 'patch',
   response: () => ({
     status: true,

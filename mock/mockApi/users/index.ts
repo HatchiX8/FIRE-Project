@@ -22,7 +22,7 @@ export const login = {
 };
 
 export const loginCheck = {
-  url: '/api/v1/users/check',
+  url: '/api/v1/user/check',
   method: 'get',
   response: () => ({
     status: true,

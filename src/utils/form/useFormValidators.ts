@@ -3,7 +3,7 @@ import type { FormItemRule } from 'naive-ui';
 export const nonNegative =
   (label = '數值'): FormItemRule['validator'] =>
   (_rule, v: number) =>
-    v >= 0 ? true : new Error(`${label}不可小於 0`);
+    v > 0 ? true : new Error(`${label}不可小於等於 0`);
 
 // 需為整數驗證（股數用）
 export const integerOnly: FormItemRule['validator'] = (_r, v: number) =>
@@ -15,8 +15,9 @@ export const isLeapYear = (y: number) => (y % 4 === 0 && y % 100 !== 0) || y % 4
 // YYYY-MM-DD 日期格式驗證器
 export const ymdValidator: FormItemRule['validator'] = (_r, v: string) => {
   if (typeof v !== 'string') return new Error('日期需為字串');
-  const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!m) return new Error('格式需為 YYYY-MM-DD，例如 2025-09-02');
+  const normalized = v.replace(/\//g, '-');
+  const m = normalized.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return new Error('格式需為 YYYY-MM-DD 或 YYYY/MM/DD');
 
   const year = Number(m[1]);
   const month = Number(m[2]);

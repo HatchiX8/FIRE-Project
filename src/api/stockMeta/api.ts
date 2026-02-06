@@ -1,10 +1,10 @@
-import instance from '@/api/axios';
-import type { apiResponse } from '@/api/type';
+import instance, { requestApi } from '@/api/axios';
+import type { ApiBody } from '@/api/types';
 import type { StockMeta } from './index';
 
 // ----------取得股票數據----------
-export const getStockMeta = async () => {
-  const res = await instance.get<apiResponse<StockMeta[]>>(`/api/v1/stockInfo`);
-  return res.data;
-};
+
+export const getStockMeta = () =>
+  requestApi<StockMeta[]>(() => instance.get<ApiBody<StockMeta[]>>(`/api/v1/stock/stockInfo`));
+
 // -------------------------------

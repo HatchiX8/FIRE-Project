@@ -48,7 +48,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'submit-upgrade', payload: { note: string }): void;
+  (e: 'submit-upgrade', payload: { upgradeReason: string }): void;
 }>();
 // ------------------------------
 
@@ -65,7 +65,8 @@ const rules: FormRules = {
 
 // 表單事件
 const handleSubmit = () => {
-  emit('submit-upgrade', { note: form.value.note });
+  submitting.value = true;
+  emit('submit-upgrade', { upgradeReason: form.value.note });
   reset();
 };
 
@@ -83,4 +84,11 @@ watch(
   },
   { immediate: true }
 );
+
+watch(visible, (newVal) => {
+  if (!newVal) {
+    reset();
+    submitting.value = false;
+  }
+});
 </script>

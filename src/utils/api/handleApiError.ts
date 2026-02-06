@@ -1,17 +1,19 @@
-import { createDiscreteApi } from 'naive-ui';
-import type { AxiosError } from 'axios';
+import axios from 'axios';
 
-const { message } = createDiscreteApi(['message']);
+export const handleApiError = (err: unknown): string => {
+  if (axios.isAxiosError(err)) {
+    // 沒有 response，代表是網路 / 連線 / timeout
+    if (!err.response) {
+      return '無法連線至伺服器，請檢查網路狀態';
+    }
 
-export const handleApiError = (err: unknown) => {
-  const error = err as AxiosError<{ message?: string }>;
-  const status = error.response?.status;
-
-  if (status === 403) {
-    message.error('您沒有權限操作');
-  } else if (status && status >= 500) {
-    message.error('伺服器錯誤，請稍後再試');
-  } else {
-    message.error(error.response?.data?.message || '未知錯誤');
+    // 有 response 但被丟進 catch（極少見，當保險）
+    return err.response.data?.message ?? '請求失敗';
   }
+
+  if (err instanceof Error) {
+    return err.message;
+  }
+
+  return '發生未知錯誤，請聯絡開發者';
 };

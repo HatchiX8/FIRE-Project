@@ -7,7 +7,13 @@
           <baseButton color="primary" ghost @click="onCancel" :disabled="okLoading"
             >取消</baseButton
           >
-          <baseButton color="primary" :loading="okLoading" @click="onOk">確定</baseButton>
+          <baseButton
+            color="primary"
+            :loading="okLoading"
+            @click="onOk"
+            :disabled="okLoading || disabled"
+            >確定</baseButton
+          >
         </div>
       </template>
     </n-card>
@@ -29,6 +35,7 @@ const props = withDefaults(
     title?: string;
     width?: string;
     okLoading?: boolean;
+    disabled?: boolean;
   }>(),
   { title: '視窗', width: '90%', okLoading: false }
 );

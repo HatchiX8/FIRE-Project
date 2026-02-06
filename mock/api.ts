@@ -16,6 +16,13 @@ import {
   sellAssets,
   addReports,
   editReports,
+  deleteReports,
+  investDeposit,
+  investWithdrawal,
+  userUpgradeList,
+  userMemberList,
+  userUpgradeReview,
+  userAccountActivation,
 } from './mockApi/index';
 
 export default [
@@ -37,10 +44,16 @@ export default [
   sellAssets,
   // ---------------------------
 
+  // ----------資金操作----------
+  investDeposit,
+  investWithdrawal,
+  // ---------------------------
+
   // ----------個人中心----------
   userInfoData,
   userUpdate,
   userAccountUpgrade,
+  userAccountActivation,
   // ---------------------------
 
   // ----------損益概況----------
@@ -48,5 +61,12 @@ export default [
   dashboardTrendChart,
   addReports,
   editReports,
+  deleteReports,
   // ---------------------------
+
+  // ----------管理者頁面----------
+  userUpgradeList,
+  userMemberList,
+  userUpgradeReview,
+  // -----------------------------
 ] as MockMethod[];

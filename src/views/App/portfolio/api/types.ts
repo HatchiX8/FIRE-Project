@@ -53,20 +53,25 @@ export interface StockOption {
 
 // 編輯股票資訊型別
 export interface EditStockPayload {
-  stock: StockOption;
+  stockId: string;
   buyPrice: number;
   quantity: number;
-  totalCost: number;
+  buyCost: number;
   buyDate: string;
   note: string;
 }
 
 // 賣出股票資訊型別
 export interface SellStockPayload {
-  sellPrice: number | null;
-  sellQty: number | null;
-  actualRealizedPnl: number | null;
+  sellPrice: number;
+  sellQty: number;
+  realizedPnl: number;
   sellDate: string;
+  sellCost: number;
   note: string;
 }
+// ---------------------------
+
+// ----------資金相關----------
+
 // ---------------------------

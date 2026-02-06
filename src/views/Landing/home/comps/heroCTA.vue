@@ -19,12 +19,21 @@
     </div>
 
     <div class="text-center">
+<<<<<<< HEAD
       <button
         class="bg-primary font-800 h-12 rounded-2xl px-6 text-black shadow-md transition hover:shadow-lg"
       >
         立即開始免費體驗
       </button>
       <p class="text-textSecondary mt-2 text-xs">連接Google立即體驗</p>
+=======
+      <!-- <button
+        class="bg-primary font-800 h-12 rounded-2xl px-6 text-black shadow-md transition hover:shadow-lg"
+      >
+        立即開始免費體驗
+      </button> -->
+      <p class="text-textSecondary mt-2 text-xs">點擊上方登入Google立即體驗</p>
+>>>>>>> 4ce345378473e3c7803ef3153fca58a379150e98
     </div>
   </div>
 </template>

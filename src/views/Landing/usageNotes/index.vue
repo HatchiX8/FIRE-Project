@@ -21,7 +21,18 @@
     </ul>
     <ul class="mt-6">
       <li>
-        <p class="text-5 text-amber-2">2.本系統目前不提供興櫃資訊</p>
+        <p class="text-5 text-amber-2">2.操作提示</p>
+      </li>
+      <li>
+        <p>每筆操作結算時，會需要輸入應收付以及實際損益</p>
+      </li>
+      <li>
+        <p>為確保與您券商APP資料同步，請依照券商每筆交易後的應收付以及實際損益為依據輸入</p>
+      </li>
+    </ul>
+    <ul class="mt-6">
+      <li>
+        <p class="text-5 text-amber-2">3.本系統目前不提供興櫃資訊</p>
       </li>
       <li>
         <p>僅提供上市櫃股票資訊</p>

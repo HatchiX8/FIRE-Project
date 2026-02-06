@@ -16,13 +16,14 @@
           <div class="text-textColor ml-6 flex flex-col gap-2">
             <p>姓名 : {{ userProfileStore.userInfo.name }}</p>
             <p>暱稱 : {{ userProfileStore.userInfo.nickname }}</p>
-            <p>{{ memberTypeText }}</p>
+            <p>權限 : {{ memberTypeText }}</p>
           </div>
 
-          <div class="mb-auto ml-auto">
+          <div class="mb-auto ml-auto" :class="{ 'flex flex-col gap-2': isEditing }">
             <baseButton color="primary" @click="isEditing ? submitEdit() : startEdit()">
               {{ isEditing ? '完成' : '編輯資料' }}
             </baseButton>
+            <baseButton color="danger" v-if="isEditing" @click="isEditing = false">取消</baseButton>
           </div>
         </div>
 
@@ -42,11 +43,31 @@
         </div>
 
         <div class="mt-6 flex justify-center gap-4">
-          <baseButton v-if="memberTypeText !== '管理員'" color="primary" @click="accUpgrade"
+          <baseButton
+            v-if="userProfileStore.userInfo.upgrade_status === 'none'"
+            color="primary"
+            @click="accUpgrade"
             >帳號升級</baseButton
           >
-          <baseButton v-else color="primary" @click="goToAdminPage">會員管理</baseButton>
-          <baseButton color="primary">資金投入/提領</baseButton>
+          <baseButton
+            v-else-if="userProfileStore.userInfo.upgrade_status === 'pending'"
+            color="primary"
+            disabled
+            >帳號升級申請中</baseButton
+          >
+          <baseButton
+            v-else-if="userProfileStore.userInfo.upgrade_status === 'rejected'"
+            color="primary"
+            @click="accUpgrade"
+            >審核遭拒絕，重新申請</baseButton
+          >
+          <baseButton
+            v-else-if="userProfileStore.userInfo.role === 'admin'"
+            color="primary"
+            @click="goToAdminPage"
+            >會員管理</baseButton
+          >
+          <!-- <baseButton color="primary">資金投入/提領</baseButton> -->
         </div>
       </div>
     </loadingAreaOverlay>
@@ -54,6 +75,7 @@
   <accUpgradeDialog
     v-model="openAccUpgradeDialog"
     :userName="userProfileStore.userInfo.name"
+    :requesting="isUpgradeRequestLoading"
     @submit-upgrade="submitUpgrade"
   />
 </template>
@@ -65,7 +87,9 @@ import type { updateUserInfoPayload } from '@/views/App/userProfile/api/index';
 // 元件
 import { baseButton } from '@/components/index';
 import accUpgradeDialog from './comps/accUpgradeDialog.vue';
+import { loadingAreaOverlay } from '@/modules/loadingModule/index';
 // 商業邏輯
+import { notify } from '@/utils/index';
 // store
 import { userInfoProfileStore } from '@/stores/index';
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
@@ -79,6 +103,10 @@ const router = useRouter();
 // 讀取狀態
 const isInfoProfileLoading = computed(() =>
   loadingStore.isLoading(userProfileStore.userInfoLoading)
+);
+
+const isUpgradeRequestLoading = computed(() =>
+  loadingStore.isLoading(userProfileStore.accountUpgradeLoading)
 );
 
 // 帳號權限類型
@@ -107,11 +135,9 @@ const getUserInfo = async () => {
   const res = await userProfileStore.fetchUserInfoData();
 
   if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
     return;
   }
-
-  console.log('✅ 成功取得使用者資料:', res.data);
 };
 // ---------------------------------
 
@@ -155,11 +181,11 @@ const requestEdit = async (editForm: updateUserInfoPayload) => {
   const res = await userProfileStore.editUpdateUserInfoData(editForm);
 
   if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
     return;
   } else {
+    notify('success', res.message);
     getUserInfo(); // 重新取得使用者資料以更新狀態
-    console.log('API:請求編輯成功', res);
   }
 };
 // ----------------------------
@@ -171,21 +197,22 @@ const accUpgrade = () => {
 };
 
 // 送出帳號升級
-const submitUpgrade = (payload: { note: string }) => {
-  requestUpgrade(payload.note);
+const submitUpgrade = async (payload: { upgradeReason: string }) => {
+  await requestUpgrade(payload.upgradeReason);
   openAccUpgradeDialog.value = false;
 };
 
 // 送出帳號升級請求
-const requestUpgrade = async (note: string) => {
-  const res = await userProfileStore.sendAccountUpgradeRequest(note);
+const requestUpgrade = async (upgradeReason: string) => {
+  const res = await userProfileStore.sendAccountUpgradeRequest(upgradeReason);
 
   if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
+
     return;
   } else {
+    notify('success', res.message);
     getUserInfo(); // 重新取得使用者資料以更新狀態
-    console.log('API:請求帳號升級成功', res);
   }
 };
 // ---------------------------

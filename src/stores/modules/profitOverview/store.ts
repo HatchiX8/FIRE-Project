@@ -7,6 +7,7 @@ import {
   getTrendChartData,
   addReportData,
   editReportData,
+  deleteReportData,
 } from '@/views/App/profitOverview/api/index';
 // 共用型別
 import type {
@@ -18,7 +19,7 @@ import type {
 } from '@/views/App/profitOverview/api/index';
 // 元件
 // 商業邏輯
-import { handleApiResponse } from '@/utils/index';
+import { handleApi } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 // --------------------------
@@ -33,12 +34,12 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   const trendChartData = ref<TrendChartData>({
     period: [],
     pnl: [],
-    netContribution: [],
-    totalEquity: [],
+    // netContribution: [],
+    // totalEquity: [],
   });
 
   const fetchTrendChartData = async (year: number) =>
-    await handleApiResponse(() => getTrendChartData(year), {
+    await handleApi(() => getTrendChartData(year), {
       loadingStore: areaLoading,
       loadingKey: trendChartLoading,
       target: trendChartData,
@@ -49,9 +50,13 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   const totalTradesLoading = 'useTotalTradesLoading';
   const totalTradesResponse = ref<TotalTradesData | null>(null);
   const totalTradesList = ref<TradeItem[]>([]);
+  const totalTradesPageInfo = ref({
+    totalPage: 1,
+    currentPage: 1,
+  });
 
   const fetchTotalTradesData = async (year: number, month: number, page: number) => {
-    const res = await handleApiResponse(() => getTotalTradesData(year, month, page), {
+    const res = await handleApi(() => getTotalTradesData(year, month, page), {
       loadingStore: areaLoading,
       loadingKey: totalTradesLoading,
       target: totalTradesResponse,
@@ -59,17 +64,21 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
 
     if (res.success) {
       totalTradesList.value = res.data?.totalTrades ?? [];
+      totalTradesPageInfo.value = {
+        totalPage: res.data?.pagination.total_page ?? 1,
+        currentPage: res.data?.pagination.current_page ?? 1,
+      };
     }
 
     return res;
   };
   // -------------------------------
 
-  // ----------新增資產----------
+  // ----------新增歷史資產----------
   const addReportLoading = 'useAddReportLoading';
 
   const addReport = async (payload: NewReportPayload) => {
-    const res = await handleApiResponse(() => addReportData(payload), {
+    const res = await handleApi(() => addReportData(payload), {
       loadingStore: areaLoading,
       loadingKey: addReportLoading,
     });
@@ -82,9 +91,22 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
   const editReportLoading = 'useEditReportLoading';
 
   const editReport = async (tradesId: string, payload: EditReportPayload) => {
-    const res = await handleApiResponse(() => editReportData(tradesId, payload), {
+    const res = await handleApi(() => editReportData(tradesId, payload), {
       loadingStore: areaLoading,
       loadingKey: editReportLoading,
+    });
+
+    return res;
+  };
+  // ---------------------------
+
+  // ----------刪除資產----------
+  const deleteReportLoading = 'useDeleteReportLoading';
+
+  const deleteReport = async (tradesId: string) => {
+    const res = await handleApi(() => deleteReportData(tradesId), {
+      loadingStore: areaLoading,
+      loadingKey: deleteReportLoading,
     });
 
     return res;
@@ -102,11 +124,16 @@ export const useProfitOverviewStore = defineStore('profitOverview', () => {
     totalTradesList,
     fetchTotalTradesData,
     totalTradesLoading,
+    totalTradesPageInfo,
     // -------------------------------
 
     // ----------歷史資料操作----------
     addReport,
+    addReportLoading,
     editReport,
+    editReportLoading,
+    deleteReport,
+    deleteReportLoading,
     // -------------------------------
   };
 });

@@ -8,14 +8,22 @@
   >
     <!-- 操作切換 -->
     <div class="mb-3 flex gap-2">
-      <n-button :type="isDeposit ? 'primary' : 'default'" @click="mode = 'deposit'">投入</n-button>
+      <n-button :type="isAdd ? 'primary' : 'default'" @click="mode = 'add'">投入</n-button>
       <n-button :type="isWithdraw ? 'primary' : 'default'" @click="mode = 'withdraw'"
         >提領</n-button
       >
+      <n-button :type="isDeposit ? 'primary' : 'default'" @click="mode = 'deposit'">重置</n-button>
     </div>
 
     <!-- 當前投資金 -->
-    <div class="text-textColor mb-3">當前投資金：{{ formatAmount(currentInvest) }}</div>
+    <div class="text-textColor mb-3">
+      <p v-if="!totalInvestLoading">當前投資金：{{ formatAmount(currentInvest) }}</p>
+      <p v-else>當前投資金:載入中... 請稍後</p>
+    </div>
+
+    <div class="text-textColor mb-3 text-sm" v-if="isDeposit">
+      <p class="text-warning">⚠️ 重置會清空現有投資金，請謹慎操作</p>
+    </div>
 
     <n-form ref="formRef" :model="form" :rules="rules" label-width="96">
       <baseForm
@@ -43,6 +51,7 @@ import type { FormInst, FormRules } from 'naive-ui';
 // ----------props&emit----------
 const props = defineProps<{
   currentInvest: number;
+  totalInvestLoading?: boolean;
   loading?: boolean; // 父層 API 進行中傳進來 → 綁到 ok-loading
   initialMode?: Mode; // 可選，預設 'deposit'
 }>();
@@ -54,15 +63,25 @@ const emit = defineEmits<{
 // ------------------------------
 
 // ----------狀態判定----------
-type Mode = 'deposit' | 'withdraw'; // 操作模式
+type Mode = 'deposit' | 'add' | 'withdraw'; // 操作模式
 const visible = defineModel<boolean>({ required: true }); // 是否顯示彈窗
 
-const mode = ref<Mode>(props.initialMode ?? 'deposit'); // 當前操作模式
+const mode = ref<Mode>(props.initialMode ?? 'add'); // 當前操作模式
 const isDeposit = computed(() => mode.value === 'deposit'); // 是否為投入模式
+const isAdd = computed(() => mode.value === 'add'); // 是否為追加模式
 const isWithdraw = computed(() => mode.value === 'withdraw'); // 是否為提領模式
 
-const dialogTitle = computed(() => (isDeposit.value ? '投入' : '提領')); // 對話框標題
-const amountLabel = computed(() => (isDeposit.value ? '投入金額' : '提領金額')); // 金額欄位標題
+const dialogTitle = computed(() => {
+  if (isDeposit.value) return '重置資金';
+  if (isAdd.value) return '投入資金';
+  return '提領資金';
+});
+
+const amountLabel = computed(() => {
+  if (isDeposit.value) return '重置後金額';
+  if (isAdd.value) return '投入金額';
+  return '提領金額';
+});
 
 const loading = computed(() => props.loading === true);
 // ---------------------------
@@ -75,17 +94,19 @@ const rules: FormRules = {
   amount: [
     { required: true, type: 'number', message: '請輸入金額', trigger: ['input', 'blur'] },
     {
-      validator: (_r, v: number) => (v > 0 ? true : new Error('金額需 > 0')),
+      validator: (_r, v: number) => {
+        if (v > 0) return true;
+        return Promise.reject('金額需 > 0');
+      },
       trigger: ['input', 'blur'],
     },
+    // 提領不得超過當前投資金
     {
-      // 提領不得超過當前投資金
-      validator: (_r, v: number) =>
-        isWithdraw.value
-          ? v <= props.currentInvest
-            ? true
-            : new Error('不得超過當前投資金')
-          : true,
+      validator: (_r, v: number) => {
+        if (!isWithdraw.value) return true;
+        if (v <= props.currentInvest) return true;
+        return Promise.reject('不得超過當前投資金');
+      },
       trigger: ['input', 'blur'],
     },
   ],
@@ -99,8 +120,15 @@ const formatAmount = (n: number) => n.toLocaleString('zh-TW');
 
 // 確定送出
 const onOk = async () => {
-  await formRef.value?.validate();
-  emit('submit', { mode: mode.value, amount: Number(form.value.amount) });
+  if (!formRef.value) return;
+
+  try {
+    await formRef.value.validate(); // 失敗會丟錯
+    // ✅ 驗證通過才送出
+    emit('submit', { mode: mode.value, amount: Number(form.value.amount) });
+  } catch {
+    return;
+  }
 };
 
 // 取消關閉
@@ -111,7 +139,7 @@ const onCancel = () => {
 
 // 重置表單
 const reset = () => {
-  mode.value = props.initialMode ?? 'deposit';
+  mode.value = props.initialMode ?? 'add';
   form.value.amount = 0;
   formRef.value?.restoreValidation();
 };

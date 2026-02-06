@@ -12,7 +12,7 @@
         <p>🚀 使用技術：</p>
       </li>
       <li>
-        <p>前端：Vue 3 + Vite + Pinia + Naive UI + UnoCSS</p>
+        <p>前端：Vue 3 + Vite + Pinia + TypeScript + Naive UI + UnoCSS</p>
       </li>
       <li>
         <p>後端：Node.js + TypeScript + PostgreSQL</p>
@@ -21,10 +21,31 @@
         <p>其他：Zeabur、CI/CD（持續整合中）</p>
       </li>
       <li class="mt-12">
-        <p>🔗 專案 GitHub：</p>
+        <div class="mt-2 flex flex-col gap-2">
+          <p>🔗 專案 GitHub：</p>
+          <p class="text-4.5 flex items-center">
+            前端 :
+            <span class="i-mdi:hand-pointing-right text-5 mr-2"></span>
+            <a
+              href="https://github.com/HatchiX8/FIRE-Project"
+              class="text-6 i-mdi:github text-blue hover:text-blue-5"
+              target="_blank"
+            ></a>
+          </p>
+          <p class="text-4.5 flex items-center">
+            後端 :
+            <span class="i-mdi:hand-pointing-right text-5 mr-2"></span>
+            <a
+              href="https://github.com/HatchiX8/FIRE-BackendProject"
+              class="text-6 i-mdi:github text-blue hover:text-blue-5"
+              target="_blank"
+            ></a>
+          </p>
+        </div>
       </li>
-      <li class="mt-12">
+      <li class="mt-12 flex flex-col gap-2">
         <p>📬 聯絡方式：</p>
+        <p>s345612s@gmail.com</p>
       </li>
     </ul>
   </div>

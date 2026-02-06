@@ -1,23 +1,20 @@
-import instance from '@/api/axios';
-import type { apiResponse } from '@/api/type';
+import instance, { requestApi } from '@/api/axios';
+import type { ApiBody } from '@/api/types';
 import type { userInfoData, updateUserInfoPayload } from './index';
 
 // ----------個人中心----------
 // 取得使用者資訊
-export const getUserInfoData = async () => {
-  const res = await instance.get<apiResponse<userInfoData>>(`/api/v1/users/info`);
-  return res.data;
-};
+export const getUserInfoData = () =>
+  requestApi(() => instance.get<ApiBody<userInfoData>>(`/api/v1/user/info`));
 
+// export const getUserInfoData = () =>
+//   requestApi<userInfoData>(() => instance.get('/api/v1/user/info'));
 // 編輯使用者資訊
-export const updateUserInfoData = async (data: updateUserInfoPayload) => {
-  const res = await instance.patch<apiResponse<null>>(`/api/v1/users/update`, data);
-  return res.data;
-};
+export const updateUserInfoData = (data: updateUserInfoPayload) =>
+  requestApi<null>(() => instance.patch<ApiBody<null>>(`/api/v1/user/update`, data));
 
 // 帳號升級申請
-export const accountUpgradeRequest = async (data: { note: string }) => {
-  const res = await instance.patch<apiResponse<null>>(`/api/v1/users/account-upgrade`, data);
-  return res.data;
-};
+export const accountUpgradeRequest = (data: { upgradeReason: string }) =>
+  requestApi<null>(() => instance.post<ApiBody<null>>(`/api/v1/user/account-upgrade`, data));
+
 // ---------------------------

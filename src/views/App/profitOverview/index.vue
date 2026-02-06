@@ -1,16 +1,18 @@
 <template>
   <div class="text-textColor">
-    <loadingAreaOverlay :loadingId="profitOverviewStore.trendChartLoading" class="px-0">
-      <div class="mb-4">
-        <trendChart
-          v-show="!isTrendChartLoading"
-          class="h-70"
-          :chartData="profitOverviewStore.trendChartData"
-        />
-      </div>
-      <div v-if="isTrendChartLoading" class="my-20"></div>
-    </loadingAreaOverlay>
+    <div class="mx-auto max-w-6xl md:px-4">
+      <loadingAreaOverlay :loadingId="profitOverviewStore.trendChartLoading">
+        <div class="mb-4">
+          <trendChart
+            v-show="!isTrendChartLoading"
+            class="h-70"
+            :chartData="profitOverviewStore.trendChartData"
+          />
+        </div>
+        <div v-if="isTrendChartLoading" class="my-20"></div>
+      </loadingAreaOverlay>
 
+<<<<<<< HEAD
     <div class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between">
       <baseButton color="primary" @click="openTotalInvestDialog">資金管理</baseButton>
       <div class="flex items-center">
@@ -18,13 +20,52 @@
         <div class="text-5 mx-2 text-center">
           <p><span class="text-danger">9月</span>歷史</p>
           <p>交易紀錄</p>
+=======
+      <div
+        v-show="!isTrendChartLoading && !isTotalTradesLoading"
+        class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between"
+      >
+        <div></div>
+        <div class="flex items-center">
+          <baseButton color="primary"
+            ><div class="i-mdi:chevron-left text-5" @click="prevMonth"></div
+          ></baseButton>
+          <div class="text-5 mx-2 text-center">
+            <p>
+              <span class="text-danger">{{ currentMonth }}月</span>歷史
+            </p>
+            <p>交易紀錄</p>
+          </div>
+
+          <baseButton color="primary"
+            ><div class="i-mdi:chevron-right text-5" @click="nextMonth"></div
+          ></baseButton>
+>>>>>>> 4ce345378473e3c7803ef3153fca58a379150e98
         </div>
 
-        <baseButton color="primary"><div class="i-mdi:chevron-right text-5"></div></baseButton>
+        <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
+      </div>
+      <div v-show="isTrendChartLoading && isTotalTradesLoading" class="flex justify-center">
+        <p class="text-5">資料請求中...請稍後</p>
       </div>
 
-      <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
+      <loadingAreaOverlay :loadingId="profitOverviewStore.totalTradesLoading">
+        <baseTable
+          v-if="!isTrendChartLoading && !isTotalTradesLoading"
+          :columns="bridgedColumns"
+          :data="bridgedData"
+          :row-key="bridgedRowKey"
+          v-model:expanded-row-keys="expanded"
+          :page-size="10"
+          :total-page="profitOverviewStore.totalTradesPageInfo.totalPage"
+          :current-page="profitOverviewStore.totalTradesPageInfo.currentPage"
+          @page-change="handlePageChange"
+          class="mt-4"
+        />
+        <div v-if="isTotalTradesLoading" class="my-20"></div>
+      </loadingAreaOverlay>
     </div>
+<<<<<<< HEAD
     <loadingAreaOverlay
       :loadingId="profitOverviewStore.totalTradesLoading"
       class="mx-auto max-w-6xl px-0 px-4"
@@ -40,27 +81,27 @@
       />
       <div v-if="isTotalTradesLoading" class="my-20"></div>
     </loadingAreaOverlay>
+=======
+>>>>>>> 4ce345378473e3c7803ef3153fca58a379150e98
   </div>
-  <totalInvestDialog
-    v-model="totalInvestDlgOpen"
-    :current-invest="currentInvest"
-    :loading="submitting"
-    initial-mode="deposit"
-    @submit="onSubmit"
-  />
   <newReportDialog
     :stockOptions="stockMetaStore.stocks"
     v-model="newReportDlgOpen"
-    :loading="submitting"
+    :loading="isAddReportLoading"
     @submitNewReport="requestAddReport"
   />
   <editReportDialog
     :reportValue="selectedReport"
     v-model="editReportDlgOpen"
-    :loading="submitting"
+    :loading="isEditReportLoading"
     @submitEditReport="requestEditReport"
   />
-  <deleteReportDialog v-model="deleteReportDlgOpen" :loading="submitting" />
+  <deleteReportDialog
+    :reportValue="selectedReport"
+    v-model="deleteReportDlgOpen"
+    :loading="isDeleteReportLoading"
+    @submitDeleteReport="requestDeleteReport"
+  />
 </template>
 <script setup lang="ts">
 // ----------import----------
@@ -69,16 +110,11 @@
 import type { DataTableColumns } from 'naive-ui';
 import type { TradeItem, StockRow, NewReportPayload, EditReportPayload } from './api/index';
 // 元件
-import {
-  trendChart,
-  totalInvestDialog,
-  newReportDialog,
-  editReportDialog,
-  deleteReportDialog,
-} from './comps/index';
+import { trendChart, newReportDialog, editReportDialog, deleteReportDialog } from './comps/index';
 import { baseButton, baseTable } from '@/components/index';
 import { loadingAreaOverlay } from '@/modules/loadingModule/index';
 // 商業邏輯
+import { notify } from '@/utils/index';
 // store
 import { useAreaLoadingStore } from '@/modules/loadingModule/store/index';
 import { useProfitOverviewStore, useStockMetaStore } from '@/stores/index';
@@ -89,21 +125,48 @@ const profitOverviewStore = useProfitOverviewStore(); // 投資組合 store
 const loadingStore = useAreaLoadingStore(); // 讀取狀態 store
 const stockMetaStore = useStockMetaStore(); // 股票資訊 store
 
-const isTrendChartLoading = computed(() =>
-  loadingStore.isLoading(profitOverviewStore.trendChartLoading)
-);
-// 損益概況讀取狀態
-const isTotalTradesLoading = computed(() =>
-  loadingStore.isLoading(profitOverviewStore.totalTradesLoading)
-);
-
 const selectedReport = ref<StockRow>({} as StockRow); // 紀錄當前所選擇的資產ID
-const submitting = ref(false); // 提交狀態
+
+// 當前年月變數
+const currentYear = ref<number>(0);
+const currentMonth = ref<number>(0);
 
 onMounted(async () => {
-  await getTrendChartData(2025); // 請求趨勢圖點位資料
-  getTotalTradesData(2025, 10, 1); // 請求損益概況資料
+  const today = new Date();
+  currentYear.value = today.getFullYear();
+  currentMonth.value = today.getMonth() + 1; // getMonth() 是 0-11，需要 +1
+
+  fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
 });
+// -------------------------
+
+// ----------月份切換----------
+// 上一個月
+const prevMonth = () => {
+  if (currentMonth.value === 1) {
+    currentMonth.value = 12;
+    currentYear.value -= 1;
+  } else {
+    currentMonth.value -= 1;
+  }
+  fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
+};
+
+// 下一個月
+const nextMonth = () => {
+  if (currentMonth.value === 12) {
+    currentMonth.value = 1;
+    currentYear.value += 1;
+  } else {
+    currentMonth.value += 1;
+  }
+  fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
+};
+
+// 分頁變動處理
+const handlePageChange = (page: number) => {
+  getTotalTradesData(currentYear.value, currentMonth.value, page);
+};
 // -------------------------
 
 // ----------欄位設定----------
@@ -120,7 +183,7 @@ const columns: DataTableColumns<TradeItem> = [
     key: 'tradesDate',
     align: 'center',
     minWidth: 20,
-    render: (row) => row.tradesDate,
+    render: (row) => row.sellDate,
   },
   {
     title: '損益(%)',
@@ -134,7 +197,7 @@ const columns: DataTableColumns<TradeItem> = [
           : row.profitLossRate < 0
             ? 'text-success'
             : 'text-neutral_300';
-      return h('span', { class: cls }, `${row.profitLossRate.toFixed(2)}%`);
+      return h('span', { class: cls }, `${row.realizedPnl} ( ${row.profitLossRate.toFixed(2)}% ) `);
     },
   },
   {
@@ -142,36 +205,45 @@ const columns: DataTableColumns<TradeItem> = [
     width: 56,
     renderExpand: (row) =>
       h('div', { class: ' flex' }, [
-        h('div', { class: 'mt-2 flex flex-col gap-2 p-3 text-left' }, [
-          h('div', `買進價格：${row.buyPrice.toLocaleString()}`),
-          h('div', `賣出價格：${row.sellPrice.toLocaleString()}`),
-          h('div', `股數：${row.quantity.toLocaleString()}`),
-          h('div', `總成本：${row.buyCost.toLocaleString()}`),
-          h('div', `總市值：${row.actualRealizedPnl.toLocaleString()}`),
+        h('div', { class: ' flex flex-col gap-2 px-3 text-left flex-1' }, [
+          h('div', { class: 'font-semibold mb-2 text-primary' }),
+          h('div', `買進價格：${row.buyPrice}`),
+          h('div', `剩餘股數：${row.quantity}`),
+          h('div', `持有成本：${row.buyCost}`),
+          h('div', `買進日期：${row.buyDate}`),
+          h('div', `買進策略：${row.buyNote ?? '-'}`),
+        ]),
+        h('div', { class: ' flex flex-col gap-2 px-3 text-left flex-1' }, [
+          h('div', { class: 'font-semibold mb-2 text-success' }),
+          h('div', `賣出價格：${row.sellPrice}`),
+          h('div', `賣出股數：${row.sellQty}`),
+          h('div', `總應收付：${row.sellCost}`),
+          h('div', `賣出日期：${row.sellDate}`),
           h(
             'div',
             {
               class:
-                row.stockProfit > 0
+                row.realizedPnl > 0
                   ? 'text-danger'
-                  : row.stockProfit < 0
+                  : row.realizedPnl < 0
                     ? 'text-success'
                     : 'text-neutral_300',
             },
-            `實際損益：${row.stockProfit.toLocaleString()} (${row.profitLossRate.toFixed(2)}%)`
+            `實際損益：${row.realizedPnl} (${row.profitLossRate.toFixed(2)}%)`
           ),
-          h('div', `備註：${row.note ?? '-'}`),
+          h('div', `賣出備註：${row.sellNote ?? '-'}`),
         ]),
+
         h('div', { class: 'mt-2 ml-auto flex flex-col gap-4' }, [
           h(
             baseButton,
             { size: 'small', color: 'success', onClick: () => openEditReportDialog(row) },
-            { default: () => '編輯' }
+            { default: () => '編輯紀錄' }
           ),
           h(
             baseButton,
             { size: 'small', color: 'danger', onClick: () => openDeleteReportDialog(row) },
-            { default: () => '刪除資產' }
+            { default: () => '撤銷紀錄' }
           ),
         ]),
       ]),
@@ -193,77 +265,29 @@ const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as Stock
 // 清除所選資產
 const clearSelectedAsset = () => {
   selectedReport.value = {} as StockRow;
-  console.log('觸發清除', selectedReport.value);
 };
 // ---------------------------
 
-// ----------資金管理----------
-const openTotalInvestDialog = () => {
-  totalInvestDlgOpen.value = true;
+// ----------資產管理----------
+// 歷史資訊讀取狀態
+const isTrendChartLoading = computed(() =>
+  loadingStore.isLoading(profitOverviewStore.trendChartLoading)
+);
+const isTotalTradesLoading = computed(() =>
+  loadingStore.isLoading(profitOverviewStore.totalTradesLoading)
+);
+
+const fetchPortfolioOverviewData = async (year: number, month: number, page: number = 1) => {
+  await Promise.all([getTrendChartData(year), getTotalTradesData(year, month, page)]);
 };
 
-const totalInvestDlgOpen = ref(false);
-
-const currentInvest = ref(1250000);
-
-async function onSubmit(payload: { mode: 'deposit' | 'withdraw'; amount: number }) {
-  submitting.value = true;
-  try {
-    if (payload.mode === 'deposit') {
-      console.log('觸發投入資金API');
-      // ← 實作你的 API
-    } else {
-      console.log('觸發提領資金API');
-      // ← 實作你的 API
-    }
-    // 成功後：關窗 + refresh
-    // dlgOpen.value = false;
-    console.log('刷新取得最新投資金額');
-  } finally {
-    submitting.value = false;
-  }
-}
-// ---------------------------
-
-// ----------新增資產----------
-const newReportDlgOpen = ref(false);
-
-const openReportDialog = () => {
-  newReportDlgOpen.value = true;
-};
-
-// ---------------------------
-
-// ----------編輯資產----------
-const editReportDlgOpen = ref(false);
-
-const openEditReportDialog = (reportRow: StockRow) => {
-  clearSelectedAsset();
-  selectedReport.value = reportRow;
-  console.log('觸發點擊，ID為:', reportRow);
-  editReportDlgOpen.value = true;
-};
-// ---------------------------
-
-// ----------刪除資產----------
-const deleteReportDlgOpen = ref(false);
-
-const openDeleteReportDialog = (reportRow: StockRow) => {
-  console.log('觸發點擊，ID為:', reportRow);
-  deleteReportDlgOpen.value = true;
-};
-// ---------------------------
-
-// ----------API請求----------
 // 趨勢圖資料請求
 const getTrendChartData = async (year: number) => {
   const res = await profitOverviewStore.fetchTrendChartData(year);
 
   if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
     return;
-  } else {
-    console.log('✅ 成功取得趨勢圖資料:', res.data);
   }
 };
 
@@ -272,25 +296,51 @@ const getTotalTradesData = async (year: number, month: number, page: number) => 
   const res = await profitOverviewStore.fetchTotalTradesData(year, month, page);
 
   if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
     return;
-  } else {
-    console.log('✅ 成功取得損益概況資料:', res.data);
   }
 };
+// ---------------------------
 
+// ----------新增資產----------
+const newReportDlgOpen = ref<boolean>(false);
+
+const openReportDialog = () => {
+  newReportDlgOpen.value = true;
+};
+
+const isAddReportLoading = computed(() =>
+  loadingStore.isLoading(profitOverviewStore.addReportLoading)
+);
 // 新增歷史交易數據
 const requestAddReport = async (payload: NewReportPayload) => {
   const res = await profitOverviewStore.addReport(payload);
 
   if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
+    newReportDlgOpen.value = false;
     return;
   } else {
-    console.log('✅ 成功新增資產:', res.success);
+    notify('success', res.message);
     newReportDlgOpen.value = false;
+    fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
   }
 };
+
+// ---------------------------
+
+// ----------編輯資產----------
+const editReportDlgOpen = ref<boolean>(false);
+
+const openEditReportDialog = (reportRow: StockRow) => {
+  clearSelectedAsset();
+  selectedReport.value = reportRow;
+  editReportDlgOpen.value = true;
+};
+
+const isEditReportLoading = computed(() =>
+  loadingStore.isLoading(profitOverviewStore.editReportLoading)
+);
 
 // 編輯歷史交易數據
 const requestEditReport = async (payload: {
@@ -299,16 +349,47 @@ const requestEditReport = async (payload: {
 }) => {
   const { reportId, formValue } = payload;
   if (!reportId) {
-    console.log('❌ 編輯資產失敗，缺少 assetId');
+    notify('error', '無法編輯歷史紀錄，請稍後再試');
+    editReportDlgOpen.value = false;
     return;
   }
   const res = await profitOverviewStore.editReport(reportId, formValue);
   if (!res.success) {
-    // 這裡可以根據需求做錯誤提示或重導
+    notify('error', res.message);
+    editReportDlgOpen.value = false;
     return;
   } else {
-    console.log('✅ 成功編輯資產:', res.success);
+    notify('success', res.message);
     editReportDlgOpen.value = false;
+    fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
+  }
+};
+
+// ---------------------------
+
+// ----------刪除資產----------
+const deleteReportDlgOpen = ref<boolean>(false);
+
+const openDeleteReportDialog = (reportRow: StockRow) => {
+  clearSelectedAsset();
+  selectedReport.value = reportRow;
+  deleteReportDlgOpen.value = true;
+};
+
+const isDeleteReportLoading = computed(() =>
+  loadingStore.isLoading(profitOverviewStore.deleteReportLoading)
+);
+// 刪除歷史交易數據
+const requestDeleteReport = async (reportId: string) => {
+  const res = await profitOverviewStore.deleteReport(reportId);
+  if (!res.success) {
+    notify('error', res.message);
+    deleteReportDlgOpen.value = false;
+    return;
+  } else {
+    notify('success', res.message);
+    deleteReportDlgOpen.value = false;
+    fetchPortfolioOverviewData(currentYear.value, currentMonth.value, 1);
   }
 };
 // ---------------------------

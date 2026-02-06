@@ -19,14 +19,17 @@ const router = createRouter({
     },
     // 登入頁面
     {
-      path: '/login',
-      component: () => import('@/views/Login/index.vue'),
+      path: '/auth/callback',
+      name: 'AuthCallback',
+      component: () => import('@/views/AuthCallbackPage/index.vue'),
     },
     // 本頁
     {
       path: '/App',
+      name: 'App',
       component: () => import('@/views/App/index.vue'),
       meta: { requiresAuth: true }, // ← 整個 /App 底下都需要登入
+      redirect: '/App/portfolio',
       children: [
         {
           path: 'portfolio',
@@ -53,6 +56,7 @@ const router = createRouter({
     {
       path: '/Landing',
       component: () => import('@/views/Landing/index.vue'),
+      redirect: '/Landing/home',
       children: [
         {
           path: 'home',

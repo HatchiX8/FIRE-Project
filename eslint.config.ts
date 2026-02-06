@@ -20,7 +20,13 @@ export default defineConfigWithVueTs(
 
       // JS基本風格
       'no-console': 'warn',
-      'no-unused-vars': 'warn',
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_', // 允許 _ 開頭的參數
+          varsIgnorePattern: '^emit$', // 忽略 emit 這個變數
+        },
+      ],
       'no-eval': 'error',
       'spaced-comment': ['warn', 'always'],
       eqeqeq: ['error', 'always'],

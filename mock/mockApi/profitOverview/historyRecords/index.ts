@@ -15,3 +15,12 @@ export const editReports = {
     message: '編輯成功',
   }),
 };
+
+export const deleteReports = {
+  url: '/api/v1/dashboard/:tradesId',
+  method: 'delete',
+  response: () => ({
+    status: true,
+    message: '刪除成功',
+  }),
+};

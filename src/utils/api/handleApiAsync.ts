@@ -1,57 +1,53 @@
 import { getErrorMessage } from './apiErrorMessage';
+import { notify } from '../feedback/notify';
+import type { TransportResult, ApiResult } from '@/api/index';
 
-interface apiResponse<T> {
-  status: boolean;
-  message?: string;
-  data?: T;
-}
-
-type Result<T> = { success: true; data: T } | { success: false; message: string };
-const ok = <T>(data: T): Result<T> => ({ success: true, data });
-const fail = (message: string): Result<never> => ({ success: false, message });
 type LoadingLike<K extends string = string> = {
   start: (key: K) => void;
   stop: (key: K) => void;
 };
 
-const handleApiAsync = async <T, K extends string = string>(
-  task: () => Promise<T>,
+export const handleApi = async <T, K extends string = string>(
+  task: () => Promise<TransportResult<T>>,
   options?: {
     loadingStore?: LoadingLike<K>;
     loadingKey?: K;
     target?: Ref<T | undefined>;
+    notify?: boolean;
   }
-): Promise<Result<T>> => {
-  const loading = options?.loadingStore; // 接收傳入的store 不在工具函式內連接pinia
-
+): Promise<ApiResult<T>> => {
+  const loading = options?.loadingStore;
   if (loading && options?.loadingKey) loading.start(options.loadingKey);
 
-  await new Promise((resolve) => setTimeout(resolve, 1000)); // 開發階段用於測試 loading 效果
-
   try {
-    const data = await task();
-    if (options?.target && typeof data !== 'undefined') {
-      options.target.value = data as T;
+    const api = await task();
+
+    if (!api.ok) {
+      if (options?.notify && api.status === 500) {
+        notify('error', '伺服器錯誤，請通知管理員');
+      }
+
+      return {
+        success: false,
+        message: api.message,
+      };
     }
-    return ok(data);
+
+    if (options?.target) {
+      options.target.value = api.data;
+    }
+
+    return {
+      success: true,
+      data: api.data,
+      message: api.message ?? '',
+    };
   } catch (err) {
-    const msg = getErrorMessage(err);
-    return fail(msg);
+    return {
+      success: false,
+      message: getErrorMessage(err),
+    };
   } finally {
     if (loading && options?.loadingKey) loading.stop(options.loadingKey);
   }
 };
-
-export const handleApiResponse = <T, K extends string = string>(
-  task: () => Promise<apiResponse<T>>,
-  options?: {
-    loadingStore?: LoadingLike<K>;
-    loadingKey?: K;
-    target?: Ref<T | undefined>;
-  }
-) =>
-  handleApiAsync<T | undefined, K>(async () => {
-    const api = await task();
-    if (!api.status) throw new Error(api.message ?? 'Request failed');
-    return api.data as T | undefined;
-  }, options);
