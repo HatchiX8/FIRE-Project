@@ -1,12 +1,7 @@
 <template>
   <div class="md:(px-4 mx-auto) max-w-6xl">
-<<<<<<< HEAD
-    <upgradeTable />
-    <memberTable />
-=======
     <upgradeTable :tableData="adminPageStore.upgradeList" @review="requestReview" />
     <memberTable :tableData="adminPageStore.memberList" @review="requestMemberStatus" />
->>>>>>> 4ce345378473e3c7803ef3153fca58a379150e98
   </div>
   <!-- Upgrade Dialog -->
   <baseDialog

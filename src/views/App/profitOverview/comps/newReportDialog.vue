@@ -246,7 +246,7 @@ const handleSubmit = async () => {
 
     sellPrice: form.value.sellPrice!,
     sellQty: form.value.quantity!,
-    sellCost: form.value.realizedPnl!,
+    sellCost: form.value.sellCost!,
     realizedPnl: form.value.realizedPnl!,
     sellDate: form.value.sellDate!,
     sellNote: form.value.sellNote!,

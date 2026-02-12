@@ -1,11 +1,6 @@
 // ----------區塊名稱----------
-<<<<<<< HEAD
-export { default as carouselCard } from './CarouselCard.vue';
-export { default as featureGrid } from './FeatureGrid.vue';
-=======
 export { default as carouselCard } from './carouselCard.vue';
 export { default as featureGrid } from './featureGrid.vue';
->>>>>>> 4ce345378473e3c7803ef3153fca58a379150e98
 export { default as heroCTA } from './heroCTA.vue';
 // ------------------------
 
