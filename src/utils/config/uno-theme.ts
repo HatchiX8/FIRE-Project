@@ -1,37 +1,82 @@
 export const themeColors = {
+  fontFamily: {
+    sans: '"Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif',
+    headline: '"Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif',
+  },
   colors: {
-    // Primary
-    primary: '#3B82F6',
-    primaryHover: '#60A5FA',
-    primaryActive: '#2563EB',
-    primaryFocus: '#1D4ED8',
-    primaryDisabled: '#93C5FD',
+    // Primary - FIRE Journal indigo
+    primary: '#6366F1',
+    primaryHover: '#818CF8',
+    primaryActive: '#4F46E5',
+    primaryFocus: '#4338CA',
+    primaryDisabled: '#A5B4FC',
+    primaryContainer: 'rgba(99, 102, 241, 0.1)',
+    primaryContainerHover: 'rgba(99, 102, 241, 0.16)',
+    primaryOutline: 'rgba(99, 102, 241, 0.2)',
 
-    // Default
-    default: '#2A2A3A', // 背景表面色
-    defaultHover: '#3A3A4A', // hover 比背景稍亮
-    defaultActive: '#1F1F2F', // active 比背景稍暗
-    defaultFocus: '#4B5563', // 聚焦邊框/陰影輔助色
-    defaultDisabled: '#3F3F4F', // disabled 比hover更暗
+    // Default / neutral controls
+    default: '#334155',
+    defaultHover: '#475569',
+    defaultActive: '#1E293B',
+    defaultFocus: '#64748B',
+    defaultDisabled: '#475569',
 
     // Success
-    success: '#4ADE80',
-    successHover: '#6EE7B7', // 提亮
-    successActive: '#22C55E', // 加深
-    successFocus: '#15803D', // 深綠聚焦
-    successDisabled: '#A7F3D0', // 淺色失效
+    success: '#34D399',
+    successHover: '#6EE7B7',
+    successActive: '#10B981',
+    successFocus: '#059669',
+    successDisabled: '#A7F3D0',
+    successContainer: 'rgba(16, 185, 129, 0.1)',
+    successOutline: 'rgba(16, 185, 129, 0.2)',
 
     // Danger
-    danger: '#F87171',
-    dangerHover: '#FCA5A5', // 提亮
-    dangerActive: '#DC2626', // 加深
-    dangerFocus: '#991B1B', // 深紅聚焦
-    dangerDisabled: '#FECACA', // 淺色失效
+    danger: '#FB7185',
+    dangerHover: '#FDA4AF',
+    dangerActive: '#F43F5E',
+    dangerFocus: '#E11D48',
+    dangerDisabled: '#FECDD3',
+    dangerContainer: 'rgba(244, 63, 94, 0.1)',
+    dangerOutline: 'rgba(244, 63, 94, 0.2)',
 
-    // Background & Text
-    background: '#1E1E2E',
-    backgroundSurface: '#2A2A3A',
-    textColor: '#E0E0E0',
-    textSecondary: '#A0A0A0',
+    // Warning
+    warning: '#F59E0B',
+    warningHover: '#FBBF24',
+    warningActive: '#D97706',
+    warningFocus: '#B45309',
+    warningDisabled: '#FDE68A',
+    warningContainer: 'rgba(245, 158, 11, 0.1)',
+    warningOutline: 'rgba(245, 158, 11, 0.2)',
+
+    // Info
+    info: '#38BDF8',
+    infoHover: '#7DD3FC',
+    infoActive: '#0EA5E9',
+    infoFocus: '#0284C7',
+    infoDisabled: '#BAE6FD',
+    infoContainer: 'rgba(14, 165, 233, 0.1)',
+    infoOutline: 'rgba(14, 165, 233, 0.2)',
+
+    // Background & surface
+    background: '#020617',
+    backgroundMuted: '#0F172A',
+    backgroundSurface: 'rgba(255, 255, 255, 0.05)',
+    surface: 'rgba(255, 255, 255, 0.05)',
+    surfaceHover: 'rgba(255, 255, 255, 0.08)',
+    surfaceActive: 'rgba(255, 255, 255, 0.12)',
+    surfaceHigh: 'rgba(255, 255, 255, 0.08)',
+    surfaceHighest: 'rgba(255, 255, 255, 0.12)',
+    surfaceOverlay: 'rgba(15, 23, 42, 0.9)',
+
+    // Text & borders
+    textColor: '#F8FAFC',
+    textSecondary: '#94A3B8',
+    textMuted: '#64748B',
+    textDisabled: '#475569',
+    onSurface: '#F8FAFC',
+    onSurfaceVariant: '#94A3B8',
+    outline: 'rgba(255, 255, 255, 0.1)',
+    outlineSoft: 'rgba(255, 255, 255, 0.05)',
+    outlineStrong: 'rgba(255, 255, 255, 0.2)',
   },
 };

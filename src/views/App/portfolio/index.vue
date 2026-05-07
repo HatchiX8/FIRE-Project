@@ -1,6 +1,104 @@
 <template>
   <div class="text-textColor">
-    <div class="mx-auto max-w-6xl md:px-4">
+    <div class="flex flex-col gap-6">
+      <section
+        class="portfolio-summary-card bg-surface relative overflow-hidden rounded-3xl p-6 backdrop-blur-xl transition-all md:p-8 xl:grid xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-8"
+      >
+        <div class="pointer-events-none absolute right-0 top-0 p-8 opacity-5">
+          <div class="i-mdi:wallet h-36 w-36 rotate-12 text-white md:h-44 md:w-44"></div>
+        </div>
+        <loadingAreaOverlay :loadingId="portfolioStore.summaryLoading">
+          <div v-show="!isSummaryLoading" class="portfolio-summary-content relative z-10 min-w-0">
+            <p class="text-textSecondary mb-3 text-[16px] font-bold uppercase tracking-widest">
+              總資產
+            </p>
+            <h2 class="text-5xl font-light leading-none tracking-tight text-white md:text-6xl">
+              {{ portfolioStore.summaryList.totalInvest?.toLocaleString?.() ?? '-' }}
+            </h2>
+            <div
+              class="portfolio-summary-breakdown text-textSecondary mt-5 grid gap-3 text-sm sm:grid-cols-2"
+            >
+              <div class="flex items-center justify-between gap-6">
+                <span>股票成本</span>
+                <span class="text-textColor font-medium">
+                  {{ portfolioStore.summaryList.stockCost?.toLocaleString?.() ?? '-' }}
+                </span>
+              </div>
+              <div class="flex items-center justify-between gap-6">
+                <span>現金資金</span>
+                <span class="text-textColor font-medium">
+                  {{ portfolioStore.summaryList.cashInvest?.toLocaleString?.() ?? '-' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <div
+                class="text-textSecondary mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-widest"
+              >
+                <span class="text-3 flex items-center gap-2">
+                  <i class="bg-primary text-4 h-2 w-2 rounded-full"></i>
+                  持股成本
+                </span>
+                <span class="text-3 flex items-center gap-2">
+                  <i class="bg-success h-2 w-2 rounded-full"></i>
+                  現金
+                </span>
+              </div>
+              <div class="flex h-1.5 overflow-hidden rounded-full bg-white/5">
+                <div class="bg-primary h-full" :style="{ width: stockCostProgressWidth }"></div>
+                <div class="bg-success h-full" :style="{ width: cashProgressWidth }"></div>
+              </div>
+            </div>
+          </div>
+          <div v-if="isSummaryLoading" class="my-12 min-w-[240px]"></div>
+        </loadingAreaOverlay>
+
+        <div
+          v-show="!isHoldingsLoading && !isSummaryLoading"
+          class="portfolio-action-panel relative z-10 mt-8 flex w-full flex-col items-start justify-center gap-3 pl-0 sm:w-auto xl:mt-0 xl:h-full xl:w-full xl:pl-6"
+        >
+          <baseButton color="primary" @click="openTotalInvestDialog">資金管理</baseButton>
+          <baseButton color="primary" @click="openAssetDialog">建立資產</baseButton>
+        </div>
+      </section>
+
+      <div v-show="isHoldingsLoading && isSummaryLoading" class="mb-4 flex justify-center">
+        <p class="text-5">資料載入中...</p>
+      </div>
+
+      <section class="grid grid-cols-1 gap-6 2xl:grid-cols-[minmax(0,2fr)_minmax(360px,1fr)]">
+        <div class="portfolio-table-card bg-surface rounded-3xl p-3 backdrop-blur-xl md:p-4 xl:p-5">
+          <loadingAreaOverlay :loadingId="portfolioStore.holdingsLoading">
+            <baseTable
+              v-if="!isHoldingsLoading && !isSummaryLoading"
+              :columns="bridgedColumns"
+              :data="bridgedData"
+              :row-key="bridgedRowKey"
+              v-model:expanded-row-keys="expanded"
+              :page-size="10"
+              :total-page="portfolioStore.holdingsPagination.totalPage"
+              :current-page="portfolioStore.holdingsPagination.currentPage"
+              @page-change="handlePageChange"
+            />
+            <div v-if="isHoldingsLoading" class="my-20"></div>
+          </loadingAreaOverlay>
+        </div>
+
+        <div class="portfolio-chart-card rounded-3xl p-6 backdrop-blur-xl">
+          <loadingAreaOverlay :loadingId="portfolioStore.summaryLoading">
+            <trendChart
+              v-show="!isSummaryLoading"
+              class="h-72 min-h-[18rem]"
+              :chartData="portfolioStore.summaryList"
+            />
+            <div v-if="isSummaryLoading" class="my-20"></div>
+          </loadingAreaOverlay>
+        </div>
+      </section>
+    </div>
+
+    <div class="hidden">
       <loadingAreaOverlay :loadingId="portfolioStore.summaryLoading">
         <div>
           <trendChart
@@ -108,6 +206,37 @@ const submitting = ref<boolean>(false); // 表單提交狀態
 onMounted(async () => {
   fetchPortfolioData(1);
 });
+
+const isFullTable = ref<boolean>(false);
+
+const updateTableMode = () => {
+  isFullTable.value = window.matchMedia('(min-width: 768px)').matches;
+};
+
+onMounted(() => {
+  updateTableMode();
+  window.addEventListener('resize', updateTableMode);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateTableMode);
+});
+
+const stockCostProgressWidth = computed(() => {
+  const stockCost = portfolioStore.summaryList.stockCost ?? 0;
+  const cashInvest = portfolioStore.summaryList.cashInvest ?? 0;
+  const total = stockCost + cashInvest;
+
+  return total > 0 ? `${(stockCost / total) * 100}%` : '0%';
+});
+
+const cashProgressWidth = computed(() => {
+  const stockCost = portfolioStore.summaryList.stockCost ?? 0;
+  const cashInvest = portfolioStore.summaryList.cashInvest ?? 0;
+  const total = stockCost + cashInvest;
+
+  return total > 0 ? `${(cashInvest / total) * 100}%` : '0%';
+});
 // -------------------------
 
 // ----------欄位設定----------
@@ -207,8 +336,88 @@ const columns: DataTableColumns<StockRow> = [
 ];
 
 const expanded = ref<Array<string | number>>([]);
+
+const fullColumns: DataTableColumns<StockRow> = [
+  {
+    title: '股票名稱',
+    key: 'stockName',
+    align: 'center',
+    minWidth: 120,
+    render: (row: StockRow) => row.stockName,
+  },
+  {
+    title: '買進價格',
+    key: 'buyPrice',
+    align: 'center',
+    minWidth: 110,
+    render: (row: StockRow): string => `${formatPriceSmart(row.buyPrice)}`,
+  },
+  {
+    title: '股數',
+    key: 'quantity',
+    align: 'center',
+    minWidth: 80,
+  },
+  {
+    title: '總成本',
+    key: 'totalCost',
+    align: 'center',
+    minWidth: 120,
+    render: (row: StockRow): string => row.totalCost.toLocaleString(),
+  },
+  {
+    title: '日期',
+    key: 'buyDate',
+    align: 'center',
+    minWidth: 120,
+  },
+  {
+    title: '備註',
+    key: 'note',
+    align: 'center',
+    minWidth: 160,
+    render: (row: StockRow): string => row.note ?? '-',
+  },
+  {
+    title: '操作',
+    key: 'actions',
+    align: 'center',
+    minWidth: 96,
+    render: (row: StockRow) =>
+      h(
+        baseButton,
+        {
+          size: 'small',
+          color: 'primary',
+          onClick: () => openSellAssetDialog(row),
+        },
+        { default: () => '平倉' }
+      ),
+  },
+  {
+    type: 'expand',
+    width: 56,
+    renderExpand: (row: StockRow) =>
+      h('div', { class: 'flex justify-end gap-3 p-3' }, [
+        h(
+          baseButton,
+          { size: 'small', color: 'success', onClick: () => openEditAssetDialog(row) },
+          { default: () => '編輯' }
+        ),
+        h(
+          baseButton,
+          { size: 'small', color: 'danger', onClick: () => openDeleteAssetDialog(row) },
+          { default: () => '刪除' }
+        ),
+      ]),
+  },
+];
+
+const displayColumns = computed(() => (isFullTable.value ? fullColumns : columns));
 // 斷言 - ✅ 這三個是「橋接變數」，把 TS 斷言放到 script
-const bridgedColumns = columns as unknown as DataTableColumns<Record<string, unknown>>;
+const bridgedColumns = computed(
+  () => displayColumns.value as unknown as DataTableColumns<Record<string, unknown>>
+);
 
 const bridgedData = computed(
   () => portfolioStore.holdingsList as unknown as Record<string, unknown>[]
@@ -478,3 +687,86 @@ const requestDeleteAsset = async (assetId: string) => {
 };
 // ---------------------------
 </script>
+
+<style scoped>
+.portfolio-summary-card {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.065);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 60px rgba(0, 0, 0, 0.16);
+}
+
+.portfolio-table-card,
+.portfolio-chart-card {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.065);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 60px rgba(0, 0, 0, 0.14);
+}
+
+.portfolio-table-card :deep(.n-data-table),
+.portfolio-table-card :deep(.n-data-table-base-table),
+.portfolio-table-card :deep(.n-data-table-wrapper),
+.portfolio-table-card :deep(.n-data-table-table),
+.portfolio-table-card :deep(.n-data-table-thead),
+.portfolio-table-card :deep(.n-data-table-tbody),
+.portfolio-table-card :deep(.n-data-table-tr),
+.portfolio-table-card :deep(.n-data-table-th),
+.portfolio-table-card :deep(.n-data-table-td) {
+  background-color: transparent;
+}
+
+.portfolio-table-card :deep(.n-data-table-th) {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.portfolio-table-card :deep(.n-data-table-td),
+.portfolio-table-card :deep(.n-data-table-th) {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.portfolio-table-card :deep(.n-data-table-tr:hover .n-data-table-td) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+@media (min-width: 768px) {
+  .portfolio-summary-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 240px);
+    column-gap: 1.5rem;
+    align-items: end;
+  }
+
+  .portfolio-summary-content > p,
+  .portfolio-summary-content > h2 {
+    grid-column: 1;
+  }
+
+  .portfolio-summary-breakdown {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: end;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .portfolio-summary-content > div:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.portfolio-action-panel :deep(.n-button) {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .portfolio-action-panel :deep(.n-button) {
+    width: 10rem;
+  }
+}
+</style>

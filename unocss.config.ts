@@ -2,6 +2,7 @@ import {
   defineConfig,
   presetIcons,
   presetMini,
+  presetWebFonts,
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss';
@@ -11,7 +12,7 @@ export default defineConfig({
   presets: [
     presetMini(),
     presetIcons({
-      scale: 1.2, // 基準比例，之後用 text-5、text-7 再放大
+      scale: 1.2,
       extraProperties: {
         display: 'inline-block',
         'vertical-align': 'middle',
@@ -21,12 +22,21 @@ export default defineConfig({
         mdi: () => import('@iconify-json/mdi/icons.json'),
       },
     }),
-    // 你也可以加入 presetAttributify(), presetIcons() ...等
+    presetWebFonts({
+      provider: 'google',
+      inlineImports: false,
+      fonts: {
+        sans: {
+          name: 'Inter',
+          weights: ['300', '400', '500', '600', '700', '800'],
+        },
+        headline: {
+          name: 'Inter',
+          weights: ['300', '400', '500', '600', '700', '800'],
+        },
+      },
+    }),
   ],
-  transformers: [
-    transformerDirectives(), // 支援 @apply
-    transformerVariantGroup(), // 支援 hover:(text-white bg-blue-500)
-  ],
-  // safelist, // 後續會寫成一支TS把要預載css寫進去 (動態class不會被UnoCss掃描到)
+  transformers: [transformerDirectives(), transformerVariantGroup()],
   theme: themeColors,
 });
