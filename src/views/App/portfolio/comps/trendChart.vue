@@ -1,43 +1,17 @@
 <template>
-  <div class="flex">
-    <div class="bg-background w-1.5/3 h-full" ref="chartDom"></div>
-    <!-- 右邊：自訂數值 -->
-    <div class="text-textColor text-4 w-1.5/3 flex flex-col justify-center">
-      <div class="mb-2 flex justify-between">
-        <span>總資產</span>
-        <span> {{ props.chartData.totalInvest?.toLocaleString?.() ?? '-' }}</span>
-      </div>
-      <div class="mb-2 flex justify-between">
-        <span>持股成本</span>
-        <span>{{ props.chartData.stockCost?.toLocaleString?.() ?? '-' }} </span>
-      </div>
-      <!-- <div class="mb-2 flex justify-between">
-        <span>股票市值</span>
-        <span>{{ props.chartData.stockValue?.toLocaleString?.() ?? '-' }} </span>
-      </div>
-      <div class="mb-2 flex justify-between">
-        <span>未實現損益</span>
-        <span
-          >{{ props.chartData.stockProfit?.toLocaleString?.() ?? '-' }}({{
-            props.chartData.profitRate
-          }})
-        </span>
-      </div> -->
+  <div class="relative flex h-full min-h-[18rem] items-center justify-center">
+    <div class="h-full min-h-[18rem] w-full" ref="chartDom"></div>
+    <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+      <span class="text-3xl font-light leading-none text-white">{{ positionRatioText }}</span>
+      <span class="mt-1 text-[10px] font-bold uppercase tracking-widest text-textSecondary">
+        已配置
+      </span>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-// ----------import----------
-// 套件
 import * as echarts from 'echarts';
-// store
-// 共用型別
-// 元件
-// 商業邏輯
 
-// ---------------------------
-
-// ----------type----------
 interface ChartData {
   totalInvest: number;
   cashInvest: number;
@@ -47,23 +21,23 @@ interface ChartData {
   stockProfit: number;
   profitRate: number;
 }
-// ------------------------
 
-// ----------props&emit----------
 const props = defineProps<{
   chartData: ChartData;
 }>();
 
-// const emit = defineEmits<{
-//   (e: 'chart-ready', instance: echarts.ECharts): void;
-// }>();
-// ------------------------------
+const positionRatioText = computed(() => {
+  const stockCost = props.chartData.stockCost ?? 0;
+  const cashInvest = props.chartData.cashInvest ?? 0;
+  const total = stockCost + cashInvest;
+  const ratio = total > 0 ? (stockCost / total) * 100 : 0;
 
-// ----------趨勢圖初始化----------
-const chartDom = ref<HTMLDivElement | null>(null); // DOM 容器
-let echart: echarts.ECharts | null = null; // 圖表實例 (用 ref 會導致 tooltip 無法正常顯示)
+  return `${ratio.toFixed(0)}%`;
+});
 
-// 初始化
+const chartDom = ref<HTMLDivElement | null>(null);
+let echart: echarts.ECharts | null = null;
+
 const initChart = () => {
   if (!chartDom.value) return;
   if (echart) {
@@ -76,20 +50,16 @@ const handleResize = () => {
   if (echart) echart.resize();
 };
 
-// 掛載元件
 onMounted(() => {
-  initChart(); // 初始化趨勢圖
-  renderCharts(); // 更新趨勢圖
-  window.addEventListener('resize', handleResize); // 處理自適應問題
+  initChart();
+  renderCharts();
+  window.addEventListener('resize', handleResize);
 });
 
-// 卸載元件
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
 });
-// -------------------------------
 
-// ----------watch----------
 watch(
   () => props.chartData,
   () => {
@@ -99,10 +69,7 @@ watch(
   },
   { deep: true, immediate: true }
 );
-// -------------------------
 
-// ----------趨勢圖----------
-// 更新趨勢圖
 const renderCharts = () => {
   if (!echart) return;
 
@@ -110,43 +77,39 @@ const renderCharts = () => {
   echart.setOption(option, true);
 };
 
-// 可抽換趨勢圖內容
 const getChartOption = (data: ChartData): echarts.EChartsCoreOption => ({
+  color: ['#6366f1', '#34d399'],
   series: [
     {
       name: '資金配置',
       type: 'pie',
-      radius: '80%',
-      center: ['40%', '45%'], // ⬅️ 這裡往上移，數字越小越上方
-      avoidLabelOverlap: false,
+      radius: ['68%', '92%'],
+      center: ['50%', '50%'],
+      avoidLabelOverlap: true,
+      padAngle: 5,
+      itemStyle: {
+        borderWidth: 0,
+        borderRadius: 8,
+      },
       data: [
+        { value: data.stockCost ?? 0, name: '持股成本' },
         { value: data.cashInvest ?? 0, name: '現金' },
-        { value: data.stockCost ?? 0, name: '股票' },
       ],
       label: {
-        show: true,
-        position: 'inside',
-        formatter: '{b}\n{d}%', // 換行顯示
-        color: '#000000',
-        fontSize: 16,
-        lineHeight: 18,
+        show: false,
       },
       labelLine: { show: false },
     },
   ],
   tooltip: {
     trigger: 'item',
-    formatter: '{b}<br/>金額: {c}<br/>水位: {d}%',
-  },
-  legend: {
-    show: false,
-    orient: 'vertical',
-    left: 'left',
-    bottom: 8,
+    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
     textStyle: {
-      color: '#A0A0A0', // 依你的 textSecondary 調
+      color: '#f8fafc',
     },
+    formatter: '{b}<br/>金額: {c}<br/>比例: {d}%',
   },
 });
-// -------------------------
 </script>

@@ -1,4 +1,8 @@
 export const themeColors = {
+  fontFamily: {
+    sans: '"Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif',
+    headline: '"Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif',
+  },
   colors: {
     // Primary - FIRE Journal indigo
     primary: '#6366F1',
