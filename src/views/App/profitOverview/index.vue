@@ -1,59 +1,82 @@
 <template>
   <div class="text-textColor">
-    <div class="mx-auto max-w-6xl md:px-4">
-      <loadingAreaOverlay :loadingId="profitOverviewStore.trendChartLoading">
-        <div class="mb-4">
-          <trendChart
-            v-show="!isTrendChartLoading"
-            class="h-70"
-            :chartData="profitOverviewStore.trendChartData"
-          />
-        </div>
-        <div v-if="isTrendChartLoading" class="my-20"></div>
-      </loadingAreaOverlay>
-
-      <div
-        v-show="!isTrendChartLoading && !isTotalTradesLoading"
-        class="md:(mx-auto px-4) flex max-w-6xl items-center justify-between"
-      >
-        <div></div>
-        <div class="flex items-center">
-          <baseButton color="primary"
-            ><div class="i-mdi:chevron-left text-5" @click="prevMonth"></div
-          ></baseButton>
-          <div class="text-5 mx-2 text-center">
-            <p>
-              <span class="text-danger">{{ currentMonth }}月</span>歷史
-            </p>
-            <p>交易紀錄</p>
+    <div class="flex flex-col gap-6">
+      <section class="profit-chart-card bg-surface rounded-3xl p-6 backdrop-blur-xl md:p-8">
+        <loadingAreaOverlay :loadingId="profitOverviewStore.trendChartLoading">
+          <div>
+            <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h2 class="text-xl font-semibold tracking-tight text-white">損益趨勢</h2>
+                <p class="text-textSecondary mt-1 text-sm">年度已實現損益走勢</p>
+              </div>
+              <div class="flex rounded-xl bg-white/5 p-1">
+                <span class="rounded-lg bg-white/10 px-4 py-1.5 text-xs font-bold text-white">
+                  {{ currentYear }}
+                </span>
+              </div>
+            </div>
+            <div class="profit-chart-body">
+              <trendChart
+                v-if="!isTrendChartLoading"
+                class="h-full min-h-0"
+                :chartData="profitOverviewStore.trendChartData"
+              />
+            </div>
           </div>
+          <div v-if="isTrendChartLoading" class="my-20"></div>
+        </loadingAreaOverlay>
+      </section>
 
-          <baseButton color="primary"
-            ><div class="i-mdi:chevron-right text-5" @click="nextMonth"></div
-          ></baseButton>
-        </div>
-
-        <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
-      </div>
-      <div v-show="isTrendChartLoading && isTotalTradesLoading" class="flex justify-center">
+      <div v-show="isTrendChartLoading && isTotalTradesLoading" class="mb-4 flex justify-center">
         <p class="text-5">資料請求中...請稍後</p>
       </div>
 
-      <loadingAreaOverlay :loadingId="profitOverviewStore.totalTradesLoading">
-        <baseTable
-          v-if="!isTrendChartLoading && !isTotalTradesLoading"
-          :columns="bridgedColumns"
-          :data="bridgedData"
-          :row-key="bridgedRowKey"
-          v-model:expanded-row-keys="expanded"
-          :page-size="10"
-          :total-page="profitOverviewStore.totalTradesPageInfo.totalPage"
-          :current-page="profitOverviewStore.totalTradesPageInfo.currentPage"
-          @page-change="handlePageChange"
-          class="mt-4"
-        />
-        <div v-if="isTotalTradesLoading" class="my-20"></div>
-      </loadingAreaOverlay>
+      <section class="grid grid-cols-1 gap-6 2xl:grid-cols-[minmax(0,2fr)_minmax(360px,1fr)]">
+        <div class="profit-table-card bg-surface rounded-3xl p-3 backdrop-blur-xl md:p-4 xl:p-5">
+          <loadingAreaOverlay :loadingId="profitOverviewStore.totalTradesLoading">
+            <baseTable
+              v-if="!isTrendChartLoading && !isTotalTradesLoading"
+              :columns="bridgedColumns"
+              :data="bridgedData"
+              :row-key="bridgedRowKey"
+              v-model:expanded-row-keys="expanded"
+              :page-size="10"
+              :total-page="profitOverviewStore.totalTradesPageInfo.totalPage"
+              :current-page="profitOverviewStore.totalTradesPageInfo.currentPage"
+              @page-change="handlePageChange"
+            />
+            <div v-if="isTotalTradesLoading" class="my-20"></div>
+          </loadingAreaOverlay>
+        </div>
+
+        <aside
+          v-show="!isTrendChartLoading && !isTotalTradesLoading"
+          class="profit-action-card bg-surface rounded-3xl p-6 backdrop-blur-xl"
+        >
+          <div class="flex h-full flex-col gap-6">
+            <div>
+              <p class="text-textSecondary text-[10px] font-bold uppercase tracking-widest">月份</p>
+              <div class="mt-4 flex items-center justify-between gap-3">
+                <baseButton color="primary">
+                  <div class="i-mdi:chevron-left text-5" @click="prevMonth"></div>
+                </baseButton>
+                <div class="min-w-0 text-center">
+                  <p class="text-3xl font-light leading-none text-white">{{ currentMonth }}</p>
+                  <p class="text-textSecondary mt-1 text-xs font-bold uppercase tracking-widest">
+                    {{ currentYear }}
+                  </p>
+                </div>
+
+                <baseButton color="primary">
+                  <div class="i-mdi:chevron-right text-5" @click="nextMonth"></div>
+                </baseButton>
+              </div>
+            </div>
+
+            <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
+          </div>
+        </aside>
+      </section>
     </div>
   </div>
   <newReportDialog
@@ -366,3 +389,59 @@ const requestDeleteReport = async (reportId: string) => {
 };
 // ---------------------------
 </script>
+
+<style scoped>
+.profit-chart-card,
+.profit-table-card,
+.profit-action-card {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.065);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 60px rgba(0, 0, 0, 0.14);
+}
+
+.profit-chart-body {
+  height: 18rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .profit-chart-body {
+    height: 300px;
+  }
+}
+
+.profit-table-card :deep(.n-data-table),
+.profit-table-card :deep(.n-data-table-base-table),
+.profit-table-card :deep(.n-data-table-wrapper),
+.profit-table-card :deep(.n-data-table-table),
+.profit-table-card :deep(.n-data-table-thead),
+.profit-table-card :deep(.n-data-table-tbody),
+.profit-table-card :deep(.n-data-table-tr),
+.profit-table-card :deep(.n-data-table-th),
+.profit-table-card :deep(.n-data-table-td) {
+  background-color: transparent;
+}
+
+.profit-table-card :deep(.n-data-table-th) {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.profit-table-card :deep(.n-data-table-td),
+.profit-table-card :deep(.n-data-table-th) {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.profit-table-card :deep(.n-data-table-tr:hover .n-data-table-td) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.profit-action-card :deep(.n-button) {
+  width: 100%;
+}
+</style>
