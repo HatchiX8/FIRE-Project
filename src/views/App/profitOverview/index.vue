@@ -1,10 +1,10 @@
 <template>
   <div class="text-textColor">
     <div class="flex flex-col gap-6">
-      <section class="profit-chart-card bg-surface rounded-3xl p-6 backdrop-blur-xl md:p-8">
+      <section class="profit-chart-card bg-surface rounded-3xl p-4 backdrop-blur-xl md:p-6">
         <loadingAreaOverlay :loadingId="profitOverviewStore.trendChartLoading">
           <div>
-            <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
               <div>
                 <h2 class="text-xl font-semibold tracking-tight text-white">損益趨勢</h2>
                 <p class="text-textSecondary mt-1 text-sm">年度已實現損益走勢</p>
@@ -32,7 +32,9 @@
       </div>
 
       <section class="grid grid-cols-1 gap-6 2xl:grid-cols-[minmax(0,2fr)_minmax(360px,1fr)]">
-        <div class="profit-table-card bg-surface rounded-3xl p-3 backdrop-blur-xl md:p-4 xl:p-5">
+        <div
+          class="profit-table-card bg-surface order-2 rounded-3xl p-3 backdrop-blur-xl md:p-4 xl:p-5 2xl:order-1"
+        >
           <loadingAreaOverlay :loadingId="profitOverviewStore.totalTradesLoading">
             <baseTable
               v-if="!isTrendChartLoading && !isTotalTradesLoading"
@@ -51,13 +53,13 @@
 
         <aside
           v-show="!isTrendChartLoading && !isTotalTradesLoading"
-          class="profit-action-card bg-surface rounded-3xl p-6 backdrop-blur-xl"
+          class="profit-action-card bg-surface order-1 rounded-3xl p-6 backdrop-blur-xl 2xl:order-2"
         >
-          <div class="flex h-full flex-col gap-6">
+          <div class="flex h-full min-w-0 flex-col gap-6">
             <div>
               <p class="text-textSecondary text-[10px] font-bold uppercase tracking-widest">月份</p>
-              <div class="mt-4 flex items-center justify-between gap-3">
-                <baseButton color="primary">
+              <div class="profit-month-switcher mt-4 grid items-center gap-3">
+                <baseButton class="profit-month-button" color="primary">
                   <div class="i-mdi:chevron-left text-5" @click="prevMonth"></div>
                 </baseButton>
                 <div class="min-w-0 text-center">
@@ -67,13 +69,15 @@
                   </p>
                 </div>
 
-                <baseButton color="primary">
+                <baseButton class="profit-month-button" color="primary">
                   <div class="i-mdi:chevron-right text-5" @click="nextMonth"></div>
                 </baseButton>
               </div>
             </div>
 
-            <baseButton color="primary" @click="openReportDialog">新增資產</baseButton>
+            <baseButton class="profit-add-button" color="primary" @click="openReportDialog">
+              新增資產
+            </baseButton>
           </div>
         </aside>
       </section>
@@ -178,7 +182,7 @@ const columns: DataTableColumns<TradeItem> = [
     key: 'tradesDate',
     align: 'center',
     minWidth: 20,
-    render: (row) => row.sellDate,
+    render: (row) => formatDisplayDate(row.sellDate),
   },
   {
     title: '損益(%)',
@@ -255,6 +259,16 @@ const bridgedData = computed(
 
 const bridgedRowKey = (row: Record<string, unknown>) => (row as unknown as StockRow).tradesId;
 // ------------------------
+
+const formatDisplayDate = (dateText: string): string => {
+  const normalizedDate = dateText.trim().replace(/\//g, '-');
+  const match = normalizedDate.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+
+  if (!match) return normalizedDate;
+
+  const [, year, month, day] = match;
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+};
 
 // ----------工具函式----------
 // 清除所選資產
@@ -402,14 +416,14 @@ const requestDeleteReport = async (reportId: string) => {
 }
 
 .profit-chart-body {
-  height: 18rem;
+  height: 14rem;
   min-width: 0;
   overflow: hidden;
 }
 
 @media (min-width: 768px) {
   .profit-chart-body {
-    height: 300px;
+    height: 240px;
   }
 }
 
@@ -441,7 +455,18 @@ const requestDeleteReport = async (reportId: string) => {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-.profit-action-card :deep(.n-button) {
+.profit-month-switcher {
+  grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+}
+
+.profit-month-button {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+}
+
+.profit-add-button {
   width: 100%;
 }
 </style>

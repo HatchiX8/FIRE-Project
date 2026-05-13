@@ -6,13 +6,7 @@
     @ok="handleSubmit"
     :disabled="disableSubmit"
   >
-    <n-form
-      ref="formRef"
-      :model="form"
-      :rules="rules"
-      label-width="80"
-      class="max-h-80vh overflow-y-auto pr-2"
-    >
+    <n-form ref="formRef" :model="form" :rules="rules" label-width="80">
       <stockInputModule
         label="股票代碼"
         path="stock"
@@ -245,7 +239,7 @@ const handleSubmit = async () => {
     buyNote: form.value.buyNote!,
 
     sellPrice: form.value.sellPrice!,
-    sellQty: form.value.quantity!,
+    sellQty: form.value.sellQty!,
     sellCost: form.value.sellCost!,
     realizedPnl: form.value.realizedPnl!,
     sellDate: form.value.sellDate!,

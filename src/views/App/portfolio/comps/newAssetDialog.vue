@@ -81,7 +81,7 @@ import type { AddStockPayload } from '../api/index';
 import { baseDialog, baseForm } from '@/components/index';
 import { stockInputModule } from '@/modules/index';
 // 商業邏輯
-import { nonNegative, integerOnly, ymdValidator } from '@/utils/index';
+import { nonNegative, integerOnly, ymdValidator, today } from '@/utils/index';
 // ---------------------------
 
 // ----------type----------
@@ -111,7 +111,7 @@ const form = ref({
   buyPrice: null,
   quantity: null,
   buyCost: null,
-  buyDate: '',
+  buyDate: today,
   note: null,
 });
 
@@ -178,7 +178,7 @@ const resetForm = () => {
     buyPrice: null,
     quantity: null,
     buyCost: null,
-    buyDate: '',
+    buyDate: today,
     note: null,
   };
 };

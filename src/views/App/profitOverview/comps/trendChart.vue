@@ -79,10 +79,10 @@ const renderCharts = () => {
 const getChartOption = (data: TrendChartData): echarts.EChartsCoreOption => ({
   color: ['#6366f1'],
   grid: {
-    top: 12,
-    right: 16,
-    bottom: 36,
-    left: 12,
+    top: 6,
+    right: 8,
+    bottom: 20,
+    left: 4,
     containLabel: true,
   },
   xAxis: {
@@ -94,7 +94,7 @@ const getChartOption = (data: TrendChartData): echarts.EChartsCoreOption => ({
     axisLabel: {
       color: '#94a3b8',
       fontSize: 12,
-      margin: 16,
+      margin: 8,
     },
   },
   yAxis: {
